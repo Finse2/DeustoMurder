@@ -13,8 +13,17 @@ public class Main {
     static List<Room> rooms = new ArrayList<>();
     static List<Weapon> weapons = new ArrayList<>();
 
-    static {
+    static {resetListContents();}
 
+
+    public static void main(String[] args) {
+
+
+    }
+    /**
+     * reset to preset values (names) for the tree lists which represent the three main types of cards encountered throught the game
+     * */
+    public static void resetListContents(){
         String[] rawactors = {
                 "Miss Scarlett",
                 "Colonel Mustard",
@@ -45,8 +54,12 @@ public class Main {
                 "Study"
         };
 
+        actors.clear();
+        weapons.clear();
+        rooms.clear();
+
         for (String name : rawactors) {
-            actors.add(new Actor(name));
+            actors.add(new Actor(name, null));
         }
 
         for (String name : rawweapons) {
@@ -57,4 +70,6 @@ public class Main {
             rooms.add(new Room(name));
         }
     }
+
+
 }

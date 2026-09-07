@@ -2,7 +2,7 @@ package model;
 
 public class Room {
 
-    String name;
+    final private String name;
 
     public Room(String name) {
         this.name = name;

@@ -2,7 +2,7 @@ package model;
 
 public class Weapon {
 
-    String name;
+    final private String name;
 
     public Weapon(String name) {
         this.name = name;
