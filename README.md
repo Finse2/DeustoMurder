@@ -1,6 +1,6 @@
 # DeustoMurder
 
-DeustoMurder is a Java-based multiplayer murder mystery game inspired by **Cluedo / Clue**.
+DeustoMurder is a Java-based multiplayer murder mystery game inspired by **Cluedo**.
 
 The game uses custom characters, weapons, and rooms based around Deusto. Players will be able to join the same game from different computers, move around the board, make suggestions, gather information, and attempt to discover the hidden murder solution.
 
