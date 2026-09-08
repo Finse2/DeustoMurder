@@ -22,6 +22,7 @@ public class Main {
 
         resetListContents(); //we change the values of the lists to their preset value
 
+
     }
     /**
      * reset to preset values (names) for the tree lists which represent the three main types of cards encountered throught the game
