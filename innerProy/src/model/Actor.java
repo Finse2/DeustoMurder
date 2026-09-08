@@ -4,7 +4,7 @@ import ui.ActorsLook;
 
 import java.awt.*;
 
-public class Actor {
+public class Actor extends Card {
 
     final private String name;
     final private Color color;

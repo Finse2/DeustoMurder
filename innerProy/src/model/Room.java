@@ -1,6 +1,6 @@
 package model;
 
-public class Room {
+public class Room extends Card{
 
     final private String name;
 

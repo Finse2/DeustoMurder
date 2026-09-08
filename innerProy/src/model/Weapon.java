@@ -1,6 +1,6 @@
 package model;
 
-public class Weapon {
+public class Weapon extends Card {
 
     final private String name;
 
