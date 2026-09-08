@@ -4,6 +4,7 @@ import model.Actor;
 import model.Room;
 import model.Weapon;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,19 +20,33 @@ public class Main {
     public static void main(String[] args) {
 
 
+        resetListContents(); //we change the values of the lists to their preset value
+
     }
     /**
      * reset to preset values (names) for the tree lists which represent the three main types of cards encountered throught the game
      * */
     public static void resetListContents(){
-        String[] rawactors = {
-                "Garaizar", // rosa
-                "Luka", // morado
-                "David", // azul
-                "Andrada", // rojo
-                "Antal", // verde
-                "Bringas" // amarillo
-        };
+
+
+
+        List<String> actorNames = List.of(
+                "Garaizar",
+                "Luka",
+                "David",
+                "Andrada",
+                "Antal",
+                "Bringas"
+        );
+
+        List<Color> actorColors = List.of(
+                Color.PINK,
+                Color.MAGENTA,
+                Color.BLUE,
+                Color.RED,
+                Color.GREEN,
+                Color.YELLOW
+        );
 
         String[] rawweapons = {
                 "Machete",
@@ -57,8 +72,8 @@ public class Main {
         weapons.clear();
         rooms.clear();
 
-        for (String name : rawactors) {
-            actors.add(new Actor(name));
+        for(int i = 0; i < actorNames.size(); i++){
+            actors.add(new Actor(actorNames.get(i), actorColors.get(i)));
         }
 
         for (String name : rawweapons) {
@@ -68,6 +83,14 @@ public class Main {
         for (String name : rawrooms) {
             rooms.add(new Room(name));
         }
+    }
+
+
+    /**
+     *
+     * */
+    public static void createDefaultLayout(){
+
     }
 
 
