@@ -5,10 +5,8 @@ import ui.ActorsLook;
 public class Actor {
 
     final private String name;
-    final private ActorsLook look;
 
-    public Actor(String name, ActorsLook look) {
+    public Actor(String name) {
         this.name = name;
-        this.look = look;
     }
 }

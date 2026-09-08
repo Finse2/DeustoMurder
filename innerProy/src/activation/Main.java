@@ -25,33 +25,32 @@ public class Main {
      * */
     public static void resetListContents(){
         String[] rawactors = {
-                "Miss Scarlett",
-                "Colonel Mustard",
-                "Mrs White",
-                "Reverend Green",
-                "Mrs Peacock",
-                "Professor Plum"
+                "Garaizar", // rosa
+                "Luka", // morado
+                "David", // azul
+                "Andrada", // rojo
+                "Antal", // verde
+                "Bringas" // amarillo
         };
 
         String[] rawweapons = {
-                "Candlestick",
-                "Dagger",
-                "Lead Pipe",
-                "Revolver",
-                "Rope",
-                "Spanner"
+                "Machete",
+                "Tiza",
+                "Teclado",
+                "Cable",
+                "Silla",
+                "Destornillador"
         };
 
         String[] rawrooms = {
-                "Kitchen",
-                "Ballroom",
-                "Conservatory",
-                "Dining Room",
-                "Billiard Room",
-                "Library",
-                "Lounge",
-                "Hall",
-                "Study"
+                "Cry",
+                "Baños",
+                "Cafeteria",
+                "Maquinas",
+                "Laboratorio",
+                "DeustoTech",
+                "Aula 1",
+                "Aula 2"
         };
 
         actors.clear();
@@ -59,7 +58,7 @@ public class Main {
         rooms.clear();
 
         for (String name : rawactors) {
-            actors.add(new Actor(name, null));
+            actors.add(new Actor(name));
         }
 
         for (String name : rawweapons) {
