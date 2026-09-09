@@ -13,17 +13,48 @@ public class Window extends JFrame {
         setTitle("Cluedo");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        setSize(500, 500);
+        setSize(1000, 800);
         setLocationRelativeTo(null);
 
-        JPanel content = new JPanel(new GridBagLayout());
-        content.setBackground(new Color(235, 235, 235));
+        JPanel board = new JPanel();
+        board.setLayout(null);
+        board.setBackground(new Color(235, 235, 235));
 
-        TileAspect tileAspect = new TileAspect(new Tile(null));
+        board.setPreferredSize(
+                new Dimension(1600, 1200)
+        );
 
-        content.add(tileAspect);
+        final int squareNumberOfElements = 21;
+        for (int i = 0; i < squareNumberOfElements; i++) {
 
-        add(content);
+            TileAspect firstTile = new TileAspect(
+                    new Tile(null),
+                    400 + (i * TileAspect.SIZE),
+                    300
+            );
+
+            board.add(firstTile);
+
+            firstTile.concatenate(
+                    board,
+                    TileAspect.TileDirection.SOUTH,
+                    squareNumberOfElements
+            );
+        }
+
+
+
+        JScrollPane scrollPane = new JScrollPane(board);
+
+        scrollPane.setHorizontalScrollBarPolicy(
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+        );
+
+        scrollPane.setVerticalScrollBarPolicy(
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
+        );
+
+        add(scrollPane);
 
         setVisible(true);
     }

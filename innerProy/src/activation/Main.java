@@ -14,21 +14,17 @@ public class Main {
     static List<Room> rooms = new ArrayList<>();
     static List<Weapon> weapons = new ArrayList<>();
 
-    static {resetListContents();}
-
+    static {
+        resetListContents();
+    }
 
     public static void main(String[] args) {
 
-
-        resetListContents(); //we change the values of the lists to their preset value
+        new Window();
 
     }
-    /**
-     * reset to preset values (names) for the tree lists which represent the three main types of cards encountered throught the game
-     * */
-    public static void resetListContents(){
 
-
+    public static void resetListContents() {
 
         List<String> actorNames = List.of(
                 "Garaizar",
@@ -72,8 +68,13 @@ public class Main {
         weapons.clear();
         rooms.clear();
 
-        for(int i = 0; i < actorNames.size(); i++){
-            actors.add(new Actor(actorNames.get(i), actorColors.get(i)));
+        for (int i = 0; i < actorNames.size(); i++) {
+            actors.add(
+                    new Actor(
+                            actorNames.get(i),
+                            actorColors.get(i)
+                    )
+            );
         }
 
         for (String name : rawweapons) {
@@ -84,14 +85,4 @@ public class Main {
             rooms.add(new Room(name));
         }
     }
-
-
-    /**
-     *
-     * */
-    public static void createDefaultLayout(){
-
-    }
-
-
 }
