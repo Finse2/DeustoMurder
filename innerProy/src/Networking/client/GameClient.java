@@ -1,4 +1,4 @@
-package Networking;
+package Networking.client;
 
 public class GameClient {
 }
