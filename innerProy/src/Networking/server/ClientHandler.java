@@ -94,10 +94,7 @@ public class ClientHandler implements Runnable {
                 socket.close();
             } catch (IOException e) {
                 System.err.println(
-                        "Error closing socket for player "
-                                + playerID
-                                + ": "
-                                + e.getMessage()
+                        "Error closing socket for player " + playerID + ": " + e.getMessage()
                 );
             }
         }
