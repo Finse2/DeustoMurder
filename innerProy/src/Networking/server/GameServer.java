@@ -11,6 +11,7 @@ import Networking.packets.PlayerJoinedPacket;
 import Networking.packets.PlayerMovePacket;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
@@ -44,7 +45,14 @@ public class GameServer {
         try (ServerSocket listeningSocket = new ServerSocket(port)) {
             serverSocket = listeningSocket;
             running = true;
-            System.out.println("Server started on port " + listeningSocket.getLocalPort());
+            InetAddress localAddress = InetAddress.getLocalHost();
+            int listeningPort = listeningSocket.getLocalPort();
+            System.out.println("Server started:");
+            System.out.println("  Host name: " + localAddress.getHostName());
+            System.out.println("  IP address: " + localAddress.getHostAddress());
+            System.out.println("  Port: " + listeningPort);
+            System.out.println("Clients can connect using "
+                    + localAddress.getHostName() + ":" + listeningPort);
 
             while (running) {
                 Socket clientSocket = listeningSocket.accept();
