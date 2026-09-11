@@ -1,4 +1,4 @@
-package ui;
+package ui.boardPiece;
 
 import model.Tile;
 
@@ -14,7 +14,7 @@ public class TileAspect extends JPanel {
         WEST
     }
 
-    public static final int SIZE = 40;
+    public static final int SIZE = 30;
 
     private final Tile tile;
 

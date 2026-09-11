@@ -1,17 +1,18 @@
 ==================================================
 BIBLIOGRAPHY / INDEX (considering the document, this way you can jump fetch the java or json file you want to get right away)
 ==================================================
-./innerProy/src/activation/Main.java lines 16-106 || (90) lines
-./innerProy/src/activation/Window.java lines 108-168 || (60) lines
-./innerProy/src/createFileChunkTxt.java lines 170-359 || (189) lines
-./innerProy/src/model/Actor.java lines 361-379 || (18) lines
-./innerProy/src/model/Player.java lines 381-393 || (12) lines
-./innerProy/src/model/Room.java lines 395-407 || (12) lines
-./innerProy/src/model/Tile.java lines 409-424 || (15) lines
-./innerProy/src/model/Weapon.java lines 426-438 || (12) lines
-./innerProy/src/ui/ActorsLook.java lines 440-459 || (19) lines
-./innerProy/src/ui/BoardLayout.java lines 461-467 || (6) lines
-./innerProy/src/ui/TileAspect.java lines 469-593 || (124) lines
+./innerProy/src/activation/Main.java lines 17-107 || (90) lines
+./innerProy/src/activation/Window.java lines 109-431 || (322) lines
+./innerProy/src/createFileChunkTxt.java lines 433-622 || (189) lines
+./innerProy/src/model/Actor.java lines 624-642 || (18) lines
+./innerProy/src/model/Player.java lines 644-656 || (12) lines
+./innerProy/src/model/Room.java lines 658-670 || (12) lines
+./innerProy/src/model/Tile.java lines 672-687 || (15) lines
+./innerProy/src/model/Weapon.java lines 689-701 || (12) lines
+./innerProy/src/ui/ActorsLook.java lines 703-722 || (19) lines
+./innerProy/src/ui/BoardLayout.java lines 724-730 || (6) lines
+./innerProy/src/ui/boardPiece/ScenarioAspect.java lines 732-762 || (30) lines
+./innerProy/src/ui/boardPiece/TileAspect.java lines 764-888 || (124) lines
 
 ==================================================
 FILE: ./innerProy/src/activation/Main.java
@@ -111,59 +112,321 @@ FILE: ./innerProy/src/activation/Window.java
 package activation;
 
 import model.Tile;
-import ui.TileAspect;
+import ui.boardPiece.ScenarioAspect;
+import ui.boardPiece.TileAspect;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Window extends JFrame {
+
+    private static final int GRID_SIZE = 8;
+
+    private static final int[][] SPECIAL_BLOCK_POSITIONS = {
+
+            {0, 0},
+            {3, 0},
+            {6, 0},
+
+            {0, 3},
+            {3, 3},
+            {6, 3},
+
+            {0, 6},
+            {3, 6},
+            {6, 6}
+    };
+
+    private final JPanel board;
+
+    private final List<PlacedComponent> components =
+            new ArrayList<>();
+
+    private record PlacedComponent(
+            JComponent component,
+            int column,
+            int row,
+            int widthInTiles,
+            int heightInTiles
+    ) {
+    }
 
     public Window() {
 
         setTitle("Cluedo");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        setSize(1000, 800);
+        setDefaultCloseOperation(
+                JFrame.EXIT_ON_CLOSE
+        );
+
+        board = new JPanel();
+
+        board.setLayout(null);
+
+        board.setBackground(
+                new Color(235, 235, 235)
+        );
+
+        createBoard();
+
+        add(
+                board,
+                BorderLayout.CENTER
+        );
+
+        /*
+         * Initial size according to the current screen.
+         */
+        Dimension screenSize =
+                Toolkit
+                        .getDefaultToolkit()
+                        .getScreenSize();
+
+        setSize(
+                (int) (screenSize.width * 0.75),
+                (int) (screenSize.height * 0.80)
+        );
+
+        setMinimumSize(
+                new Dimension(
+                        400,
+                        400
+                )
+        );
+
         setLocationRelativeTo(null);
 
-        JPanel board = new JPanel();
-        board.setLayout(null);
-        board.setBackground(new Color(235, 235, 235));
+        /*
+         * Every time the window changes size,
+         * recalculate the board.
+         */
+        board.addComponentListener(
+                new ComponentAdapter() {
 
-        board.setPreferredSize(
-                new Dimension(1600, 1200)
+                    @Override
+                    public void componentResized(
+                            ComponentEvent e
+                    ) {
+
+                        resizeBoard();
+                    }
+                }
         );
-
-        for(int i = 0; i < 2; i++){
-            TileAspect firstTile = new TileAspect(
-                    new Tile(null),
-                    400,
-                    300
-            );
-
-            board.add(firstTile);
-            firstTile.concatenate(
-                    board,
-                    TileAspect.TileDirection.EAST,
-                    3
-            );
-        }
-
-
-
-        JScrollPane scrollPane = new JScrollPane(board);
-
-        scrollPane.setHorizontalScrollBarPolicy(
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
-        );
-
-        scrollPane.setVerticalScrollBarPolicy(
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
-        );
-
-        add(scrollPane);
 
         setVisible(true);
+    }
+
+    private void createBoard() {
+
+        boolean[][] occupiedBySpecialBlock =
+                new boolean[GRID_SIZE][GRID_SIZE];
+
+        /*
+         * Mark spaces occupied by the 2x2 rooms.
+         */
+        for (int[] position :
+                SPECIAL_BLOCK_POSITIONS) {
+
+            int column = position[0];
+            int row = position[1];
+
+            occupiedBySpecialBlock[row][column] = true;
+            occupiedBySpecialBlock[row][column + 1] = true;
+
+            occupiedBySpecialBlock[row + 1][column] = true;
+            occupiedBySpecialBlock[row + 1][column + 1] = true;
+        }
+
+        /*
+         * Create corridor tiles.
+         */
+        for (int row = 0;
+             row < GRID_SIZE;
+             row++) {
+
+            for (int column = 0;
+                 column < GRID_SIZE;
+                 column++) {
+
+                if (!occupiedBySpecialBlock[row][column]) {
+
+                    TileAspect corridor =
+                            new TileAspect(
+                                    new Tile(null)
+                            );
+
+                    board.add(corridor);
+
+                    components.add(
+                            new PlacedComponent(
+                                    corridor,
+                                    column,
+                                    row,
+                                    1,
+                                    1
+                            )
+                    );
+                }
+            }
+        }
+
+        /*
+         * Create the 9 special blocks.
+         */
+        for (int[] position :
+                SPECIAL_BLOCK_POSITIONS) {
+
+            int column = position[0];
+            int row = position[1];
+
+            ScenarioAspect specialBlock =
+                    new ScenarioAspect(
+                            0,
+                            0
+                    );
+
+            board.add(specialBlock);
+
+            components.add(
+                    new PlacedComponent(
+                            specialBlock,
+                            column,
+                            row,
+                            2,
+                            2
+                    )
+            );
+        }
+    }
+
+    private void resizeBoard() {
+
+        int availableWidth =
+                board.getWidth();
+
+        int availableHeight =
+                board.getHeight();
+
+        /*
+         * Leave some empty space around the board.
+         */
+        int margin =
+                Math.max(
+                        15,
+                        Math.min(
+                                availableWidth,
+                                availableHeight
+                        ) / 20
+                );
+
+        int usableWidth =
+                availableWidth
+                        - margin * 2;
+
+        int usableHeight =
+                availableHeight
+                        - margin * 2;
+
+        /*
+         * One grid cell must remain square.
+         */
+        int tileSize =
+                Math.min(
+                        usableWidth / GRID_SIZE,
+                        usableHeight / GRID_SIZE
+                );
+
+        if (tileSize <= 0) {
+            return;
+        }
+
+        int totalBoardSize =
+                tileSize * GRID_SIZE;
+
+        /*
+         * Center the complete board.
+         */
+        int startX =
+                (availableWidth
+                        - totalBoardSize) / 2;
+
+        int startY =
+                (availableHeight
+                        - totalBoardSize) / 2;
+
+        for (PlacedComponent placed :
+                components) {
+
+            int x =
+                    startX
+                            + placed.column()
+                            * tileSize;
+
+            int y =
+                    startY
+                            + placed.row()
+                            * tileSize;
+
+            int width =
+                    placed.widthInTiles()
+                            * tileSize;
+
+            int height =
+                    placed.heightInTiles()
+                            * tileSize;
+
+            placed.component().setBounds(
+                    x,
+                    y,
+                    width,
+                    height
+            );
+
+            /*
+             * Scale border thickness as well.
+             */
+            if (placed.component()
+                    instanceof TileAspect) {
+
+                int border =
+                        Math.max(
+                                1,
+                                tileSize / 8
+                        );
+
+                placed.component().setBorder(
+                        BorderFactory.createLineBorder(
+                                Color.BLUE,
+                                border
+                        )
+                );
+
+            } else if (
+                    placed.component()
+                            instanceof ScenarioAspect
+            ) {
+
+                int border =
+                        Math.max(
+                                1,
+                                tileSize / 15
+                        );
+
+                placed.component().setBorder(
+                        BorderFactory.createLineBorder(
+                                Color.BLACK,
+                                border
+                        )
+                );
+            }
+        }
+
+        board.revalidate();
+        board.repaint();
     }
 }
 
@@ -467,9 +730,41 @@ public class BoardLayout {
 }
 
 ==================================================
-FILE: ./innerProy/src/ui/TileAspect.java
+FILE: ./innerProy/src/ui/boardPiece/ScenarioAspect.java
 ==================================================
-package ui;
+package ui.boardPiece;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class ScenarioAspect extends JPanel {
+
+    public static final int SIZE = TileAspect.SIZE * 2;
+
+    public ScenarioAspect(int x, int y) {
+
+        setBounds(
+                x,
+                y,
+                SIZE,
+                SIZE
+        );
+
+        setBackground(Color.LIGHT_GRAY);
+
+        setBorder(
+                BorderFactory.createLineBorder(
+                        Color.BLACK,
+                        3
+                )
+        );
+    }
+}
+
+==================================================
+FILE: ./innerProy/src/ui/boardPiece/TileAspect.java
+==================================================
+package ui.boardPiece;
 
 import model.Tile;
 
@@ -485,7 +780,7 @@ public class TileAspect extends JPanel {
         WEST
     }
 
-    private static final int SIZE = 190;
+    public static final int SIZE = 30;
 
     private final Tile tile;
 
