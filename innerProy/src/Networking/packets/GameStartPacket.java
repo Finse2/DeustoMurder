@@ -4,19 +4,16 @@ import Networking.common.Packet;
 import Networking.common.PacketType;
 
 public class GameStartPacket extends Packet {
+    private static final long serialVersionUID = 1L;
 
-    private boolean StartGame;
+    private final boolean startGame;
 
     public GameStartPacket(boolean StartGame) {
         super(PacketType.GAME_START);
-        this.StartGame = StartGame;
+        this.startGame = StartGame;
     }
 
     public boolean getGameStart() {
-        return StartGame;
-    }
-
-    public void setStartGame(boolean StartGame) {
-        this.StartGame = StartGame;
+        return startGame;
     }
 }

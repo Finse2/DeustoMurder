@@ -1,7 +1,9 @@
 package model;
 
-public class Card {
+import java.io.Serializable;
 
-    static String name;
+public abstract class Card implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
 }

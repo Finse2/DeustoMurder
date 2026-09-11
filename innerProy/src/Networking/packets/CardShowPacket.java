@@ -4,32 +4,36 @@ import Networking.common.Packet;
 import Networking.common.PacketType;
 import model.Card;
 
-import java.util.List;
-
 public class CardShowPacket extends Packet {
+    private static final long serialVersionUID = 1L;
 
-    private String User;
-    private Card showCard;
+    private final String user;
+    private final String targetUser;
+    private final int targetUserID;
+    private final Card showCard;
 
-    public CardShowPacket(Card showCard, String User) {
+    public CardShowPacket(Card showCard, String User, String targetUser, int targetUserID) {
         super(PacketType.CARD_SHOW);
         this.showCard = showCard;
-        this.User = User;
+        this.user = User;
+        this.targetUser = targetUser;
+        this.targetUserID = targetUserID;
+
     }
 
     public Card getShowCard() {
         return showCard;
     }
 
-    public void setShowCard(Card showCard) {
-        this.showCard = showCard;
-    }
-
     public String getUser() {
-        return User;
+        return user;
     }
 
-    public void setUser() {
-        this.User = User;
+    public String getTargetUser() {
+        return targetUser;
+    }
+
+    public int getTargetUserID() {
+        return targetUserID;
     }
 }

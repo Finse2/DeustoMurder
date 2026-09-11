@@ -5,21 +5,25 @@ import Networking.common.Packet;
 import Networking.common.PacketType;
 
 public class JoinPacket extends Packet {
-    private String ComputerName;
-    private String UserName;
+    private static final long serialVersionUID = 1L;
+    private final String computerName;
+    private final String userName;
 
-    public JoinPacket(String computerName, String UserName) {
+    public JoinPacket(String computerName, String userName) {
         super(PacketType.JOIN);
+        this.computerName = computerName;
+        this.userName = userName;
+    }
 
-        this.ComputerName = computerName;
-        this.UserName = UserName;
+    public JoinPacket(String computerName, String userName, int ignoredPlayerID) {
+        this(computerName, userName);
     }
 
     public String getComputerName() {
-        return ComputerName;
+        return computerName;
     }
 
     public String getUserName() {
-        return UserName;
+        return userName;
     }
 }
