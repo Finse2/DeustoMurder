@@ -1,17 +1,13 @@
-package Networking.client;
-
-import Networking.common.Packet;
-import Networking.packets.JoinAcceptedPacket;
-import Networking.packets.JoinPacket;
+package Networking;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class GameClient {
+final class GameClient {
 
-    public interface PacketListener {
+    interface PacketListener {
         void onPacket(Packet packet);
 
         default void onDisconnected() {
@@ -28,16 +24,13 @@ public class GameClient {
 
     private volatile boolean connected;
     private volatile int playerID = -1;
+
     private Socket socket;
     private ObjectInputStream input;
     private ObjectOutputStream output;
     private Thread receiveThread;
 
-    public GameClient(String host, int port) {
-        this(host, port, null);
-    }
-
-    public GameClient(String host, int port, PacketListener listener) {
+    GameClient(String host, int port, PacketListener listener) {
         if (host == null || host.isBlank()) {
             throw new IllegalArgumentException("Host cannot be blank");
         }
@@ -49,7 +42,7 @@ public class GameClient {
         this.listener = listener;
     }
 
-    public synchronized void connect(String userName, String computerName) throws IOException {
+    synchronized void connect(String userName, String computerName) throws IOException {
         if (connected) {
             throw new IllegalStateException("Client is already connected");
         }
@@ -80,7 +73,7 @@ public class GameClient {
         }
     }
 
-    public synchronized void sendPacket(Packet packet) {
+    synchronized void sendPacket(Packet packet) {
         if (!connected || output == null) {
             throw new IllegalStateException("Client is not connected");
         }
@@ -95,7 +88,7 @@ public class GameClient {
         }
     }
 
-    public synchronized void disconnect() {
+    synchronized void disconnect() {
         if (!connected && socket == null) {
             return;
         }
@@ -149,11 +142,11 @@ public class GameClient {
         }
     }
 
-    public boolean isConnected() {
+    boolean isConnected() {
         return connected;
     }
 
-    public int getPlayerID() {
+    int getPlayerID() {
         return playerID;
     }
 }
