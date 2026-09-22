@@ -1,10 +1,8 @@
-package Networking.packets;
+package Networking;
 
-import Networking.common.Packet;
-import Networking.common.PacketType;
 import model.Card;
 
-public class CardShowPacket extends Packet {
+final class CardShowPacket extends Packet {
     private static final long serialVersionUID = 1L;
 
     private final String user;
@@ -12,28 +10,27 @@ public class CardShowPacket extends Packet {
     private final int targetUserID;
     private final Card showCard;
 
-    public CardShowPacket(Card showCard, String User, String targetUser, int targetUserID) {
+    CardShowPacket(Card showCard, String user, String targetUser, int targetUserID) {
         super(PacketType.CARD_SHOW);
         this.showCard = showCard;
-        this.user = User;
+        this.user = user;
         this.targetUser = targetUser;
         this.targetUserID = targetUserID;
-
     }
 
-    public Card getShowCard() {
+    Card getShowCard() {
         return showCard;
     }
 
-    public String getUser() {
+    String getUser() {
         return user;
     }
 
-    public String getTargetUser() {
+    String getTargetUser() {
         return targetUser;
     }
 
-    public int getTargetUserID() {
+    int getTargetUserID() {
         return targetUserID;
     }
 }

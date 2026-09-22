@@ -1,25 +1,33 @@
-package Networking.server;
-
-import Networking.common.Packet;
+package Networking;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class ClientHandler implements Runnable {
+final class ServersClientHandler implements Runnable {
 
-    private final Socket socket;
+
+    private final Socket socket;    //connects to the Client
+
     private final GameServer server;
-    private final int playerID;
 
+    private final int playerID; //unique ID that each machine has, if 2 clients have the same playerID then we throw both of them out
+
+    /**the name the client chooses for itself*/
     private volatile String userName;
+
     private volatile String computerName;
+
+    /**input for the socket*/
     private ObjectInputStream input;
+    /**output for the socket*/
     private ObjectOutputStream output;
+
+    /**boolean stated weather the selected player is active*/
     private boolean disconnected;
 
-    public ClientHandler(Socket socket, GameServer server, int playerID) {
+    ServersClientHandler(Socket socket, GameServer server, int playerID) {
         this.socket = socket;
         this.server = server;
         this.playerID = playerID;
@@ -51,7 +59,8 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    public synchronized void sendPacket(Packet packet) {
+    /**send binary through a packet*/
+    synchronized void sendPacket(Packet packet) {
         if (packet == null || disconnected || output == null) {
             return;
         }
@@ -66,7 +75,8 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    public synchronized void disconnect() {
+    /**disconnects a player from the server*/
+    synchronized void disconnect() {
         if (disconnected) {
             return;
         }
@@ -81,39 +91,25 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    public int getPlayerID() {
+    //getters
+
+    int getPlayerID() {
         return playerID;
     }
 
-    public String getUserName() {
+    String getUserName() {
         return userName;
     }
 
-    public String getComputerName() {
+    String getComputerName() {
         return computerName;
     }
 
-    public void setUserName(String userName) {
+    void setUserName(String userName) {
         this.userName = userName;
     }
 
-    public void setComputerName(String computerName) {
+    void setComputerName(String computerName) {
         this.computerName = computerName;
-    }
-
-    public Socket getSocket() {
-        return socket;
-    }
-
-    public GameServer getServer() {
-        return server;
-    }
-
-    public ObjectInputStream getInput() {
-        return input;
-    }
-
-    public ObjectOutputStream getOutput() {
-        return output;
     }
 }

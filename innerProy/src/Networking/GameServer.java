@@ -1,14 +1,4 @@
-package Networking.server;
-
-import Networking.common.Packet;
-import Networking.common.PacketType;
-import Networking.packets.CardShowPacket;
-import Networking.packets.GameOverPacket;
-import Networking.packets.GameStartPacket;
-import Networking.packets.JoinAcceptedPacket;
-import Networking.packets.JoinPacket;
-import Networking.packets.PlayerJoinedPacket;
-import Networking.packets.PlayerMovePacket;
+package Networking;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -20,24 +10,27 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class GameServer {
+final class GameServer {
 
     private final int port;
-    private final Map<Integer, ClientHandler> clients = new ConcurrentHashMap<>();
+    private final Map<Integer, ServersClientHandler> clients = new ConcurrentHashMap<>();
     private final AtomicInteger nextPlayerID = new AtomicInteger(1);
     private final ExecutorService clientExecutor = Executors.newCachedThreadPool();
 
     private volatile boolean running;
     private volatile ServerSocket serverSocket;
 
-    public GameServer(int port) {
-        if (port < 0 || port > 65535) {
-            throw new IllegalArgumentException("Port must be between 0 and 65535");
+    GameServer(int port) {
+        if (port < 1 || port > 65535) {
+            throw new IllegalArgumentException("Port must be between 1 and 65535");
         }
         this.port = port;
     }
 
-    public void start() {
+    /**initializes the backend server
+     *
+     * @throws IllegalStateException if server is already running*/
+    void start() {
         if (running) {
             throw new IllegalStateException("Server is already running");
         }
@@ -57,9 +50,9 @@ public class GameServer {
             while (running) {
                 Socket clientSocket = listeningSocket.accept();
                 int playerID = nextPlayerID.getAndIncrement();
-                ClientHandler clientHandler = new ClientHandler(clientSocket, this, playerID);
-                clients.put(playerID, clientHandler);
-                clientExecutor.execute(clientHandler);
+                ServersClientHandler serversClientHandler = new ServersClientHandler(clientSocket, this, playerID);
+                clients.put(playerID, serversClientHandler);
+                clientExecutor.execute(serversClientHandler);
             }
         } catch (IOException e) {
             if (running) {
@@ -72,7 +65,7 @@ public class GameServer {
         }
     }
 
-    public void stop() {
+    void stop() {
         running = false;
         ServerSocket socket = serverSocket;
         if (socket != null) {
@@ -85,8 +78,8 @@ public class GameServer {
         disconnectClients();
     }
 
-    public void handlePacket(Packet packet, ClientHandler clientHandler) {
-        if (packet == null || clientHandler == null) {
+    void handlePacket(Packet packet, ServersClientHandler serversClientHandler) {
+        if (packet == null || serversClientHandler == null) {
             return;
         }
 
@@ -96,33 +89,33 @@ public class GameServer {
         }
 
         switch (type) {
-            case JOIN -> handleJoin(packet, clientHandler);
-            case CARD_SHOW -> handleCardShow(packet, clientHandler);
+            case JOIN -> handleJoin(packet, serversClientHandler);
+            case CARD_SHOW -> handleCardShow(packet, serversClientHandler);
             case GAME_OVER -> broadcast(packet);
-            case PLAYER_MOVE -> handlePlayerMove(packet, clientHandler);
+            case PLAYER_MOVE -> handlePlayerMove(packet, serversClientHandler);
             case GAME_START -> broadcast(packet);
             case JOIN_ACCEPTED, PLAYER_JOINED ->
-                    System.err.println("Ignoring server-only packet from player " + clientHandler.getPlayerID());
+                    System.err.println("Ignoring server-only packet from player " + serversClientHandler.getPlayerID());
         }
     }
 
-    private void handleJoin(Packet packet, ClientHandler clientHandler) {
+    private void handleJoin(Packet packet, ServersClientHandler serversClientHandler) {
         if (!(packet instanceof JoinPacket joinPacket)) {
             return;
         }
 
-        String userName = cleanName(joinPacket.getUserName(), "Player " + clientHandler.getPlayerID());
+        String userName = cleanName(joinPacket.getUserName(), "Player " + serversClientHandler.getPlayerID());
         String computerName = cleanName(joinPacket.getComputerName(), "Unknown computer");
-        clientHandler.setUserName(userName);
-        clientHandler.setComputerName(computerName);
+        serversClientHandler.setUserName(userName);
+        serversClientHandler.setComputerName(computerName);
 
-        clientHandler.sendPacket(new JoinAcceptedPacket(clientHandler.getPlayerID()));
+        serversClientHandler.sendPacket(new JoinAcceptedPacket(serversClientHandler.getPlayerID()));
 
-        for (ClientHandler existingClient : clients.values()) {
-            if (existingClient == clientHandler || existingClient.getUserName() == null) {
+        for (ServersClientHandler existingClient : clients.values()) {
+            if (existingClient == serversClientHandler || existingClient.getUserName() == null) {
                 continue;
             }
-            clientHandler.sendPacket(new PlayerJoinedPacket(
+            serversClientHandler.sendPacket(new PlayerJoinedPacket(
                     existingClient.getPlayerID(),
                     existingClient.getUserName(),
                     existingClient.getComputerName()
@@ -130,18 +123,18 @@ public class GameServer {
         }
 
         broadcastExcept(
-                new PlayerJoinedPacket(clientHandler.getPlayerID(), userName, computerName),
-                clientHandler
+                new PlayerJoinedPacket(serversClientHandler.getPlayerID(), userName, computerName),
+                serversClientHandler
         );
         System.out.println("Player joined: " + userName + " from " + computerName);
     }
 
-    private void handleCardShow(Packet packet, ClientHandler clientHandler) {
+    private void handleCardShow(Packet packet, ServersClientHandler serversClientHandler) {
         if (!(packet instanceof CardShowPacket cardShowPacket)) {
             return;
         }
 
-        ClientHandler target = clients.get(cardShowPacket.getTargetUserID());
+        ServersClientHandler target = clients.get(cardShowPacket.getTargetUserID());
         if (target == null) {
             System.err.println("Target player not found: " + cardShowPacket.getTargetUserID());
             return;
@@ -149,13 +142,13 @@ public class GameServer {
 
         target.sendPacket(new CardShowPacket(
                 cardShowPacket.getShowCard(),
-                clientHandler.getUserName(),
+                serversClientHandler.getUserName(),
                 target.getUserName(),
                 target.getPlayerID()
         ));
     }
 
-    private void handlePlayerMove(Packet packet, ClientHandler clientHandler) {
+    private void handlePlayerMove(Packet packet, ServersClientHandler serversClientHandler) {
         if (!(packet instanceof PlayerMovePacket movePacket)) {
             return;
         }
@@ -164,19 +157,19 @@ public class GameServer {
                 movePacket.getPlayerPosX(),
                 movePacket.getPlayerPosY(),
                 movePacket.getMoveDistance(),
-                clientHandler.getPlayerID()
+                serversClientHandler.getPlayerID()
         );
-        broadcastExcept(authoritativeMove, clientHandler);
+        broadcastExcept(authoritativeMove, serversClientHandler);
     }
 
     private void broadcast(Packet packet) {
-        for (ClientHandler client : clients.values()) {
+        for (ServersClientHandler client : clients.values()) {
             client.sendPacket(packet);
         }
     }
 
-    private void broadcastExcept(Packet packet, ClientHandler excludedClient) {
-        for (ClientHandler client : clients.values()) {
+    private void broadcastExcept(Packet packet, ServersClientHandler excludedClient) {
+        for (ServersClientHandler client : clients.values()) {
             if (client != excludedClient) {
                 client.sendPacket(packet);
             }
@@ -184,7 +177,7 @@ public class GameServer {
     }
 
     private void disconnectClients() {
-        for (ClientHandler client : clients.values()) {
+        for (ServersClientHandler client : clients.values()) {
             client.disconnect();
         }
         clientExecutor.shutdownNow();
@@ -197,15 +190,15 @@ public class GameServer {
         return value.trim();
     }
 
-    public void removeClient(ClientHandler clientHandler) {
-        clients.remove(clientHandler.getPlayerID(), clientHandler);
+    void removeClient(ServersClientHandler serversClientHandler) {
+        clients.remove(serversClientHandler.getPlayerID(), serversClientHandler);
     }
 
-    public int getClientCount() {
+    int getClientCount() {
         return clients.size();
     }
 
-    public boolean isRunning() {
+    boolean isRunning() {
         return running;
     }
 }

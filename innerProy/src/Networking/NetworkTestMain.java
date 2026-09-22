@@ -1,29 +1,10 @@
 package Networking;
 
-import Networking.client.GameClient;
-import Networking.common.Packet;
-import Networking.packets.CardShowPacket;
-import Networking.packets.GameOverPacket;
-import Networking.packets.GameStartPacket;
-import Networking.packets.JoinAcceptedPacket;
-import Networking.packets.PlayerJoinedPacket;
-import Networking.packets.PlayerMovePacket;
-import Networking.server.GameServer;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-/**
- * Console tool for testing the networking layer on one or more computers.
- *
- * Server:
- *   java Networking.NetworkTestMain server 23456
- *
- * Client:
- *   java Networking.NetworkTestMain client 192.168.1.20 23456 Luka Luka-PC
- */
-public final class NetworkTestMain {
+final class NetworkTestMain {
 
     private NetworkTestMain() {
     }
@@ -105,14 +86,14 @@ public final class NetworkTestMain {
 
     private static void runServer(String[] args) {
         int port = args.length >= 2 ? parsePort(args[1]) : 23456;
-        GameServer server = new GameServer(port);
+        Server server = new Server(port);
 
         Runtime.getRuntime().addShutdownHook(new Thread(server::stop));
         System.out.println("Starting test server. Press Ctrl+C to stop.");
         server.start();
     }
 
-    private static void runClient(String[] args) throws IOException, InterruptedException {
+    private static void runClient(String[] args) throws IOException {
         if (args.length < 5) {
             printUsage();
             return;
@@ -123,7 +104,7 @@ public final class NetworkTestMain {
         String userName = args[3];
         String computerName = args[4];
 
-        GameClient client = new GameClient(host, port, new ConsolePacketListener());
+        Client client = new Client(host, port, new ConsoleClientListener());
         try {
             client.connect(userName, computerName);
             waitForPlayerID(client);
@@ -135,7 +116,7 @@ public final class NetworkTestMain {
         }
     }
 
-    private static void runClientCommands(GameClient client) throws IOException, InterruptedException {
+    private static void runClientCommands(Client client) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
         while (client.isConnected()) {
@@ -153,13 +134,12 @@ public final class NetworkTestMain {
             try {
                 switch (command[0].toLowerCase()) {
                     case "help" -> printClientCommands();
-                    case "start" -> client.sendPacket(new GameStartPacket(true));
+                    case "start" -> client.startGame();
                     case "move" -> sendMove(client, command);
                     case "show" -> sendCardShow(client, command);
-                    case "demo" -> runDemo(client, command);
                     case "over" -> {
                         String winner = command.length >= 2 ? command[1] : "unknown";
-                        client.sendPacket(new GameOverPacket(true, winner));
+                        client.endGame(winner);
                     }
                     case "id" -> System.out.println("Assigned player ID: " + client.getPlayerID());
                     case "quit", "exit" -> {
@@ -173,7 +153,7 @@ public final class NetworkTestMain {
         }
     }
 
-    private static void sendMove(GameClient client, String[] command) {
+    private static void sendMove(Client client, String[] command) {
         if (command.length != 4) {
             throw new IllegalArgumentException("Usage: move <x> <y> <distance>");
         }
@@ -181,41 +161,19 @@ public final class NetworkTestMain {
         int x = Integer.parseInt(command[1]);
         int y = Integer.parseInt(command[2]);
         int distance = Integer.parseInt(command[3]);
-        client.sendPacket(new PlayerMovePacket(x, y, distance, client.getPlayerID()));
+        client.movePlayer(x, y, distance);
     }
 
-    private static void sendCardShow(GameClient client, String[] command) {
+    private static void sendCardShow(Client client, String[] command) {
         if (command.length != 2) {
             throw new IllegalArgumentException("Usage: show <target-player-id>");
         }
 
         int targetID = Integer.parseInt(command[1]);
-        client.sendPacket(new CardShowPacket(null, "test-client", "target-" + targetID, targetID));
+        client.showCard(null, targetID);
     }
 
-    private static void runDemo(GameClient client, String[] command) throws InterruptedException {
-        if (command.length != 2) {
-            throw new IllegalArgumentException("Usage: demo <target-player-id>");
-        }
-
-        int targetID = Integer.parseInt(command[1]);
-        System.out.println("Sending GAME_START...");
-        client.sendPacket(new GameStartPacket(true));
-        Thread.sleep(250);
-
-        System.out.println("Sending PLAYER_MOVE...");
-        client.sendPacket(new PlayerMovePacket(4, 5, 2, client.getPlayerID()));
-        Thread.sleep(250);
-
-        System.out.println("Sending CARD_SHOW...");
-        client.sendPacket(new CardShowPacket(null, "test-client", "target-" + targetID, targetID));
-        Thread.sleep(250);
-
-        System.out.println("Sending GAME_OVER...");
-        client.sendPacket(new GameOverPacket(true, "demo-player"));
-    }
-
-    private static void waitForPlayerID(GameClient client) throws IOException {
+    private static void waitForPlayerID(Client client) throws IOException {
         long deadline = System.currentTimeMillis() + 5000;
         while (client.getPlayerID() < 0 && client.isConnected()
                 && System.currentTimeMillis() < deadline) {
@@ -249,52 +207,52 @@ public final class NetworkTestMain {
 
                 Start a client:
                   java Networking.NetworkTestMain client <server-ip> <port> <username> <computer-name>
-
-                Example:
-                  java Networking.NetworkTestMain server 23456
-                  java Networking.NetworkTestMain client 192.168.1.20 23456 Luka Luka-PC
                 """);
     }
 
     private static void printClientCommands() {
         System.out.println("""
                 Client commands:
-                  start                 Broadcast GAME_START
+                  start                    Broadcast GAME_START
                   move <x> <y> <distance>  Broadcast PLAYER_MOVE
-                  show <target-id>      Send CARD_SHOW to one client
-                  over [winner]         Broadcast GAME_OVER
-                  demo <target-id>      Send all test packet types
-                  id                    Print this client's assigned ID
-                  quit                  Disconnect and exit
+                  show <target-id>         Send CARD_SHOW to one client
+                  over [winner]            Broadcast GAME_OVER
+                  id                       Print this client's assigned ID
+                  quit                     Disconnect and exit
                 """);
     }
 
-    private static final class ConsolePacketListener implements GameClient.PacketListener {
+    private static final class ConsoleClientListener implements Client.Listener {
+        @Override
+        public void onConnected(int playerID) {
+            System.out.println("\nJOIN_ACCEPTED: assigned ID " + playerID);
+        }
 
         @Override
-        public void onPacket(Packet packet) {
-            if (packet instanceof JoinAcceptedPacket acceptedPacket) {
-                System.out.println("\nJOIN_ACCEPTED: assigned ID " + acceptedPacket.getPlayerID());
-            } else if (packet instanceof PlayerJoinedPacket joinedPacket) {
-                System.out.println("\nPLAYER_JOINED: " + joinedPacket.getPlayerName()
-                        + " (" + joinedPacket.getComputerName() + "), ID "
-                        + joinedPacket.getPlayerID());
-            } else if (packet instanceof PlayerMovePacket movePacket) {
-                System.out.println("\nPLAYER_MOVE: player " + movePacket.getPlayerID()
-                        + " -> (" + movePacket.getPlayerPosX() + ", "
-                        + movePacket.getPlayerPosY() + "), distance "
-                        + movePacket.getMoveDistance());
-            } else if (packet instanceof CardShowPacket cardShowPacket) {
-                System.out.println("\nCARD_SHOW: " + cardShowPacket.getUser()
-                        + " -> " + cardShowPacket.getTargetUser());
-            } else if (packet instanceof GameStartPacket) {
-                System.out.println("\nGAME_START received");
-            } else if (packet instanceof GameOverPacket gameOverPacket) {
-                System.out.println("\nGAME_OVER received. Winner: " + gameOverPacket.getWinner());
-            } else {
-                System.out.println("\nReceived packet: " + packet.getPacketType());
-            }
-            System.out.print("> ");
+        public void onPlayerJoined(int playerID, String playerName, String computerName) {
+            System.out.println("\nPLAYER_JOINED: " + playerName
+                    + " (" + computerName + "), ID " + playerID);
+        }
+
+        @Override
+        public void onPlayerMoved(int playerID, int x, int y, int distance) {
+            System.out.println("\nPLAYER_MOVE: player " + playerID
+                    + " -> (" + x + ", " + y + "), distance " + distance);
+        }
+
+        @Override
+        public void onCardShown(model.Card card, String fromUser, String targetUser, int targetPlayerID) {
+            System.out.println("\nCARD_SHOW: " + fromUser + " -> " + targetUser);
+        }
+
+        @Override
+        public void onGameStarted() {
+            System.out.println("\nGAME_START received");
+        }
+
+        @Override
+        public void onGameOver(String winner) {
+            System.out.println("\nGAME_OVER received. Winner: " + winner);
         }
 
         @Override
