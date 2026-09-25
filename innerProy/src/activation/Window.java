@@ -1,29 +1,52 @@
 package activation;
 
-import model.Tile;
-import ui.TileAspect;
+import model.Room;
+import ui.BoardLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class Window extends JFrame {
 
-    public Window() {
+    public Window(List<Room> rooms) {
 
-        setTitle("Cluedo");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle(
+                "Deusto Murder - Board"
+        );
 
-        setSize(500, 500);
+        setDefaultCloseOperation(
+                JFrame.EXIT_ON_CLOSE
+        );
+
+        BoardLayout board =
+                new BoardLayout(rooms);
+
+        setContentPane(board);
+
+        Dimension screenSize =
+                Toolkit
+                        .getDefaultToolkit()
+                        .getScreenSize();
+
+        int side = (int) Math.min(
+                screenSize.width * 0.80,
+                screenSize.height * 0.80
+        );
+
+        setSize(
+                side,
+                side
+        );
+
+        setMinimumSize(
+                new Dimension(
+                        650,
+                        650
+                )
+        );
+
         setLocationRelativeTo(null);
-
-        JPanel content = new JPanel(new GridBagLayout());
-        content.setBackground(new Color(235, 235, 235));
-
-        TileAspect tileAspect = new TileAspect(new Tile(null));
-
-        content.add(tileAspect);
-
-        add(content);
 
         setVisible(true);
     }
