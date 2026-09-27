@@ -77,7 +77,7 @@ The current characters are:
 
 ## Rooms
 
-* Cry
+* CRAI
 * Baños
 * Cafeteria
 * Maquinas
@@ -85,6 +85,7 @@ The current characters are:
 * DeustoTech
 * Aula 1
 * Aula 2
+* Decanato
 
 ## Technologies
 
