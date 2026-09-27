@@ -83,8 +83,8 @@ The current characters are:
 * Maquinas
 * Laboratorio
 * DeustoTech
-* Aula 1
-* Aula 2
+* Aula 208
+* Polideportivo
 * Decanato
 
 ## Technologies
