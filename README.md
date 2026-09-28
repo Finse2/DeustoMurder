@@ -69,7 +69,7 @@ The current characters are:
 ## Weapons
 
 * Machete
-* Tiza
+* Tiza 
 * Teclado
 * Cable
 * Silla
@@ -77,14 +77,15 @@ The current characters are:
 
 ## Rooms
 
-* Cry
+* CRAI
 * Baños
 * Cafeteria
-* Maquinas
-* Laboratorio
+* Sala de máquinas
+* Laboratorios
 * DeustoTech
-* Aula 1
-* Aula 2
+* Aula E208
+* Decanato
+* Polideportivo
 
 ## Technologies
 
@@ -130,7 +131,7 @@ When a game starts:
 3. One Actor, Weapon, and Room are removed to create the hidden solution.
 4. All remaining cards are combined into the playable deck.
 5. The deck is shuffled.
-6. Each player receives 3 cards.
+6. Each player receives 4 cards.
 7. Remaining cards become visible to every player.
 
 ## Development Status
