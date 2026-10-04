@@ -1,7 +1,10 @@
 package activation;
 
+import model.Actor;
 import model.Room;
+import model.Weapon;
 import ui.BoardLayout;
+import ui.DetectiveCard;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,7 +12,7 @@ import java.util.List;
 
 public class Window extends JFrame {
 
-    public Window(List<Room> rooms) {
+    public Window(List<Room> rooms, List<Actor> actors, List <Weapon> weapons) {
 
         setTitle(
                 "Deusto Murder - Board"
@@ -19,35 +22,38 @@ public class Window extends JFrame {
                 JFrame.EXIT_ON_CLOSE
         );
 
-        BoardLayout board =
-                new BoardLayout(rooms);
+        BoardLayout board = new BoardLayout(rooms);
 
-        setContentPane(board);
+        JPanel mainPanel = new JPanel(new BorderLayout());
 
-        Dimension screenSize =
-                Toolkit
-                        .getDefaultToolkit()
-                        .getScreenSize();
+        JButton detectiveCardButton = new JButton("Tarjeta del detective");
 
-        int side = (int) Math.min(
-                screenSize.width * 0.80,
-                screenSize.height * 0.80
-        );
+        detectiveCardButton.addActionListener(e -> {
+            DetectiveCard.showCard(
+                    actors,
+                    weapons,
+                    rooms
+            );
+        });
 
-        setSize(
-                side,
-                side
-        );
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        setMinimumSize(
-                new Dimension(
-                        650,
-                        650
-                )
-        );
+        topPanel.add(detectiveCardButton);
+
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+        mainPanel.add(board, BorderLayout.CENTER);
+
+        setContentPane(mainPanel);
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+        int side = (int) Math.min(screenSize.width * 0.8, screenSize.height * 0.8);
+
+        setSize(new Dimension (side, side));
+        setMinimumSize(new Dimension (650, 650));
 
         setLocationRelativeTo(null);
-
         setVisible(true);
+
     }
 }
