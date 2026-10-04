@@ -1,50 +1,71 @@
 package activation;
 
 import model.Actor;
+import model.Card;
+import model.Player;
+import model.RawPiece;
+import model.RawRoom;
 import model.Room;
 import model.Weapon;
+import ui.BoardLayout;
 
-import java.awt.*;
+import javax.swing.SwingUtilities;
+import java.awt.Color;
+import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Main {
 
+    static final int BOARD_ROWS = 22;
+    static final int BOARD_COLUMNS = 23;
+
     static List<Actor> actors = new ArrayList<>();
     static List<Room> rooms = new ArrayList<>();
     static List<Weapon> weapons = new ArrayList<>();
+    static List<Card> solution = new ArrayList<>();
+    static List<Card> Playable_Cards = new ArrayList<>();
+    static List<Card> visible_cards = new ArrayList<>();
+    static List<Player> players = new ArrayList<>();
 
-    static {
-        resetListContents();
-    }
+    static RawRoom[] rawRooms = new RawRoom[0];
+    static BoardLayout board;
 
     public static void main(String[] args) {
-        new Window(rooms);
+        resetListContents();
+
+        SwingUtilities.invokeLater(() -> {
+            board = new BoardLayout(BOARD_ROWS, BOARD_COLUMNS, rawRooms, createRawPieces());
+            rooms = new ArrayList<>(board.getRooms());
+            new Window(board, actors, weapons, rooms);
+        });
     }
 
-    private record rawActor(
-            String actorName,
-            Color actorsColor
-    ) {}
-
-    private record rawRoom(
-            String roomName,
-            int[] area,
-            List<Point> ignoredPoints
-    ) {}
-
+    /**
+     * Resets the lists to the preset
+     * actors, weapons and rooms.
+     */
     public static void resetListContents() {
-
-        List<rawActor> rawActors = List.of(
-                new rawActor("Garaizar", Color.PINK),
-                new rawActor("Luka", Color.MAGENTA),
-                new rawActor("David", Color.BLUE),
-                new rawActor("Andrada", Color.RED),
-                new rawActor("Antal", Color.GREEN),
-                new rawActor("Bringas", Color.YELLOW)
+        List<String> actorNames = List.of(
+                "Garaizar",
+                "Luka",
+                "David",
+                "Andrada",
+                "Antal",
+                "Bringas"
         );
 
-        String[] rawWeapons = {
+        List<Color> actorColors = List.of(
+                Color.PINK,
+                Color.MAGENTA,
+                Color.BLUE,
+                Color.RED,
+                Color.GREEN,
+                Color.YELLOW
+        );
+
+        String[] rawweapons = {
                 "Machete",
                 "Tiza",
                 "Teclado",
@@ -53,89 +74,287 @@ public class Main {
                 "Destornillador"
         };
 
-        List<rawRoom> rawRooms = List.of(
-
-                new rawRoom("Cry", new int[]{0, 0, 7, 4},
-                        List.of()),
-
-                new rawRoom("Baños", new int[]{9, 0, 5, 6},
-                        List.of()
-                ),
-
-                new rawRoom("Cafeteria", new int[]{16, 0, 7, 5},
-                        List.of()
-                ),
-
-                new rawRoom("Maquinas", new int[]{0, 6, 7, 4},
+        rawRooms = new RawRoom[]{
+                new RawRoom("Cry", new int[]{0, 0, 7, 4},
+                        List.of(),
+                        List.<Point[]>of(
+                                new Point[]{
+                                        new Point(7, 1),
+                                        new Point(7, 2)
+                                }
+                        ),
                         List.of(
-                                new Point(0, 6),
-                                new Point(0, 9),
-                                new Point(6, 6),
-                                new Point(6, 9)
+                                new Point(2, 1),
+                                new Point(3, 1),
+                                new Point(2, 2),
+                                new Point(3, 2)
                         )
                 ),
 
-                new rawRoom("Laboratorio", new int[]{9, 7, 5, 6},
-                        List.of()
+                new RawRoom("Baños", new int[]{9, 0, 5, 5},
+                        List.of(),
+                        List.<Point[]>of(
+                                new Point[]{
+                                        new Point(10, 5),
+                                        new Point(11, 5)
+                                },
+                                new Point[]{
+                                        new Point(14, 1),
+                                        new Point(14, 2)
+                                }
+                        ),
+                        List.of(
+                                new Point(10, 2),
+                                new Point(11, 2),
+                                new Point(12, 2),
+                                new Point(11, 3)
+                        )
                 ),
 
-                new rawRoom("DeustoTech", new int[]{16, 7, 7, 7},
+                new RawRoom("Cafeteria", new int[]{16, 0, 7, 5},
+                        List.of(),
+                        List.<Point[]>of(
+                                new Point[]{
+                                        new Point(16, 5),
+                                        new Point(17, 5)
+                                }
+                        ),
+                        List.of(
+                                new Point(18, 2),
+                                new Point(19, 2),
+                                new Point(20, 2),
+                                new Point(19, 3)
+                        )
+                ),
+
+                new RawRoom("Maquinas", new int[]{0, 6, 7, 4},
+                        List.of(
+                                new Point(6, 6),
+                                new Point(6, 9)
+                        ),
+                        List.<Point[]>of(
+                                new Point[]{
+                                        new Point(6, 6)
+                                },
+                                new Point[]{
+                                        new Point(6, 9)
+                                }
+                        ),
+                        List.of(
+                                new Point(2, 7),
+                                new Point(3, 7),
+                                new Point(2, 8),
+                                new Point(3, 8)
+                        )
+                ),
+
+                new RawRoom("Laboratorio", new int[]{9, 7, 5, 6},
+                        List.of(),
+                        List.<Point[]>of(
+                                new Point[]{
+                                        new Point(8, 9),
+                                        new Point(8, 10)
+                                },
+                                new Point[]{
+                                        new Point(14, 9),
+                                        new Point(14, 10)
+                                }
+                        ),
+                        List.of(
+                                new Point(10, 9),
+                                new Point(11, 9),
+                                new Point(12, 9),
+                                new Point(11, 10)
+                        )
+                ),
+
+                new RawRoom("DeustoTech", new int[]{16, 7, 7, 7},
                         List.of(
                                 new Point(16, 13),
                                 new Point(17, 13)
+                        ),
+                        List.<Point[]>of(
+                                new Point[]{
+                                        new Point(16, 13),
+                                        new Point(17, 13)
+                                }
+                        ),
+                        List.of(
+                                new Point(18, 9),
+                                new Point(19, 9),
+                                new Point(20, 9),
+                                new Point(19, 10)
                         )
                 ),
 
-                new rawRoom("Aula 1", new int[]{0, 11, 6, 4},
-                        List.of()
+                new RawRoom("Aula 1", new int[]{0, 11, 6, 4},
+                        List.of(),
+                        List.<Point[]>of(
+                                new Point[]{
+                                        new Point(6, 12),
+                                        new Point(6, 13)
+                                }
+                        ),
+                        List.of(
+                                new Point(2, 12),
+                                new Point(3, 12),
+                                new Point(2, 13),
+                                new Point(3, 13)
+                        )
                 ),
 
-                new rawRoom("Aula 2", new int[]{0, 17, 6, 5},
+                new RawRoom("Aula 2", new int[]{0, 17, 6, 5},
                         List.of(
                                 new Point(0, 17),
                                 new Point(5, 17)
+                        ),
+                        List.<Point[]>of(
+                                new Point[]{
+                                        new Point(5, 17),
+                                        new Point(6, 17),
+                                        new Point(6, 18)
+                                }
+                        ),
+                        List.of(
+                                new Point(2, 18),
+                                new Point(3, 18),
+                                new Point(2, 19),
+                                new Point(3, 19)
                         )
                 ),
 
-                new rawRoom("Room 9", new int[]{8, 15, 7, 7},
+                new RawRoom("Room 9", new int[]{8, 15, 7, 7},
                         List.of(
                                 new Point(8, 21),
                                 new Point(14, 21)
+                        ),
+                        List.<Point[]>of(
+                                new Point[]{
+                                        new Point(10, 14),
+                                        new Point(11, 14),
+                                        new Point(12, 14)
+                                }
+                        ),
+                        List.of(
+                                new Point(10, 18),
+                                new Point(11, 18),
+                                new Point(12, 18),
+                                new Point(11, 19)
                         )
                 ),
 
-                new rawRoom("Room 10", new int[]{17, 16, 6, 6},
-                        List.of()
+                new RawRoom("Room 10", new int[]{17, 16, 6, 6},
+                        List.of(),
+                        List.<Point[]>of(
+                                new Point[]{
+                                        new Point(16, 16),
+                                        new Point(16, 17)
+                                }
+                        ),
+                        List.of(
+                                new Point(19, 18),
+                                new Point(20, 18),
+                                new Point(19, 19),
+                                new Point(20, 19)
+                        )
                 )
-        );
+        };
 
         actors.clear();
         weapons.clear();
         rooms.clear();
+        solution.clear();
+        Playable_Cards.clear();
+        visible_cards.clear();
+        players.clear();
 
-        for (rawActor rawActor : rawActors) {
-
-            actors.add(new Actor(rawActor.actorName(), rawActor.actorsColor()));
+        for (int i = 0; i < actorNames.size(); i++) {
+            actors.add(new Actor(actorNames.get(i), actorColors.get(i)));
         }
 
-        for (String weaponName : rawWeapons) {
-
-            weapons.add(new Weapon(weaponName));
+        for (String name : rawweapons) {
+            weapons.add(new Weapon(name));
         }
 
-        for (rawRoom rawRoom : rawRooms) {
-
+        for (RawRoom rawRoom : rawRooms) {
             int[] area = rawRoom.area();
-
-            Room room = new Room(rawRoom.roomName());
-
-            room.occupyRectangle(area[0], area[1], area[2], area[3]);
+            Room room = new Room(rawRoom.name()).occupyRectangle(area[0], area[1], area[2], area[3]);
 
             for (Point ignoredPoint : rawRoom.ignoredPoints()) {
                 room.free(ignoredPoint.x, ignoredPoint.y);
             }
 
+            for (Point[] entrance : rawRoom.entrance()) {
+                Room.Cell[] entranceCells = new Room.Cell[entrance.length];
+
+                for (int i = 0; i < entrance.length; i++) {
+                    entranceCells[i] = new Room.Cell(entrance[i].x, entrance[i].y);
+                }
+
+                room.addEntrance(entranceCells);
+            }
+
+            for (Point position : rawRoom.playerPositions()) {
+                room.addPlayerPosition(position.x, position.y);
+            }
+
             rooms.add(room);
         }
+    }
+
+    static RawPiece[] createRawPieces() {
+        RawPiece[] rawPieces = new RawPiece[players.size()];
+
+        for (int i = 0; i < players.size(); i++) {
+            Player player = players.get(i);
+            rawPieces[i] = new RawPiece(player.getPiece(), player.getPlayerPosX(), player.getPlayerPosY());
+        }
+
+        return rawPieces;
+    }
+
+    public static void gameStart() {
+        Collections.shuffle(actors);
+        Collections.shuffle(weapons);
+        Collections.shuffle(rooms);
+
+        Actor solution_actor = actors.getFirst();
+        actors.removeFirst();
+
+        Weapon solution_weapon = weapons.getFirst();
+        weapons.removeFirst();
+
+        Room solution_room = rooms.getFirst();
+        rooms.removeFirst();
+
+        solution.add(solution_actor);
+        solution.add(solution_weapon);
+        solution.add(solution_room);
+
+        Playable_Cards.addAll(actors);
+        Playable_Cards.addAll(weapons);
+        Playable_Cards.addAll(rooms);
+        Collections.shuffle(Playable_Cards);
+
+        if (players.size() * 3 > Playable_Cards.size()) {
+            System.out.println("Error too many players!!!");
+            return;
+        }
+
+        for (Player player : players) {
+            for (int i = 0; i < 3; i++) {
+                Card card = Playable_Cards.removeFirst();
+                player.addCard(card);
+            }
+        }
+
+        if (!Playable_Cards.isEmpty()) {
+            visible_cards.addAll(Playable_Cards);
+            Playable_Cards.clear();
+        }
+    }
+
+    public static void createDefaultLayout() {
+        resetListContents();
     }
 }

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8563273f-b94d-4691-9ec1-cace6571287c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/activation/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/activation/Window.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/model/Room.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/model/Room.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/ui/BoardLayout.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/ui/BoardLayout.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/ui/TileAspect.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/ui/TileAspect.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Window.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Window.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/model/Room.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/model/Room.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/ui/TileAspect.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/ui/TileAspect.class" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+        <option value="package-info" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.8066417592395663" />
+      <entry key="MS500" value="1.9670335774555103" />
+      <entry key="S2" value="2.776049251430316" />
+      <entry key="S5" value="4.715311608651936" />
+      <entry key="S10" value="6.4919617538556516" />
+      <entry key="S30" value="8.896824842183726" />
+      <entry key="S60" value="12.854687188236731" />
+      <entry key="M2" value="21.663109943657552" />
+      <entry key="M5" value="35.74671687487992" />
+      <entry key="M10" value="44.101723377967986" />
+      <entry key="M15" value="47.96286793053528" />
+      <entry key="M30" value="62.1250475953816" />
+      <entry key="H1" value="121.68421902096168" />
+      <entry key="H2" value="252.3768782265228" />
+      <entry key="H4" value="435.912660795211" />
+      <entry key="D1" value="1078.4060712130097" />
+      <entry key="W1" value="1595.675959236091" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="6.885219100614095E-136" />
+      <entry key="S60" value="4.494705960991223E-68" />
+      <entry key="M2" value="4.531658239183686E-34" />
+      <entry key="M5" value="1.3440564042158002E-13" />
+      <entry key="M10" value="9.488056915038681E-7" />
+      <entry key="M15" value="1.8370922405863338E-4" />
+      <entry key="M30" value="0.035790080786731744" />
+      <entry key="H1" value="0.5078938659525802" />
+      <entry key="H2" value="2.014182602325256" />
+      <entry key="H4" value="4.2984262576388295" />
+      <entry key="D1" value="13.929875586288157" />
+      <entry key="W1" value="22.709306022059334" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="0.870550563316429" />
+      <entry key="MS500" value="0.9847134292690887" />
+      <entry key="S2" value="1.9506367594004734" />
+      <entry key="S5" value="4.10270328182372" />
+      <entry key="S10" value="6.03853080385135" />
+      <entry key="S30" value="8.676924309250438" />
+      <entry key="S60" value="12.726554578546548" />
+      <entry key="M2" value="21.589728068186194" />
+      <entry key="M5" value="35.71199902074624" />
+      <entry key="M10" value="44.08239413304306" />
+      <entry key="M15" value="47.94948474474177" />
+      <entry key="M30" value="62.15324476849142" />
+      <entry key="H1" value="122.18709829639127" />
+      <entry key="H2" value="254.3871975086293" />
+      <entry key="H4" value="440.2081782093918" />
+      <entry key="D1" value="1092.3343697317985" />
+      <entry key="W1" value="1618.3848398663542" />
+    </decayedShown>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3IzmsHv1OyfqxSUOmNcOGDvsryg" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Application.NetworkTestMain.executor&quot;: &quot;Run&quot;,
+    &quot;Application.createFileChunkTxt.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/nistaltothantal/Desktop/world/programacion/Java/DeustoMurder&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/antaljanos.nistal/Desktop/world/programacion/Java/DeustoMurder/innerProy/src/Main.java&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\antaljanos.nistal\Desktop\world\programacion\Java\DeustoMurder\innerProy\src\Networking" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.26222.65" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.26222.65" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8563273f-b94d-4691-9ec1-cace6571287c" name="Changes" comment="" />
+      <created>1788775976504</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1788775976504</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/../../../.." />
+    </ignored-roots>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>

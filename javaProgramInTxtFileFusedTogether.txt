@@ -1,50 +1,1348 @@
 ==================================================
 BIBLIOGRAPHY / INDEX (considering the document, this way you can jump fetch the java or json file you want to get right away)
 ==================================================
-./innerProy/src/activation/Main.java lines 17-107 || (90) lines
-./innerProy/src/activation/Window.java lines 109-431 || (322) lines
-./innerProy/src/createFileChunkTxt.java lines 433-622 || (189) lines
-./innerProy/src/model/Actor.java lines 624-642 || (18) lines
-./innerProy/src/model/Player.java lines 644-656 || (12) lines
-./innerProy/src/model/Room.java lines 658-670 || (12) lines
-./innerProy/src/model/Tile.java lines 672-687 || (15) lines
-./innerProy/src/model/Weapon.java lines 689-701 || (12) lines
-./innerProy/src/ui/ActorsLook.java lines 703-722 || (19) lines
-./innerProy/src/ui/BoardLayout.java lines 724-730 || (6) lines
-./innerProy/src/ui/boardPiece/ScenarioAspect.java lines 732-762 || (30) lines
-./innerProy/src/ui/boardPiece/TileAspect.java lines 764-888 || (124) lines
+innerProy/networking/src/Networking/Client.java lines 41-189 || (148) lines
+innerProy/networking/src/Networking/NetworkTestMain.java lines 191-462 || (271) lines
+innerProy/networking/src/Networking/Server.java lines 464-497 || (33) lines
+innerProy/networking/src/Networking/client/GameClient.java lines 499-657 || (158) lines
+innerProy/networking/src/Networking/common/Packet.java lines 659-680 || (21) lines
+innerProy/networking/src/Networking/common/PacketType.java lines 682-695 || (13) lines
+innerProy/networking/src/Networking/package-info.java lines 697-720 || (23) lines
+innerProy/networking/src/Networking/packets/CardShowPacket.java lines 722-763 || (41) lines
+innerProy/networking/src/Networking/packets/GameOverPacket.java lines 765-793 || (28) lines
+innerProy/networking/src/Networking/packets/GameStartPacket.java lines 795-817 || (22) lines
+innerProy/networking/src/Networking/packets/JoinAcceptedPacket.java lines 819-840 || (21) lines
+innerProy/networking/src/Networking/packets/JoinPacket.java lines 842-870 || (28) lines
+innerProy/networking/src/Networking/packets/PlayerJoinedPacket.java lines 872-906 || (34) lines
+innerProy/networking/src/Networking/packets/PlayerMovePacket.java lines 908-948 || (40) lines
+innerProy/networking/src/Networking/server/GameServer.java lines 950-1165 || (215) lines
+innerProy/networking/src/Networking/server/ServersClientHandler.java lines 1167-1285 || (118) lines
+innerProy/networking/src/module-info.java lines 1287-1292 || (5) lines
+innerProy/src/activation/Main.java lines 1294-1656 || (362) lines
+innerProy/src/activation/Window.java lines 1658-1698 || (40) lines
+innerProy/src/activation/dice.java lines 1700-1726 || (26) lines
+innerProy/src/createFileChunkTxt.java lines 1728-1917 || (189) lines
+innerProy/src/model/Actor.java lines 1919-1943 || (24) lines
+innerProy/src/model/Card.java lines 1945-1955 || (10) lines
+innerProy/src/model/Piece.java lines 1957-1994 || (37) lines
+innerProy/src/model/Player.java lines 1996-2104 || (108) lines
+innerProy/src/model/RawPiece.java lines 2106-2112 || (6) lines
+innerProy/src/model/RawRoom.java lines 2114-2128 || (14) lines
+innerProy/src/model/Room.java lines 2130-2264 || (134) lines
+innerProy/src/model/Tile.java lines 2266-2331 || (65) lines
+innerProy/src/model/Weapon.java lines 2333-2349 || (16) lines
+innerProy/src/module-info.java lines 2351-2357 || (6) lines
+innerProy/src/ui/ActorsLook.java lines 2359-2377 || (18) lines
+innerProy/src/ui/BoardLayout.java lines 2379-2832 || (453) lines
+innerProy/src/ui/DetectiveCard.java lines 2834-2976 || (142) lines
+innerProy/src/ui/RoomsLook.java lines 2978-3098 || (120) lines
+innerProy/src/ui/TileAspect.java lines 3100-3225 || (125) lines
 
 ==================================================
-FILE: ./innerProy/src/activation/Main.java
+FILE: innerProy/networking/src/Networking/Client.java
+==================================================
+package Networking;
+
+import Networking.client.GameClient;
+import Networking.common.Packet;
+import Networking.packets.CardShowPacket;
+import Networking.packets.GameOverPacket;
+import Networking.packets.GameStartPacket;
+import Networking.packets.JoinAcceptedPacket;
+import Networking.packets.PlayerJoinedPacket;
+import Networking.packets.PlayerMovePacket;
+
+import java.io.IOException;
+import java.io.Serializable;
+
+public final class Client {
+
+    //bunch of empty default functions, meant to not force an over-write from implementors from the get-go but instead force
+    //the user to only over-write functions that it actually has to use
+
+    /**
+     * used by Client to notify Application when something arrives from Server
+     */
+    public interface Listener {
+        default void onConnected(int playerID) {}
+
+        /**used when a player joins the game*/
+        default void onPlayerJoined(int playerID, String playerName, String computerName) {}
+
+        /**used when a player makes a move*/
+        default void onPlayerMoved(int playerID, int x, int y, int distance) {}
+
+        /**used when a player shows a card to another player*/
+        default void onCardShown(Serializable card, String fromUser, String targetUser, int targetPlayerID) {}
+
+        /**default game initializer*/
+        default void onGameStarted() {}
+
+        default void onGameOver(String winner) {}
+
+        default void onDisconnected() {}
+
+        default void onError(Exception exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    /**the real Client backend engine, instead of inheritance I thought composition would be a better choice for this case
+     * its package private so it cant be accessed externally*/
+    private final GameClient client;
+    private final Listener listener;
+
+    public Client(String host, int port) {
+        this(host, port, null);
+    }
+
+    /**we pass a host whitch is the Server, a port witch is the */
+    public Client(String host, int port, Listener listener) {
+        this.listener = listener;
+        this.client = new GameClient(host, port, new GameClient.PacketListener() {
+            @Override
+            public void onPacket(Packet packet) {
+                dispatch(packet);
+            }
+
+            @Override
+            public void onDisconnected() {
+                if (Client.this.listener != null) {
+                    Client.this.listener.onDisconnected();
+                }
+            }
+
+            @Override
+            public void onError(Exception exception) {
+                if (Client.this.listener != null) {
+                    Client.this.listener.onError(exception);
+                }
+            }
+        });
+    }
+
+    public void connect(String userName, String computerName) throws IOException {
+        client.connect(userName, computerName);
+    }
+
+    public void startGame() {
+        client.sendPacket(new GameStartPacket(true));
+    }
+
+    public void movePlayer(int x, int y, int distance) {
+        client.sendPacket(new PlayerMovePacket(x, y, distance, client.getPlayerID()));
+    }
+
+    public void showCard(Serializable card, int targetPlayerID) {
+        client.sendPacket(new CardShowPacket(card, null, null, targetPlayerID));
+    }
+
+    public void endGame(String winner) {
+        client.sendPacket(new GameOverPacket(true, winner));
+    }
+
+    public void disconnect() {
+        client.disconnect();
+    }
+
+    public boolean isConnected() {
+        return client.isConnected();
+    }
+
+    public int getPlayerID() {
+        return client.getPlayerID();
+    }
+
+    private void dispatch(Packet packet) {
+        if (listener == null) {
+            return;
+        }
+
+        if (packet instanceof JoinAcceptedPacket acceptedPacket) {
+            listener.onConnected(acceptedPacket.getPlayerID());
+        } else if (packet instanceof PlayerJoinedPacket joinedPacket) {
+            listener.onPlayerJoined(
+                    joinedPacket.getPlayerID(),
+                    joinedPacket.getPlayerName(),
+                    joinedPacket.getComputerName()
+            );
+        } else if (packet instanceof PlayerMovePacket movePacket) {
+            listener.onPlayerMoved(
+                    movePacket.getPlayerID(),
+                    movePacket.getPlayerPosX(),
+                    movePacket.getPlayerPosY(),
+                    movePacket.getMoveDistance()
+            );
+        } else if (packet instanceof CardShowPacket cardShowPacket) {
+            listener.onCardShown(
+                    cardShowPacket.getShowCard(),
+                    cardShowPacket.getUser(),
+                    cardShowPacket.getTargetUser(),
+                    cardShowPacket.getTargetUserID()
+            );
+        } else if (packet instanceof GameStartPacket startPacket && startPacket.getGameStart()) {
+            listener.onGameStarted();
+        } else if (packet instanceof GameOverPacket gameOverPacket && gameOverPacket.getGameOver()) {
+            listener.onGameOver(gameOverPacket.getWinner());
+        }
+    }
+}
+
+==================================================
+FILE: innerProy/networking/src/Networking/NetworkTestMain.java
+==================================================
+package Networking;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Serializable;
+
+final class NetworkTestMain {
+
+    private NetworkTestMain() {
+    }
+
+    public static void main(String[] args) throws Exception {
+        if (args.length == 0) {
+            runInteractiveSetup();
+            return;
+        }
+
+        if ("help".equalsIgnoreCase(args[0])) {
+            printUsage();
+            return;
+        }
+
+        switch (args[0].toLowerCase()) {
+            case "server" -> runServer(args);
+            case "client" -> runClient(args);
+            default -> {
+                System.err.println("Unknown mode: " + args[0]);
+                printUsage();
+            }
+        }
+    }
+
+    private static void runInteractiveSetup() throws Exception {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+        System.out.println("Choose mode:");
+        System.out.println("1 - Server");
+        System.out.println("2 - Client");
+        System.out.print("> ");
+        String mode = reader.readLine();
+
+        if ("1".equals(mode)) {
+            int port = readPort(reader);
+            runServer(new String[]{"server", String.valueOf(port)});
+            return;
+        }
+
+        if ("2".equals(mode)) {
+            System.out.print("Server IP or hostname: ");
+            String host = reader.readLine();
+            int port = readPort(reader);
+            System.out.print("Username: ");
+            String userName = reader.readLine();
+            System.out.print("Computer name: ");
+            String computerName = reader.readLine();
+
+            runClient(new String[]{
+                    "client",
+                    host,
+                    String.valueOf(port),
+                    userName,
+                    computerName
+            });
+            return;
+        }
+
+        System.out.println("Invalid choice.");
+        printUsage();
+    }
+
+    private static int readPort(BufferedReader reader) throws IOException {
+        while (true) {
+            System.out.print("Port [23456]: ");
+            String portText = reader.readLine();
+            if (portText == null || portText.isBlank()) {
+                return 23456;
+            }
+
+            try {
+                return parsePort(portText);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Please enter a numeric port between 1 and 65535.");
+            }
+        }
+    }
+
+    private static void runServer(String[] args) {
+        int port = args.length >= 2 ? parsePort(args[1]) : 23456;
+        Server server = new Server(port);
+
+        Runtime.getRuntime().addShutdownHook(new Thread(server::stop));
+        System.out.println("Starting test server. Press Ctrl+C to stop.");
+        server.start();
+    }
+
+    private static void runClient(String[] args) throws IOException {
+        if (args.length < 5) {
+            printUsage();
+            return;
+        }
+
+        String host = args[1];
+        int port = parsePort(args[2]);
+        String userName = args[3];
+        String computerName = args[4];
+
+        Client client = new Client(host, port, new ConsoleClientListener());
+        try {
+            client.connect(userName, computerName);
+            waitForPlayerID(client);
+            System.out.println("Connected as player " + client.getPlayerID() + ".");
+            System.out.println("Type 'help' to see test commands.");
+            runClientCommands(client);
+        } finally {
+            client.disconnect();
+        }
+    }
+
+    private static void runClientCommands(Client client) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+        while (client.isConnected()) {
+            System.out.print("> ");
+            String line = reader.readLine();
+            if (line == null) {
+                return;
+            }
+
+            String[] command = line.trim().split("\\s+");
+            if (command.length == 0 || command[0].isBlank()) {
+                continue;
+            }
+
+            try {
+                switch (command[0].toLowerCase()) {
+                    case "help" -> printClientCommands();
+                    case "start" -> client.startGame();
+                    case "move" -> sendMove(client, command);
+                    case "show" -> sendCardShow(client, command);
+                    case "over" -> {
+                        String winner = command.length >= 2 ? command[1] : "unknown";
+                        client.endGame(winner);
+                    }
+                    case "id" -> System.out.println("Assigned player ID: " + client.getPlayerID());
+                    case "quit", "exit" -> {
+                        return;
+                    }
+                    default -> System.out.println("Unknown command. Type 'help'.");
+                }
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid command: " + e.getMessage());
+            }
+        }
+    }
+
+    private static void sendMove(Client client, String[] command) {
+        if (command.length != 4) {
+            throw new IllegalArgumentException("Usage: move <x> <y> <distance>");
+        }
+
+        int x = Integer.parseInt(command[1]);
+        int y = Integer.parseInt(command[2]);
+        int distance = Integer.parseInt(command[3]);
+        client.movePlayer(x, y, distance);
+    }
+
+    private static void sendCardShow(Client client, String[] command) {
+        if (command.length != 2) {
+            throw new IllegalArgumentException("Usage: show <target-player-id>");
+        }
+
+        int targetID = Integer.parseInt(command[1]);
+        client.showCard(null, targetID);
+    }
+
+    private static void waitForPlayerID(Client client) throws IOException {
+        long deadline = System.currentTimeMillis() + 5000;
+        while (client.getPlayerID() < 0 && client.isConnected()
+                && System.currentTimeMillis() < deadline) {
+            try {
+                Thread.sleep(25);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IOException("Interrupted while waiting for join acknowledgment", e);
+            }
+        }
+
+        if (client.getPlayerID() < 0) {
+            throw new IOException("The server did not send JOIN_ACCEPTED within 5 seconds");
+        }
+    }
+
+    private static int parsePort(String value) {
+        int port = Integer.parseInt(value);
+        if (port < 1 || port > 65535) {
+            throw new IllegalArgumentException("Port must be between 1 and 65535");
+        }
+        return port;
+    }
+
+    private static void printUsage() {
+        System.out.println("""
+                Networking test tool
+
+                Start a server:
+                  java Networking.NetworkTestMain server [port]
+
+                Start a client:
+                  java Networking.NetworkTestMain client <server-ip> <port> <username> <computer-name>
+                """);
+    }
+
+    private static void printClientCommands() {
+        System.out.println("""
+                Client commands:
+                  start                    Broadcast GAME_START
+                  move <x> <y> <distance>  Broadcast PLAYER_MOVE
+                  show <target-id>         Send CARD_SHOW to one client
+                  over [winner]            Broadcast GAME_OVER
+                  id                       Print this client's assigned ID
+                  quit                     Disconnect and exit
+                """);
+    }
+
+    private static final class ConsoleClientListener implements Client.Listener {
+        @Override
+        public void onConnected(int playerID) {
+            System.out.println("\nJOIN_ACCEPTED: assigned ID " + playerID);
+        }
+
+        @Override
+        public void onPlayerJoined(int playerID, String playerName, String computerName) {
+            System.out.println("\nPLAYER_JOINED: " + playerName
+                    + " (" + computerName + "), ID " + playerID);
+        }
+
+        @Override
+        public void onPlayerMoved(int playerID, int x, int y, int distance) {
+            System.out.println("\nPLAYER_MOVE: player " + playerID
+                    + " -> (" + x + ", " + y + "), distance " + distance);
+        }
+
+        @Override
+        public void onCardShown(Serializable card, String fromUser, String targetUser, int targetPlayerID) {
+            System.out.println("\nCARD_SHOW: " + fromUser + " -> " + targetUser);
+        }
+
+        @Override
+        public void onGameStarted() {
+            System.out.println("\nGAME_START received");
+        }
+
+        @Override
+        public void onGameOver(String winner) {
+            System.out.println("\nGAME_OVER received. Winner: " + winner);
+        }
+
+        @Override
+        public void onDisconnected() {
+            System.out.println("\nDisconnected from server.");
+        }
+
+        @Override
+        public void onError(Exception exception) {
+            System.err.println("\nNetwork error: " + exception.getMessage());
+        }
+    }
+}
+
+==================================================
+FILE: innerProy/networking/src/Networking/Server.java
+==================================================
+package Networking;
+
+import Networking.server.GameServer;
+
+/**lightweight wrapper class that exposes some of the functionality defined by the engine GameServer*/
+public final class Server {
+
+    public static final long serialVersionUID = 1L;
+
+    private final GameServer server;
+
+    public Server(int port) {
+        server = new GameServer(port);
+    }
+
+    public void start() {
+        server.start();
+    }
+
+    public void stop() {
+        server.stop();
+    }
+
+    public boolean isRunning() {
+        return server.isRunning();
+    }
+
+    public int getClientCount() {
+        return server.getClientCount();
+    }
+}
+
+==================================================
+FILE: innerProy/networking/src/Networking/client/GameClient.java
+==================================================
+package Networking.client;
+
+import Networking.common.Packet;
+import Networking.packets.JoinAcceptedPacket;
+import Networking.packets.JoinPacket;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+
+public final class GameClient {
+
+    public interface PacketListener {
+        void onPacket(Packet packet);
+
+        default void onDisconnected() {
+        }
+
+        default void onError(Exception exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    private final String host;
+    private final int port;
+    private final PacketListener listener;
+
+    private volatile boolean connected;
+    private volatile int playerID = -1;
+
+    private Socket socket;
+    private ObjectInputStream input;
+    private ObjectOutputStream output;
+    private Thread receiveThread;
+
+    public GameClient(String host, int port, PacketListener listener) {
+        if (host == null || host.isBlank()) {
+            throw new IllegalArgumentException("Host cannot be blank");
+        }
+        if (port < 1 || port > 65535) {
+            throw new IllegalArgumentException("Port must be between 1 and 65535");
+        }
+        this.host = host;
+        this.port = port;
+        this.listener = listener;
+    }
+
+    public synchronized void connect(String userName, String computerName) throws IOException {
+        if (connected) {
+            throw new IllegalStateException("Client is already connected");
+        }
+
+        Socket newSocket = new Socket(host, port);
+        try {
+            ObjectOutputStream newOutput = new ObjectOutputStream(newSocket.getOutputStream());
+            newOutput.flush();
+            ObjectInputStream newInput = new ObjectInputStream(newSocket.getInputStream());
+
+            socket = newSocket;
+            output = newOutput;
+            input = newInput;
+            connected = true;
+
+            receiveThread = new Thread(this::receiveLoop, "game-client-receiver");
+            receiveThread.setDaemon(true);
+            receiveThread.start();
+
+            sendPacket(new JoinPacket(computerName, userName));
+        } catch (IOException | RuntimeException e) {
+            try {
+                newSocket.close();
+            } catch (IOException closeException) {
+                e.addSuppressed(closeException);
+            }
+            throw e;
+        }
+    }
+
+    public synchronized void sendPacket(Packet packet) {
+        if (!connected || output == null) {
+            throw new IllegalStateException("Client is not connected");
+        }
+
+        try {
+            output.writeObject(packet);
+            output.flush();
+            output.reset();
+        } catch (IOException e) {
+            notifyError(e);
+            disconnect();
+        }
+    }
+
+    public synchronized void disconnect() {
+        if (!connected && socket == null) {
+            return;
+        }
+        connected = false;
+
+        if (socket != null) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                notifyError(e);
+            } finally {
+                socket = null;
+                input = null;
+                output = null;
+            }
+        }
+
+        if (listener != null) {
+            listener.onDisconnected();
+        }
+    }
+
+    private void receiveLoop() {
+        try {
+            while (connected) {
+                Object received = input.readObject();
+                if (!(received instanceof Packet packet)) {
+                    notifyError(new IOException("Received non-packet data"));
+                    continue;
+                }
+
+                if (packet instanceof JoinAcceptedPacket acceptedPacket) {
+                    playerID = acceptedPacket.getPlayerID();
+                }
+                if (listener != null) {
+                    listener.onPacket(packet);
+                }
+            }
+        } catch (ClassNotFoundException | IOException e) {
+            if (connected) {
+                notifyError(e);
+            }
+        } finally {
+            disconnect();
+        }
+    }
+
+    private void notifyError(Exception exception) {
+        if (listener != null) {
+            listener.onError(exception);
+        }
+    }
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public int getPlayerID() {
+        return playerID;
+    }
+}
+
+==================================================
+FILE: innerProy/networking/src/Networking/common/Packet.java
+==================================================
+package Networking.common;
+
+import Networking.Server;
+
+import java.io.Serializable;
+
+public abstract class Packet implements Serializable {
+
+    private static final long serialVersionUID = Server.serialVersionUID;
+    private final PacketType type;
+
+    protected Packet(PacketType type) {
+        this.type = type;
+    }
+
+    public PacketType getPacketType() {
+        return type;
+    }
+}
+
+==================================================
+FILE: innerProy/networking/src/Networking/common/PacketType.java
+==================================================
+package Networking.common;
+
+public enum PacketType {
+    JOIN,
+    JOIN_ACCEPTED,
+    PLAYER_JOINED,
+    GAME_START,
+    PLAYER_MOVE,
+    CARD_SHOW,
+    GAME_OVER
+}
+
+==================================================
+FILE: innerProy/networking/src/Networking/package-info.java
+==================================================
+
+/***
+ *
+ * Public classes are Server and Client<br>
+ *<br>
+ * use Server initially to create an environment and connect all players to it, including the one whose PC is running the<br>
+ * Server object itself, through a Client object<br>
+ *<br>
+ * Public classes are {@link Networking.Client} and {@link Networking.Server}.<br>
+ *<br>
+ * A {@link Networking.Server} should first be initialized;<br>
+ *      -assign it a {@link javax.sound.sampled.Port} & <br> Networking.server.GameServer<br>
+ *<br>
+ * A {@link Networking.Client} should then be initialized, order of connection test make a difference<br>
+ *      it requires a Port, a host and a Listener<br>
+ *      Port is the port which the Clients server will usse for running the game<br>
+ *      host is the public IP of the Server<br>
+ *      Listener is a functional interface whom, by over-writing its functions during new object creation (AnonymousInnerClass)<br>
+ *      explains to the Clients server how to handle each of the cases it may encounter<br>
+ */
+package Networking;
+
+==================================================
+FILE: innerProy/networking/src/Networking/packets/CardShowPacket.java
+==================================================
+package Networking.packets;
+
+import Networking.common.Packet;
+import Networking.common.PacketType;
+
+import java.io.Serializable;
+
+public final class CardShowPacket extends Packet {
+    private static final long serialVersionUID = 1L;
+
+    private final String user;
+    private final String targetUser;
+    private final int targetUserID;
+    private final Serializable showCard;
+
+    public CardShowPacket(Serializable showCard, String user, String targetUser, int targetUserID) {
+        super(PacketType.CARD_SHOW);
+        this.showCard = showCard;
+        this.user = user;
+        this.targetUser = targetUser;
+        this.targetUserID = targetUserID;
+    }
+
+    public Serializable getShowCard() {
+        return showCard;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public String getTargetUser() {
+        return targetUser;
+    }
+
+    public int getTargetUserID() {
+        return targetUserID;
+    }
+}
+
+==================================================
+FILE: innerProy/networking/src/Networking/packets/GameOverPacket.java
+==================================================
+package Networking.packets;
+
+import Networking.Server;
+import Networking.common.Packet;
+import Networking.common.PacketType;
+
+public final class GameOverPacket extends Packet {
+    private static final long serialVersionUID = Server.serialVersionUID;
+
+    private final boolean gameOver;
+    private final String winner;
+
+    public GameOverPacket(boolean gameOver, String winner) {
+        super(PacketType.GAME_OVER);
+        this.gameOver = gameOver;
+        this.winner = winner;
+    }
+
+    public boolean getGameOver() {
+        return gameOver;
+    }
+
+    public String getWinner() {
+        return winner;
+    }
+}
+
+==================================================
+FILE: innerProy/networking/src/Networking/packets/GameStartPacket.java
+==================================================
+package Networking.packets;
+
+import Networking.Server;
+import Networking.common.Packet;
+import Networking.common.PacketType;
+
+public final class GameStartPacket extends Packet {
+    private static final long serialVersionUID = Server.serialVersionUID;
+
+    private final boolean startGame;
+
+    public GameStartPacket(boolean startGame) {
+        super(PacketType.GAME_START);
+        this.startGame = startGame;
+    }
+
+    public boolean getGameStart() {
+        return startGame;
+    }
+}
+
+==================================================
+FILE: innerProy/networking/src/Networking/packets/JoinAcceptedPacket.java
+==================================================
+package Networking.packets;
+
+import Networking.common.Packet;
+import Networking.common.PacketType;
+
+public final class JoinAcceptedPacket extends Packet {
+    private static final long serialVersionUID = 1L;
+
+    private final int playerID;
+
+    public JoinAcceptedPacket(int playerID) {
+        super(PacketType.JOIN_ACCEPTED);
+        this.playerID = playerID;
+    }
+
+    public int getPlayerID() {
+        return playerID;
+    }
+}
+
+==================================================
+FILE: innerProy/networking/src/Networking/packets/JoinPacket.java
+==================================================
+package Networking.packets;
+
+import Networking.Server;
+import Networking.common.Packet;
+import Networking.common.PacketType;
+
+public final class JoinPacket extends Packet {
+    private static final long serialVersionUID = Server.serialVersionUID;
+
+    private final String computerName;
+    private final String userName;
+
+    public JoinPacket(String computerName, String userName) {
+        super(PacketType.JOIN);
+        this.computerName = computerName;
+        this.userName = userName;
+    }
+
+    public String getComputerName() {
+        return computerName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+}
+
+==================================================
+FILE: innerProy/networking/src/Networking/packets/PlayerJoinedPacket.java
+==================================================
+package Networking.packets;
+
+import Networking.Server;
+import Networking.common.Packet;
+import Networking.common.PacketType;
+
+public final class PlayerJoinedPacket extends Packet {
+    private static final long serialVersionUID = Server.serialVersionUID;
+
+    private final int playerID;
+    private final String playerName;
+    private final String computerName;
+
+    public PlayerJoinedPacket(int playerID, String playerName, String computerName) {
+        super(PacketType.PLAYER_JOINED);
+        this.playerID = playerID;
+        this.playerName = playerName;
+        this.computerName = computerName;
+    }
+
+    public int getPlayerID() {
+        return playerID;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public String getComputerName() {
+        return computerName;
+    }
+}
+
+==================================================
+FILE: innerProy/networking/src/Networking/packets/PlayerMovePacket.java
+==================================================
+package Networking.packets;
+
+import Networking.Server;
+import Networking.common.Packet;
+import Networking.common.PacketType;
+
+public final class PlayerMovePacket extends Packet {
+    private static final long serialVersionUID = Server.serialVersionUID;
+
+    private final int playerPosX;
+    private final int playerPosY;
+    private final int moveDistance;
+    private final int playerID;
+
+    public PlayerMovePacket(int playerPosX, int playerPosY, int moveDistance, int playerID) {
+        super(PacketType.PLAYER_MOVE);
+        this.playerPosX = playerPosX;
+        this.playerPosY = playerPosY;
+        this.moveDistance = moveDistance;
+        this.playerID = playerID;
+    }
+
+    public int getPlayerPosX() {
+        return playerPosX;
+    }
+
+    public int getPlayerPosY() {
+        return playerPosY;
+    }
+
+    public int getMoveDistance() {
+        return moveDistance;
+    }
+
+    public int getPlayerID() {
+        return playerID;
+    }
+}
+
+==================================================
+FILE: innerProy/networking/src/Networking/server/GameServer.java
+==================================================
+package Networking.server;
+
+import Networking.common.Packet;
+import Networking.common.PacketType;
+import Networking.packets.CardShowPacket;
+import Networking.packets.GameOverPacket;
+import Networking.packets.JoinAcceptedPacket;
+import Networking.packets.JoinPacket;
+import Networking.packets.PlayerJoinedPacket;
+import Networking.packets.PlayerMovePacket;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public final class GameServer {
+
+    private final int port;
+    private final Map<Integer, ServersClientHandler> clients = new ConcurrentHashMap<>();
+    private final AtomicInteger nextPlayerID = new AtomicInteger(1);
+    private final ExecutorService clientExecutor = Executors.newCachedThreadPool();
+
+    private volatile boolean running;
+    private volatile ServerSocket serverSocket;
+
+    public GameServer(int port) {
+        if (port < 1 || port > 65535) {
+            throw new IllegalArgumentException("Port must be between 1 and 65535");
+        }
+        this.port = port;
+    }
+
+    /**initializes the backend server
+     *
+     * @throws IllegalStateException if server is already running*/
+    public void start() {
+        if (running) {
+            throw new IllegalStateException("Server is already running");
+        }
+
+        try (ServerSocket listeningSocket = new ServerSocket(port)) {
+            serverSocket = listeningSocket;
+            running = true;
+            InetAddress localAddress = InetAddress.getLocalHost();
+            int listeningPort = listeningSocket.getLocalPort();
+            System.out.println("Server started:");
+            System.out.println("  Host name: " + localAddress.getHostName());
+            System.out.println("  IP address: " + localAddress.getHostAddress());
+            System.out.println("  Port: " + listeningPort);
+            System.out.println("Clients can connect using "
+                    + localAddress.getHostName() + ":" + listeningPort);
+
+            while (running) {
+                Socket clientSocket = listeningSocket.accept();
+                int playerID = nextPlayerID.getAndIncrement();
+                ServersClientHandler serversClientHandler = new ServersClientHandler(clientSocket, this, playerID);
+                clients.put(playerID, serversClientHandler);
+                clientExecutor.execute(serversClientHandler);
+            }
+        } catch (IOException e) {
+            if (running) {
+                System.err.println("Server stopped because it could not accept clients: " + e.getMessage());
+            }
+        } finally {
+            running = false;
+            serverSocket = null;
+            disconnectClients();
+        }
+    }
+
+    public void stop() {
+        running = false;
+        ServerSocket socket = serverSocket;
+        if (socket != null) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                System.err.println("Error closing server socket: " + e.getMessage());
+            }
+        }
+        disconnectClients();
+    }
+
+    void handlePacket(Packet packet, ServersClientHandler serversClientHandler) {
+        if (packet == null || serversClientHandler == null) {
+            return;
+        }
+
+        PacketType type = packet.getPacketType();
+        if (type == null) {
+            return;
+        }
+
+        switch (type) {
+            case JOIN -> handleJoin(packet, serversClientHandler);
+            case CARD_SHOW -> handleCardShow(packet, serversClientHandler);
+            case GAME_OVER -> broadcast(packet);
+            case PLAYER_MOVE -> handlePlayerMove(packet, serversClientHandler);
+            case GAME_START -> broadcast(packet);
+            case JOIN_ACCEPTED, PLAYER_JOINED ->
+                    System.err.println("Ignoring server-only packet from player " + serversClientHandler.getPlayerID());
+        }
+    }
+
+    private void handleJoin(Packet packet, ServersClientHandler serversClientHandler) {
+        if (!(packet instanceof JoinPacket joinPacket)) {
+            return;
+        }
+
+        String userName = cleanName(joinPacket.getUserName(), "Player " + serversClientHandler.getPlayerID());
+        String computerName = cleanName(joinPacket.getComputerName(), "Unknown computer");
+        serversClientHandler.setUserName(userName);
+        serversClientHandler.setComputerName(computerName);
+
+        serversClientHandler.sendPacket(new JoinAcceptedPacket(serversClientHandler.getPlayerID()));
+
+        for (ServersClientHandler existingClient : clients.values()) {
+            if (existingClient == serversClientHandler || existingClient.getUserName() == null) {
+                continue;
+            }
+            serversClientHandler.sendPacket(new PlayerJoinedPacket(
+                    existingClient.getPlayerID(),
+                    existingClient.getUserName(),
+                    existingClient.getComputerName()
+            ));
+        }
+
+        broadcastExcept(
+                new PlayerJoinedPacket(serversClientHandler.getPlayerID(), userName, computerName),
+                serversClientHandler
+        );
+        System.out.println("Player joined: " + userName + " from " + computerName);
+    }
+
+    private void handleCardShow(Packet packet, ServersClientHandler serversClientHandler) {
+        if (!(packet instanceof CardShowPacket cardShowPacket)) {
+            return;
+        }
+
+        ServersClientHandler target = clients.get(cardShowPacket.getTargetUserID());
+        if (target == null) {
+            System.err.println("Target player not found: " + cardShowPacket.getTargetUserID());
+            return;
+        }
+
+        target.sendPacket(new CardShowPacket(
+                cardShowPacket.getShowCard(),
+                serversClientHandler.getUserName(),
+                target.getUserName(),
+                target.getPlayerID()
+        ));
+    }
+
+    private void handlePlayerMove(Packet packet, ServersClientHandler serversClientHandler) {
+        if (!(packet instanceof PlayerMovePacket movePacket)) {
+            return;
+        }
+
+        PlayerMovePacket authoritativeMove = new PlayerMovePacket(
+                movePacket.getPlayerPosX(),
+                movePacket.getPlayerPosY(),
+                movePacket.getMoveDistance(),
+                serversClientHandler.getPlayerID()
+        );
+        broadcastExcept(authoritativeMove, serversClientHandler);
+    }
+
+    private void broadcast(Packet packet) {
+        for (ServersClientHandler client : clients.values()) {
+            client.sendPacket(packet);
+        }
+    }
+
+    private void broadcastExcept(Packet packet, ServersClientHandler excludedClient) {
+        for (ServersClientHandler client : clients.values()) {
+            if (client != excludedClient) {
+                client.sendPacket(packet);
+            }
+        }
+    }
+
+    private void disconnectClients() {
+        for (ServersClientHandler client : clients.values()) {
+            client.disconnect();
+        }
+        clientExecutor.shutdownNow();
+    }
+
+    private String cleanName(String value, String fallback) {
+        if (value == null || value.isBlank()) {
+            return fallback;
+        }
+        return value.trim();
+    }
+
+    void removeClient(ServersClientHandler serversClientHandler) {
+        clients.remove(serversClientHandler.getPlayerID(), serversClientHandler);
+    }
+
+    public int getClientCount() {
+        return clients.size();
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
+}
+
+==================================================
+FILE: innerProy/networking/src/Networking/server/ServersClientHandler.java
+==================================================
+package Networking.server;
+
+import Networking.common.Packet;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+
+final class ServersClientHandler implements Runnable {
+
+    private final Socket socket;    //connects to the Client
+
+    private final GameServer server;
+
+    private final int playerID; //unique ID that each machine has, if 2 clients have the same playerID then we throw both of them out
+
+    /**the name the client chooses for itself*/
+    private volatile String userName;
+
+    private volatile String computerName;
+
+    /**input for the socket*/
+    private ObjectInputStream input;
+    /**output for the socket*/
+    private ObjectOutputStream output;
+
+    /**boolean stated weather the selected player is active*/
+    private boolean disconnected;
+
+    ServersClientHandler(Socket socket, GameServer server, int playerID) {
+        this.socket = socket;
+        this.server = server;
+        this.playerID = playerID;
+    }
+
+    @Override
+    public void run() {
+        try {
+            output = new ObjectOutputStream(socket.getOutputStream());
+            output.flush();
+            input = new ObjectInputStream(socket.getInputStream());
+
+            while (!socket.isClosed()) {
+                Object received = input.readObject();
+                if (!(received instanceof Packet packet)) {
+                    System.err.println("Ignoring non-packet data from player " + playerID);
+                    continue;
+                }
+                server.handlePacket(packet, this);
+            }
+        } catch (ClassNotFoundException e) {
+            System.err.println("Unable to deserialize a packet from player " + playerID + ": " + e.getMessage());
+        } catch (IOException e) {
+            if (!socket.isClosed()) {
+                System.err.println("Connection lost for player " + playerID + ": " + e.getMessage());
+            }
+        } finally {
+            disconnect();
+        }
+    }
+
+    /**send binary through a packet*/
+    synchronized void sendPacket(Packet packet) {
+        if (packet == null || disconnected || output == null) {
+            return;
+        }
+
+        try {
+            output.writeObject(packet);
+            output.flush();
+            output.reset();
+        } catch (IOException e) {
+            System.err.println("Failed to send packet to player " + playerID + ": " + e.getMessage());
+            disconnect();
+        }
+    }
+
+    /**disconnects a player from the server*/
+    synchronized void disconnect() {
+        if (disconnected) {
+            return;
+        }
+        disconnected = true;
+
+        try {
+            socket.close();
+        } catch (IOException e) {
+            System.err.println("Error closing socket for player " + playerID + ": " + e.getMessage());
+        } finally {
+            server.removeClient(this);
+        }
+    }
+
+    //getters
+
+    int getPlayerID() {
+        return playerID;
+    }
+
+    String getUserName() {
+        return userName;
+    }
+
+    String getComputerName() {
+        return computerName;
+    }
+
+    void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    void setComputerName(String computerName) {
+        this.computerName = computerName;
+    }
+}
+
+==================================================
+FILE: innerProy/networking/src/module-info.java
+==================================================
+module deustomurder.networking {
+    exports Networking;
+}
+
+==================================================
+FILE: innerProy/src/activation/Main.java
 ==================================================
 package activation;
 
 import model.Actor;
+import model.Card;
+import model.Player;
+import model.RawPiece;
+import model.RawRoom;
 import model.Room;
 import model.Weapon;
+import ui.BoardLayout;
 
-import java.awt.*;
+import javax.swing.SwingUtilities;
+import java.awt.Color;
+import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Main {
 
+    static final int BOARD_ROWS = 22;
+    static final int BOARD_COLUMNS = 23;
+
     static List<Actor> actors = new ArrayList<>();
     static List<Room> rooms = new ArrayList<>();
     static List<Weapon> weapons = new ArrayList<>();
+    static List<Card> solution = new ArrayList<>();
+    static List<Card> Playable_Cards = new ArrayList<>();
+    static List<Card> visible_cards = new ArrayList<>();
+    static List<Player> players = new ArrayList<>();
 
-    static {
-        resetListContents();
-    }
+    static RawRoom[] rawRooms = new RawRoom[0];
+    static BoardLayout board;
 
     public static void main(String[] args) {
+        resetListContents();
 
-        new Window();
-
+        SwingUtilities.invokeLater(() -> {
+            board = new BoardLayout(BOARD_ROWS, BOARD_COLUMNS, rawRooms, createRawPieces());
+            rooms = new ArrayList<>(board.getRooms());
+            new Window(board, actors, weapons, rooms);
+        });
     }
 
+    /**
+     * Resets the lists to the preset
+     * actors, weapons and rooms.
+     */
     public static void resetListContents() {
-
         List<String> actorNames = List.of(
                 "Garaizar",
                 "Luka",
@@ -72,366 +1370,363 @@ public class Main {
                 "Destornillador"
         };
 
-        String[] rawrooms = {
-                "Cry",
-                "Baños",
-                "Cafeteria",
-                "Maquinas",
-                "Laboratorio",
-                "DeustoTech",
-                "Aula 1",
-                "Aula 2"
+        rawRooms = new RawRoom[]{
+                new RawRoom("Cry", new int[]{0, 0, 7, 4},
+                        List.of(),
+                        List.<Point[]>of(
+                                new Point[]{
+                                        new Point(7, 1),
+                                        new Point(7, 2)
+                                }
+                        ),
+                        List.of(
+                                new Point(2, 1),
+                                new Point(3, 1),
+                                new Point(2, 2),
+                                new Point(3, 2)
+                        )
+                ),
+
+                new RawRoom("Baños", new int[]{9, 0, 5, 5},
+                        List.of(),
+                        List.<Point[]>of(
+                                new Point[]{
+                                        new Point(10, 5),
+                                        new Point(11, 5)
+                                },
+                                new Point[]{
+                                        new Point(14, 1),
+                                        new Point(14, 2)
+                                }
+                        ),
+                        List.of(
+                                new Point(10, 2),
+                                new Point(11, 2),
+                                new Point(12, 2),
+                                new Point(11, 3)
+                        )
+                ),
+
+                new RawRoom("Cafeteria", new int[]{16, 0, 7, 5},
+                        List.of(),
+                        List.<Point[]>of(
+                                new Point[]{
+                                        new Point(16, 5),
+                                        new Point(17, 5)
+                                }
+                        ),
+                        List.of(
+                                new Point(18, 2),
+                                new Point(19, 2),
+                                new Point(20, 2),
+                                new Point(19, 3)
+                        )
+                ),
+
+                new RawRoom("Maquinas", new int[]{0, 6, 7, 4},
+                        List.of(
+                                new Point(6, 6),
+                                new Point(6, 9)
+                        ),
+                        List.<Point[]>of(
+                                new Point[]{
+                                        new Point(6, 6)
+                                },
+                                new Point[]{
+                                        new Point(6, 9)
+                                }
+                        ),
+                        List.of(
+                                new Point(2, 7),
+                                new Point(3, 7),
+                                new Point(2, 8),
+                                new Point(3, 8)
+                        )
+                ),
+
+                new RawRoom("Laboratorio", new int[]{9, 7, 5, 6},
+                        List.of(),
+                        List.<Point[]>of(
+                                new Point[]{
+                                        new Point(8, 9),
+                                        new Point(8, 10)
+                                },
+                                new Point[]{
+                                        new Point(14, 9),
+                                        new Point(14, 10)
+                                }
+                        ),
+                        List.of(
+                                new Point(10, 9),
+                                new Point(11, 9),
+                                new Point(12, 9),
+                                new Point(11, 10)
+                        )
+                ),
+
+                new RawRoom("DeustoTech", new int[]{16, 7, 7, 7},
+                        List.of(
+                                new Point(16, 13),
+                                new Point(17, 13)
+                        ),
+                        List.<Point[]>of(
+                                new Point[]{
+                                        new Point(16, 13),
+                                        new Point(17, 13)
+                                }
+                        ),
+                        List.of(
+                                new Point(18, 9),
+                                new Point(19, 9),
+                                new Point(20, 9),
+                                new Point(19, 10)
+                        )
+                ),
+
+                new RawRoom("Aula 1", new int[]{0, 11, 6, 4},
+                        List.of(),
+                        List.<Point[]>of(
+                                new Point[]{
+                                        new Point(6, 12),
+                                        new Point(6, 13)
+                                }
+                        ),
+                        List.of(
+                                new Point(2, 12),
+                                new Point(3, 12),
+                                new Point(2, 13),
+                                new Point(3, 13)
+                        )
+                ),
+
+                new RawRoom("Aula 2", new int[]{0, 17, 6, 5},
+                        List.of(
+                                new Point(0, 17),
+                                new Point(5, 17)
+                        ),
+                        List.<Point[]>of(
+                                new Point[]{
+                                        new Point(5, 17),
+                                        new Point(6, 17),
+                                        new Point(6, 18)
+                                }
+                        ),
+                        List.of(
+                                new Point(2, 18),
+                                new Point(3, 18),
+                                new Point(2, 19),
+                                new Point(3, 19)
+                        )
+                ),
+
+                new RawRoom("Room 9", new int[]{8, 15, 7, 7},
+                        List.of(
+                                new Point(8, 21),
+                                new Point(14, 21)
+                        ),
+                        List.<Point[]>of(
+                                new Point[]{
+                                        new Point(10, 14),
+                                        new Point(11, 14),
+                                        new Point(12, 14)
+                                }
+                        ),
+                        List.of(
+                                new Point(10, 18),
+                                new Point(11, 18),
+                                new Point(12, 18),
+                                new Point(11, 19)
+                        )
+                ),
+
+                new RawRoom("Room 10", new int[]{17, 16, 6, 6},
+                        List.of(),
+                        List.<Point[]>of(
+                                new Point[]{
+                                        new Point(16, 16),
+                                        new Point(16, 17)
+                                }
+                        ),
+                        List.of(
+                                new Point(19, 18),
+                                new Point(20, 18),
+                                new Point(19, 19),
+                                new Point(20, 19)
+                        )
+                )
         };
 
         actors.clear();
         weapons.clear();
         rooms.clear();
+        solution.clear();
+        Playable_Cards.clear();
+        visible_cards.clear();
+        players.clear();
 
         for (int i = 0; i < actorNames.size(); i++) {
-            actors.add(
-                    new Actor(
-                            actorNames.get(i),
-                            actorColors.get(i)
-                    )
-            );
+            actors.add(new Actor(actorNames.get(i), actorColors.get(i)));
         }
 
         for (String name : rawweapons) {
             weapons.add(new Weapon(name));
         }
 
-        for (String name : rawrooms) {
-            rooms.add(new Room(name));
-        }
-    }
-}
+        for (RawRoom rawRoom : rawRooms) {
+            int[] area = rawRoom.area();
+            Room room = new Room(rawRoom.name()).occupyRectangle(area[0], area[1], area[2], area[3]);
 
-==================================================
-FILE: ./innerProy/src/activation/Window.java
-==================================================
-package activation;
-
-import model.Tile;
-import ui.boardPiece.ScenarioAspect;
-import ui.boardPiece.TileAspect;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.util.ArrayList;
-import java.util.List;
-
-public class Window extends JFrame {
-
-    private static final int GRID_SIZE = 8;
-
-    private static final int[][] SPECIAL_BLOCK_POSITIONS = {
-
-            {0, 0},
-            {3, 0},
-            {6, 0},
-
-            {0, 3},
-            {3, 3},
-            {6, 3},
-
-            {0, 6},
-            {3, 6},
-            {6, 6}
-    };
-
-    private final JPanel board;
-
-    private final List<PlacedComponent> components =
-            new ArrayList<>();
-
-    private record PlacedComponent(
-            JComponent component,
-            int column,
-            int row,
-            int widthInTiles,
-            int heightInTiles
-    ) {
-    }
-
-    public Window() {
-
-        setTitle("Cluedo");
-
-        setDefaultCloseOperation(
-                JFrame.EXIT_ON_CLOSE
-        );
-
-        board = new JPanel();
-
-        board.setLayout(null);
-
-        board.setBackground(
-                new Color(235, 235, 235)
-        );
-
-        createBoard();
-
-        add(
-                board,
-                BorderLayout.CENTER
-        );
-
-        /*
-         * Initial size according to the current screen.
-         */
-        Dimension screenSize =
-                Toolkit
-                        .getDefaultToolkit()
-                        .getScreenSize();
-
-        setSize(
-                (int) (screenSize.width * 0.75),
-                (int) (screenSize.height * 0.80)
-        );
-
-        setMinimumSize(
-                new Dimension(
-                        400,
-                        400
-                )
-        );
-
-        setLocationRelativeTo(null);
-
-        /*
-         * Every time the window changes size,
-         * recalculate the board.
-         */
-        board.addComponentListener(
-                new ComponentAdapter() {
-
-                    @Override
-                    public void componentResized(
-                            ComponentEvent e
-                    ) {
-
-                        resizeBoard();
-                    }
-                }
-        );
-
-        setVisible(true);
-    }
-
-    private void createBoard() {
-
-        boolean[][] occupiedBySpecialBlock =
-                new boolean[GRID_SIZE][GRID_SIZE];
-
-        /*
-         * Mark spaces occupied by the 2x2 rooms.
-         */
-        for (int[] position :
-                SPECIAL_BLOCK_POSITIONS) {
-
-            int column = position[0];
-            int row = position[1];
-
-            occupiedBySpecialBlock[row][column] = true;
-            occupiedBySpecialBlock[row][column + 1] = true;
-
-            occupiedBySpecialBlock[row + 1][column] = true;
-            occupiedBySpecialBlock[row + 1][column + 1] = true;
-        }
-
-        /*
-         * Create corridor tiles.
-         */
-        for (int row = 0;
-             row < GRID_SIZE;
-             row++) {
-
-            for (int column = 0;
-                 column < GRID_SIZE;
-                 column++) {
-
-                if (!occupiedBySpecialBlock[row][column]) {
-
-                    TileAspect corridor =
-                            new TileAspect(
-                                    new Tile(null)
-                            );
-
-                    board.add(corridor);
-
-                    components.add(
-                            new PlacedComponent(
-                                    corridor,
-                                    column,
-                                    row,
-                                    1,
-                                    1
-                            )
-                    );
-                }
+            for (Point ignoredPoint : rawRoom.ignoredPoints()) {
+                room.free(ignoredPoint.x, ignoredPoint.y);
             }
-        }
 
-        /*
-         * Create the 9 special blocks.
-         */
-        for (int[] position :
-                SPECIAL_BLOCK_POSITIONS) {
+            for (Point[] entrance : rawRoom.entrance()) {
+                Room.Cell[] entranceCells = new Room.Cell[entrance.length];
 
-            int column = position[0];
-            int row = position[1];
+                for (int i = 0; i < entrance.length; i++) {
+                    entranceCells[i] = new Room.Cell(entrance[i].x, entrance[i].y);
+                }
 
-            ScenarioAspect specialBlock =
-                    new ScenarioAspect(
-                            0,
-                            0
-                    );
+                room.addEntrance(entranceCells);
+            }
 
-            board.add(specialBlock);
+            for (Point position : rawRoom.playerPositions()) {
+                room.addPlayerPosition(position.x, position.y);
+            }
 
-            components.add(
-                    new PlacedComponent(
-                            specialBlock,
-                            column,
-                            row,
-                            2,
-                            2
-                    )
-            );
+            rooms.add(room);
         }
     }
 
-    private void resizeBoard() {
+    static RawPiece[] createRawPieces() {
+        RawPiece[] rawPieces = new RawPiece[players.size()];
 
-        int availableWidth =
-                board.getWidth();
+        for (int i = 0; i < players.size(); i++) {
+            Player player = players.get(i);
+            rawPieces[i] = new RawPiece(player.getPiece(), player.getPlayerPosX(), player.getPlayerPosY());
+        }
 
-        int availableHeight =
-                board.getHeight();
+        return rawPieces;
+    }
 
-        /*
-         * Leave some empty space around the board.
-         */
-        int margin =
-                Math.max(
-                        15,
-                        Math.min(
-                                availableWidth,
-                                availableHeight
-                        ) / 20
-                );
+    public static void gameStart() {
+        Collections.shuffle(actors);
+        Collections.shuffle(weapons);
+        Collections.shuffle(rooms);
 
-        int usableWidth =
-                availableWidth
-                        - margin * 2;
+        Actor solution_actor = actors.getFirst();
+        actors.removeFirst();
 
-        int usableHeight =
-                availableHeight
-                        - margin * 2;
+        Weapon solution_weapon = weapons.getFirst();
+        weapons.removeFirst();
 
-        /*
-         * One grid cell must remain square.
-         */
-        int tileSize =
-                Math.min(
-                        usableWidth / GRID_SIZE,
-                        usableHeight / GRID_SIZE
-                );
+        Room solution_room = rooms.getFirst();
+        rooms.removeFirst();
 
-        if (tileSize <= 0) {
+        solution.add(solution_actor);
+        solution.add(solution_weapon);
+        solution.add(solution_room);
+
+        Playable_Cards.addAll(actors);
+        Playable_Cards.addAll(weapons);
+        Playable_Cards.addAll(rooms);
+        Collections.shuffle(Playable_Cards);
+
+        if (players.size() * 3 > Playable_Cards.size()) {
+            System.out.println("Error too many players!!!");
             return;
         }
 
-        int totalBoardSize =
-                tileSize * GRID_SIZE;
-
-        /*
-         * Center the complete board.
-         */
-        int startX =
-                (availableWidth
-                        - totalBoardSize) / 2;
-
-        int startY =
-                (availableHeight
-                        - totalBoardSize) / 2;
-
-        for (PlacedComponent placed :
-                components) {
-
-            int x =
-                    startX
-                            + placed.column()
-                            * tileSize;
-
-            int y =
-                    startY
-                            + placed.row()
-                            * tileSize;
-
-            int width =
-                    placed.widthInTiles()
-                            * tileSize;
-
-            int height =
-                    placed.heightInTiles()
-                            * tileSize;
-
-            placed.component().setBounds(
-                    x,
-                    y,
-                    width,
-                    height
-            );
-
-            /*
-             * Scale border thickness as well.
-             */
-            if (placed.component()
-                    instanceof TileAspect) {
-
-                int border =
-                        Math.max(
-                                1,
-                                tileSize / 8
-                        );
-
-                placed.component().setBorder(
-                        BorderFactory.createLineBorder(
-                                Color.BLUE,
-                                border
-                        )
-                );
-
-            } else if (
-                    placed.component()
-                            instanceof ScenarioAspect
-            ) {
-
-                int border =
-                        Math.max(
-                                1,
-                                tileSize / 15
-                        );
-
-                placed.component().setBorder(
-                        BorderFactory.createLineBorder(
-                                Color.BLACK,
-                                border
-                        )
-                );
+        for (Player player : players) {
+            for (int i = 0; i < 3; i++) {
+                Card card = Playable_Cards.removeFirst();
+                player.addCard(card);
             }
         }
 
-        board.revalidate();
-        board.repaint();
+        if (!Playable_Cards.isEmpty()) {
+            visible_cards.addAll(Playable_Cards);
+            Playable_Cards.clear();
+        }
+    }
+
+    public static void createDefaultLayout() {
+        resetListContents();
     }
 }
 
 ==================================================
-FILE: ./innerProy/src/createFileChunkTxt.java
+FILE: innerProy/src/activation/Window.java
+==================================================
+package activation;
+
+import model.Actor;
+import model.Room;
+import model.Weapon;
+import ui.BoardLayout;
+import ui.DetectiveCard;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
+
+class Window extends JFrame {
+
+    Window(BoardLayout board, List<Actor> actors, List<Weapon> weapons, List<Room> rooms) {
+        setTitle("Deusto Murder - Board");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        JButton detectiveCardButton = new JButton("Tarjeta del detective");
+
+        detectiveCardButton.addActionListener(e -> DetectiveCard.showCard(actors, weapons, rooms));
+
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        topPanel.add(detectiveCardButton);
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+        mainPanel.add(board, BorderLayout.CENTER);
+        setContentPane(mainPanel);
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int side = (int) Math.min(screenSize.width * 0.80, screenSize.height * 0.80);
+
+        setSize(side, side);
+        setMinimumSize(new Dimension(650, 650));
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+}
+
+==================================================
+FILE: innerProy/src/activation/dice.java
+==================================================
+package activation;
+
+import java.util.Random;
+
+class dice {
+
+    private int roll_output;
+
+    int getRoll_output() {
+        return roll_output;
+    }
+
+    void setRoll_output(int roll_output) {
+        this.roll_output = roll_output;
+    }
+
+    int roll() {
+        int roll1 = new Random().nextInt(0, 7);
+        int roll2 = new Random().nextInt(6);
+        int roll = roll1 + roll2;
+        setRoll_output(roll);
+        return roll;
+    }
+}
+
+==================================================
+FILE: innerProy/src/createFileChunkTxt.java
 ==================================================
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -622,15 +1917,13 @@ public class createFileChunkTxt extends Application {
 }
 
 ==================================================
-FILE: ./innerProy/src/model/Actor.java
+FILE: innerProy/src/model/Actor.java
 ==================================================
 package model;
 
-import ui.ActorsLook;
+import java.awt.Color;
 
-import java.awt.*;
-
-public class Actor {
+public class Actor extends Card {
 
     final private String name;
     final private Color color;
@@ -639,213 +1932,1247 @@ public class Actor {
         this.name = name;
         this.color = color;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public Color getColor() {
+        return color;
+    }
 }
 
 ==================================================
-FILE: ./innerProy/src/model/Player.java
+FILE: innerProy/src/model/Card.java
 ==================================================
 package model;
+
+import java.io.Serializable;
+
+public abstract class Card implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+}
+
+==================================================
+FILE: innerProy/src/model/Piece.java
+==================================================
+package model;
+
+import java.awt.Color;
+
+public class Piece {
+
+    private final Player owner;
+    private int x;
+    private int y;
+
+    Piece(Player owner) {
+        this.owner = owner;
+    }
+
+    public Player getOwner() {
+        return owner;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setPosition(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public Color getColor() {
+        return owner.getSelf().getColor();
+    }
+}
+
+==================================================
+FILE: innerProy/src/model/Player.java
+==================================================
+package model;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Player {
 
     final private Actor self;
+    private final Piece piece;
+    private static int nextPlayerID = 0;
+    private int playerID;
+    private String name;
+    private List<Card> player_cards;
+    private final List<Card> detectiveNotes = new ArrayList<>();
 
-    public Player(Actor self) {
+    public Player(Actor self, List<Card> player_cards, int playerID) {
+        this(self, player_cards, playerID, self == null ? null : self.getName());
+    }
+
+    public Player(Actor self, List<Card> player_cards, int playerID, String name) {
         this.self = self;
+        this.player_cards = player_cards == null ? new ArrayList<>() : player_cards;
+        this.playerID = nextPlayerID;
+        this.name = name;
+        this.piece = new Piece(this);
+        nextPlayerID++;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void addCard(Card card) {
+        player_cards.add(card);
+    }
+
+    public void moveUP() {
+        piece.setPosition(piece.getX(), piece.getY() + 1);
+    }
+
+    public void moveDOWN() {
+        piece.setPosition(piece.getX(), piece.getY() - 1);
+    }
+
+    public void moveLEFT() {
+        piece.setPosition(piece.getX() - 1, piece.getY());
+    }
+
+    public void moveRIGHT() {
+        piece.setPosition(piece.getX() + 1, piece.getY());
+    }
+
+    public int getPlayerPosX() {
+        return piece.getX();
+    }
+
+    public int getPlayerPosY() {
+        return piece.getY();
+    }
+
+    public int getPlayerID() {
+        return playerID;
+    }
+
+    public void setPlayerID(int playerID) {
+        this.playerID = playerID;
+    }
+
+    public void setPlayerPosX(int playerPosX) {
+        piece.setPosition(playerPosX, piece.getY());
+    }
+
+    public void setPlayerPosY(int playerPosY) {
+        piece.setPosition(piece.getX(), playerPosY);
+    }
+
+    Actor getSelf() {
+        return self;
+    }
+
+    public Piece getPiece() {
+        return piece;
+    }
+
+    public void addDetectiveNote(Card card) {
+        if (!detectiveNotes.contains(card)) {
+            detectiveNotes.add(card);
+        }
+    }
+
+    public void removeDetectiveNote(Card card) {
+        detectiveNotes.remove(card);
+    }
+
+    public boolean hasDetectiveNote(Card card) {
+        return detectiveNotes.contains(card);
+    }
+
+    public List<Card> getDetectiveNotes() {
+        return detectiveNotes;
     }
 }
 
 ==================================================
-FILE: ./innerProy/src/model/Room.java
+FILE: innerProy/src/model/RawPiece.java
 ==================================================
 package model;
 
-public class Room {
+public record RawPiece(Piece piece, int x, int y) {
+}
 
-    final private String name;
+==================================================
+FILE: innerProy/src/model/RawRoom.java
+==================================================
+package model;
+
+import java.awt.Point;
+import java.util.List;
+
+public record RawRoom(
+        String name,
+        int[] area,
+        List<Point> ignoredPoints,
+        List<Point[]> entrance,
+        List<Point> playerPositions) {
+}
+
+==================================================
+FILE: innerProy/src/model/Room.java
+==================================================
+package model;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * A room card that also stores the cells
+ * occupied by that room on the board.
+ */
+public class Room extends Card {
+
+    private static final long serialVersionUID = 1L;
+
+    private final String name;
+    private final Set<Cell> occupiedCells = new LinkedHashSet<>();
+    private final List<List<Cell>> entrances = new ArrayList<>();
+    private final Set<Cell> playerPositions = new LinkedHashSet<>();
 
     public Room(String name) {
         this.name = name;
     }
-}
 
-==================================================
-FILE: ./innerProy/src/model/Tile.java
-==================================================
-package model;
+    public String getName() {
+        return name;
+    }
 
-/**
- * object that visually represents a tile of the map*/
-public class Tile {
+    public Set<Cell> getOccupiedCells() {
+        return Collections.unmodifiableSet(occupiedCells);
+    }
 
-    Actor actorOnThisTile = null;
+    public boolean occupies(int column, int row) {
+        return occupiedCells.contains(new Cell(column, row));
+    }
 
-    public Tile(Actor actorOnThisTile) {
-        this.actorOnThisTile = actorOnThisTile;
+    public List<List<Cell>> getEntrances() {
+        return Collections.unmodifiableList(entrances);
+    }
+
+    public Set<Cell> getPlayerPositions() {
+        return Collections.unmodifiableSet(playerPositions);
+    }
+
+    public boolean isEntrance(int column, int row) {
+        Cell target = new Cell(column, row);
+
+        for (List<Cell> entrance : entrances) {
+            if (entrance.contains(target)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isPlayerPosition(int column, int row) {
+        return playerPositions.contains(new Cell(column, row));
+    }
+
+    public Room addEntrance(Cell... cells) {
+        if (cells == null || cells.length == 0) {
+            throw new IllegalArgumentException("An entrance must contain at least one cell");
+        }
+
+        List<Cell> entrance = new ArrayList<>();
+
+        for (Cell cell : cells) {
+            if (cell == null) {
+                throw new IllegalArgumentException("Entrance cells cannot be null");
+            }
+
+            if (cell.column() < 0 || cell.row() < 0) {
+                throw new IllegalArgumentException("Entrance coordinates cannot be negative");
+            }
+
+            entrance.add(cell);
+        }
+
+        entrances.add(List.copyOf(entrance));
+        return this;
+    }
+
+    public Room addPlayerPosition(int column, int row) {
+        Cell cell = new Cell(column, row);
+
+        if (!occupiedCells.contains(cell)) {
+            throw new IllegalArgumentException(
+                    "Player position (" + column + ", " + row + ") is not inside room '" + name + "'"
+            );
+        }
+
+        playerPositions.add(cell);
+        return this;
+    }
+
+    public Room occupy(int column, int row) {
+        if (column < 0 || row < 0) {
+            throw new IllegalArgumentException("Room coordinates cannot be negative");
+        }
+
+        occupiedCells.add(new Cell(column, row));
+        return this;
+    }
+
+    public Room occupyRectangle(int column, int row, int width, int height) {
+        if (width <= 0 || height <= 0) {
+            throw new IllegalArgumentException("Room width and height must be positive");
+        }
+
+        for (int y = row; y < row + height; y++) {
+            for (int x = column; x < column + width; x++) {
+                occupy(x, y);
+            }
+        }
+
+        return this;
+    }
+
+    public Room free(int column, int row) {
+        Cell cell = new Cell(column, row);
+        occupiedCells.remove(cell);
+        playerPositions.remove(cell);
+        return this;
+    }
+
+    public record Cell(int column, int row) implements Serializable {
+        private static final long serialVersionUID = 1L;
     }
 }
 
-
 ==================================================
-FILE: ./innerProy/src/model/Weapon.java
+FILE: innerProy/src/model/Tile.java
 ==================================================
 package model;
 
-public class Weapon {
+public class Tile {
+
+    private Piece pieceOnThisTile;
+    private boolean disabled;
+    private Room accessibleRoom;
+    private Room room;
+    private boolean roomPosition;
+
+    public Tile(Piece pieceOnThisTile) {
+        this(pieceOnThisTile, null);
+    }
+
+    public Tile(Piece pieceOnThisTile, Room accessibleRoom) {
+        this.pieceOnThisTile = pieceOnThisTile;
+        this.accessibleRoom = accessibleRoom;
+    }
+
+    public Piece getPieceOnThisTile() {
+        return pieceOnThisTile;
+    }
+
+    public void setPieceOnThisTile(Piece pieceOnThisTile) {
+        this.pieceOnThisTile = pieceOnThisTile;
+    }
+
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    public Room getAccessibleRoom() {
+        return accessibleRoom;
+    }
+
+    public void setAccessibleRoom(Room accessibleRoom) {
+        this.accessibleRoom = accessibleRoom;
+    }
+
+    public boolean givesAccessToRoom() {
+        return accessibleRoom != null;
+    }
+
+    public Room getRoom() {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
+    }
+
+    public boolean isRoomPosition() {
+        return roomPosition;
+    }
+
+    public void setRoomPosition(boolean roomPosition) {
+        this.roomPosition = roomPosition;
+    }
+}
+
+==================================================
+FILE: innerProy/src/model/Weapon.java
+==================================================
+package model;
+
+public class Weapon extends Card {
 
     final private String name;
 
     public Weapon(String name) {
         this.name = name;
     }
+
+    public String getName() {
+        return name;
+    }
 }
 
 ==================================================
-FILE: ./innerProy/src/ui/ActorsLook.java
+FILE: innerProy/src/module-info.java
+==================================================
+module deustomurder.game {
+    requires java.desktop;
+    requires deustomurder.networking;
+}
+
+==================================================
+FILE: innerProy/src/ui/ActorsLook.java
 ==================================================
 package ui;
 
 import model.Actor;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
+import java.awt.Color;
 
-public class ActorsLook {
+class ActorsLook {
 
     Color color;
     Actor actor;
 
-    public ActorsLook(Color color, Actor actor) {
+    ActorsLook(Color color, Actor actor) {
         this.color = color;
         this.actor = actor;
     }
 }
 
 ==================================================
-FILE: ./innerProy/src/ui/BoardLayout.java
+FILE: innerProy/src/ui/BoardLayout.java
 ==================================================
 package ui;
 
-public class BoardLayout {
-}
+import model.Piece;
+import model.RawPiece;
+import model.RawRoom;
+import model.Room;
+import model.Tile;
 
-==================================================
-FILE: ./innerProy/src/ui/boardPiece/ScenarioAspect.java
-==================================================
-package ui.boardPiece;
+import javax.swing.JPanel;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.swing.*;
-import java.awt.*;
+public final class BoardLayout extends JPanel {
 
-public class ScenarioAspect extends JPanel {
+    public static final int GRID_COLUMNS = 23;
+    public static final int GRID_ROWS = 22;
 
-    public static final int SIZE = TileAspect.SIZE * 2;
+    private final int rows;
+    private final int columns;
+    private final Tile[][] tiles;
+    private final List<Room> rooms = new ArrayList<>();
+    private final List<Piece> pieces = new ArrayList<>();
+    private final List<PlacedTile> visibleTiles = new ArrayList<>();
+    private final List<PlacedTile> roomPositionTiles = new ArrayList<>();
+    private final List<RoomsLook> roomLooks = new ArrayList<>();
 
-    public ScenarioAspect(int x, int y) {
+    private record PlacedTile(TileAspect look, int column, int row) {
+    }
 
-        setBounds(
-                x,
-                y,
-                SIZE,
-                SIZE
+    public BoardLayout(int rows, int columns, RawRoom[] rawRooms, RawPiece[] rawPieces) {
+        this(rows, columns);
+        createRooms(rawRooms == null ? new RawRoom[0] : rawRooms);
+        createBoard();
+        placePieces(rawPieces == null ? new RawPiece[0] : rawPieces);
+    }
+
+    public BoardLayout(List<Room> rooms) {
+        this(GRID_ROWS, GRID_COLUMNS);
+        this.rooms.addAll(rooms);
+        createBoard();
+    }
+
+    private BoardLayout(int rows, int columns) {
+        if (rows <= 0 || columns <= 0) {
+            throw new IllegalArgumentException("Board rows and columns must be positive");
+        }
+
+        this.rows = rows;
+        this.columns = columns;
+        this.tiles = new Tile[rows][columns];
+
+        setLayout(null);
+        setBackground(Color.WHITE);
+        setPreferredSize(new Dimension(900, 900));
+    }
+
+    public Room checkTileEntrance(int x, int y) {
+        return getTileAt(x, y).getAccessibleRoom();
+    }
+
+    public boolean checkIsTileDissabled(int x, int y) {
+        return getTileAt(x, y).isDisabled();
+    }
+
+    public boolean checkIsTileDisabled(int x, int y) {
+        return checkIsTileDissabled(x, y);
+    }
+
+    public boolean canMovePiece(Piece piece, int x, int y) {
+        if (piece == null || x < 0 || x >= columns || y < 0 || y >= rows) {
+            return false;
+        }
+
+        int pieceX = piece.getX();
+        int pieceY = piece.getY();
+
+        if (pieceX < 0 || pieceX >= columns || pieceY < 0 || pieceY >= rows) {
+            return false;
+        }
+
+        if (tiles[pieceY][pieceX].getPieceOnThisTile() != piece) {
+            return false;
+        }
+
+        Tile destination = tiles[y][x];
+        return !destination.isDisabled()
+                && (destination.getPieceOnThisTile() == null || destination.getPieceOnThisTile() == piece);
+    }
+
+    public void movePiece(Piece piece, int xorigin, int yorigin, int xdestination, int ydestination) {
+        if (piece == null) {
+            throw new IllegalArgumentException("Piece cannot be null");
+        }
+
+        Tile origin = getTileAt(xorigin, yorigin);
+        Tile destination = getTileAt(xdestination, ydestination);
+
+        if (origin.getPieceOnThisTile() != piece) {
+            throw new IllegalArgumentException("Piece is not at the supplied origin tile");
+        }
+
+        if (destination.isDisabled()) {
+            throw new IllegalArgumentException("Destination tile is disabled");
+        }
+
+        if (destination.getPieceOnThisTile() != null && destination.getPieceOnThisTile() != piece) {
+            throw new IllegalArgumentException("Destination tile is occupied");
+        }
+
+        origin.setPieceOnThisTile(null);
+        destination.setPieceOnThisTile(piece);
+        piece.setPosition(xdestination, ydestination);
+        repaint();
+    }
+
+    public void enterRoom(Piece piece, Room room) {
+        if (piece == null || room == null) {
+            throw new IllegalArgumentException("Piece and room cannot be null");
+        }
+
+        Tile origin = getTileAt(piece.getX(), piece.getY());
+
+        if (origin.getPieceOnThisTile() != piece) {
+            throw new IllegalArgumentException("Piece is not on its recorded tile");
+        }
+
+        Room.Cell destinationCell = findEmptyRoomPosition(room);
+
+        if (destinationCell == null) {
+            throw new IllegalStateException("No empty blue tile is available in room '" + room.getName() + "'");
+        }
+
+        Tile destination = getTileAt(destinationCell.column(), destinationCell.row());
+
+        origin.setPieceOnThisTile(null);
+        destination.setPieceOnThisTile(piece);
+        piece.setPosition(destinationCell.column(), destinationCell.row());
+        repaint();
+    }
+
+    public Tile getTileAt(int x, int y) {
+        validateCoordinates(x, y);
+        return tiles[y][x];
+    }
+
+    public List<Room> getRooms() {
+        return List.copyOf(rooms);
+    }
+
+    public Piece[][] getPieces() {
+        Piece[][] boardPieces = new Piece[rows][columns];
+
+        for (int row = 0; row < rows; row++) {
+            for (int column = 0; column < columns; column++) {
+                boardPieces[row][column] = tiles[row][column].getPieceOnThisTile();
+            }
+        }
+
+        return boardPieces;
+    }
+
+    public List<Piece> getPieceList() {
+        return List.copyOf(pieces);
+    }
+
+    private void createRooms(RawRoom[] rawRooms) {
+        for (RawRoom rawRoom : rawRooms) {
+            if (rawRoom == null) {
+                throw new IllegalArgumentException("Raw rooms cannot contain null");
+            }
+
+            int[] area = rawRoom.area();
+
+            if (area == null || area.length != 4) {
+                throw new IllegalArgumentException("Room area must contain x, y, width and height");
+            }
+
+            Room room = new Room(rawRoom.name()).occupyRectangle(area[0], area[1], area[2], area[3]);
+
+            for (Point ignoredPoint : rawRoom.ignoredPoints()) {
+                room.free(ignoredPoint.x, ignoredPoint.y);
+            }
+
+            for (Point[] entrance : rawRoom.entrance()) {
+                Room.Cell[] entranceCells = new Room.Cell[entrance.length];
+
+                for (int i = 0; i < entrance.length; i++) {
+                    entranceCells[i] = new Room.Cell(entrance[i].x, entrance[i].y);
+                }
+
+                room.addEntrance(entranceCells);
+            }
+
+            for (Point position : rawRoom.playerPositions()) {
+                room.addPlayerPosition(position.x, position.y);
+            }
+
+            rooms.add(room);
+        }
+    }
+
+    private void createBoard() {
+        Map<Room.Cell, Room> roomByCell = new HashMap<>();
+        Map<Room.Cell, Room> roomByEntranceCell = new HashMap<>();
+        Map<Room.Cell, Room> roomByPlayerPosition = new HashMap<>();
+
+        for (Room room : rooms) {
+            mapRoomCells(room, roomByCell);
+            mapEntranceCells(room, roomByEntranceCell);
+            mapPlayerPositions(room, roomByPlayerPosition);
+        }
+
+        for (int row = 0; row < rows; row++) {
+            for (int column = 0; column < columns; column++) {
+                Room.Cell cell = new Room.Cell(column, row);
+                Room room = roomByCell.get(cell);
+                Room accessibleRoom = roomByEntranceCell.get(cell);
+                Room positionRoom = roomByPlayerPosition.get(cell);
+                Tile tile = new Tile(null, accessibleRoom);
+
+                if (room != null) {
+                    tile.setDisabled(true);
+                    tile.setRoom(room);
+                }
+
+                if (positionRoom != null) {
+                    tile.setRoom(positionRoom);
+                    tile.setRoomPosition(true);
+                }
+
+                tiles[row][column] = tile;
+
+                if (room == null) {
+                    TileAspect tileLook = new TileAspect(tile);
+
+                    if (tile.givesAccessToRoom()) {
+                        tileLook.setTileColor(Color.RED);
+                    }
+
+                    add(tileLook);
+                    visibleTiles.add(new PlacedTile(tileLook, column, row));
+                }
+
+                if (positionRoom != null) {
+                    TileAspect tileLook = new TileAspect(tile);
+                    tileLook.setTileColor(Color.BLUE);
+                    roomPositionTiles.add(new PlacedTile(tileLook, column, row));
+                }
+            }
+        }
+
+        for (Room room : rooms) {
+            if (room.getOccupiedCells().isEmpty()) {
+                continue;
+            }
+
+            RoomsLook roomLook = new RoomsLook(room);
+            add(roomLook);
+            roomLooks.add(roomLook);
+        }
+
+        for (PlacedTile tile : roomPositionTiles) {
+            add(tile.look());
+            setComponentZOrder(tile.look(), 0);
+            visibleTiles.add(tile);
+        }
+    }
+
+    private void placePieces(RawPiece[] rawPieces) {
+        for (RawPiece rawPiece : rawPieces) {
+            if (rawPiece == null || rawPiece.piece() == null) {
+                throw new IllegalArgumentException("Raw pieces and their pieces cannot be null");
+            }
+
+            Tile tile = getTileAt(rawPiece.x(), rawPiece.y());
+
+            if (tile.getPieceOnThisTile() != null) {
+                throw new IllegalArgumentException("Two pieces cannot occupy the same tile");
+            }
+
+            if (tile.isDisabled() && !tile.isRoomPosition()) {
+                throw new IllegalArgumentException("A piece cannot start on a disabled non-room-position tile");
+            }
+
+            Piece piece = rawPiece.piece();
+            tile.setPieceOnThisTile(piece);
+            piece.setPosition(rawPiece.x(), rawPiece.y());
+            pieces.add(piece);
+        }
+    }
+
+    private void mapRoomCells(Room room, Map<Room.Cell, Room> roomByCell) {
+        for (Room.Cell cell : room.getOccupiedCells()) {
+            validateRoomCell(room, cell);
+            Room previousRoom = roomByCell.putIfAbsent(cell, room);
+
+            if (previousRoom != null) {
+                throw new IllegalArgumentException(
+                        "Rooms '" + previousRoom.getName() + "' and '" + room.getName()
+                                + "' overlap at grid cell (" + cell.column() + ", " + cell.row() + ")"
+                );
+            }
+        }
+    }
+
+    private void mapEntranceCells(Room room, Map<Room.Cell, Room> roomByEntranceCell) {
+        for (List<Room.Cell> entrance : room.getEntrances()) {
+            for (Room.Cell cell : entrance) {
+                validateRoomCell(room, cell);
+                Room previousRoom = roomByEntranceCell.putIfAbsent(cell, room);
+
+                if (previousRoom != null && previousRoom != room) {
+                    throw new IllegalArgumentException(
+                            "Rooms '" + previousRoom.getName() + "' and '" + room.getName()
+                                    + "' use the same entrance tile (" + cell.column() + ", " + cell.row() + ")"
+                    );
+                }
+            }
+        }
+    }
+
+    private void mapPlayerPositions(Room room, Map<Room.Cell, Room> roomByPlayerPosition) {
+        for (Room.Cell cell : room.getPlayerPositions()) {
+            validateRoomCell(room, cell);
+
+            if (!room.occupies(cell.column(), cell.row())) {
+                throw new IllegalArgumentException(
+                        "Player position (" + cell.column() + ", " + cell.row() + ") is not inside room '"
+                                + room.getName() + "'"
+                );
+            }
+
+            Room previousRoom = roomByPlayerPosition.putIfAbsent(cell, room);
+
+            if (previousRoom != null && previousRoom != room) {
+                throw new IllegalArgumentException(
+                        "Rooms '" + previousRoom.getName() + "' and '" + room.getName()
+                                + "' use the same player position (" + cell.column() + ", " + cell.row() + ")"
+                );
+            }
+        }
+    }
+
+    private Room.Cell findEmptyRoomPosition(Room room) {
+        if (!rooms.contains(room)) {
+            throw new IllegalArgumentException("Room does not belong to this board");
+        }
+
+        for (Room.Cell cell : room.getPlayerPositions()) {
+            if (getTileAt(cell.column(), cell.row()).getPieceOnThisTile() == null) {
+                return cell;
+            }
+        }
+
+        return null;
+    }
+
+    private void validateRoomCell(Room room, Room.Cell cell) {
+        if (cell.column() < 0 || cell.column() >= columns || cell.row() < 0 || cell.row() >= rows) {
+            throw new IllegalArgumentException(
+                    "Room '" + room.getName() + "' uses grid cell (" + cell.column() + ", " + cell.row()
+                            + ") outside the " + columns + "x" + rows + " board"
+            );
+        }
+    }
+
+    private void validateCoordinates(int x, int y) {
+        if (x < 0 || x >= columns || y < 0 || y >= rows) {
+            throw new IllegalArgumentException(
+                    "Tile coordinates (" + x + ", " + y + ") are outside the " + columns + "x" + rows + " board"
+            );
+        }
+    }
+
+    @Override
+    public void doLayout() {
+        super.doLayout();
+
+        int availableWidth = getWidth();
+        int availableHeight = getHeight();
+        int margin = Math.max(24, Math.min(availableWidth, availableHeight) / 28);
+        int tileSize = Math.min(
+                (availableWidth - margin * 2) / columns,
+                (availableHeight - margin * 2) / rows
         );
 
-        setBackground(Color.LIGHT_GRAY);
+        if (tileSize <= 0) {
+            return;
+        }
 
-        setBorder(
-                BorderFactory.createLineBorder(
-                        Color.BLACK,
-                        3
-                )
+        int gridWidth = tileSize * columns;
+        int gridHeight = tileSize * rows;
+        int startX = (availableWidth - gridWidth) / 2;
+        int startY = (availableHeight - gridHeight) / 2;
+
+        for (PlacedTile tile : visibleTiles) {
+            tile.look().setBounds(
+                    startX + tile.column() * tileSize,
+                    startY + tile.row() * tileSize,
+                    tileSize,
+                    tileSize
+            );
+            tile.look().setGridLineThickness(Math.max(1, tileSize / 24));
+        }
+
+        for (RoomsLook roomLook : roomLooks) {
+            roomLook.placeOnGrid(startX, startY, tileSize);
+        }
+
+        repaint();
+    }
+
+    @Override
+    protected void paintComponent(Graphics graphics) {
+        super.paintComponent(graphics);
+
+        int availableWidth = getWidth();
+        int availableHeight = getHeight();
+        int margin = Math.max(24, Math.min(availableWidth, availableHeight) / 28);
+        int tileSize = Math.min(
+                (availableWidth - margin * 2) / columns,
+                (availableHeight - margin * 2) / rows
         );
+
+        if (tileSize <= 0) {
+            return;
+        }
+
+        int gridWidth = tileSize * columns;
+        int gridHeight = tileSize * rows;
+        int startX = (availableWidth - gridWidth) / 2;
+        int startY = (availableHeight - gridHeight) / 2;
+        Graphics2D g2 = (Graphics2D) graphics.create();
+
+        try {
+            g2.setColor(Color.BLACK);
+            g2.setStroke(new BasicStroke(Math.max(2.0f, tileSize / 10.0f)));
+            g2.drawRect(startX, startY, gridWidth, gridHeight);
+        } finally {
+            g2.dispose();
+        }
     }
 }
 
 ==================================================
-FILE: ./innerProy/src/ui/boardPiece/TileAspect.java
+FILE: innerProy/src/ui/DetectiveCard.java
 ==================================================
-package ui.boardPiece;
+package ui;
 
-import model.Tile;
+import model.Actor;
+import model.Room;
+import model.Weapon;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class TileAspect extends JPanel {
+public class DetectiveCard extends JPanel {
 
-    public enum TileDirection {
+    private static final Color PAPER = new Color(248, 246, 238);
+    private static final Color INK = new Color(25, 25, 25);
+
+    public DetectiveCard(List<Actor> actors, List<Weapon> weapons, List<Room> rooms) {
+        setLayout(new BorderLayout());
+        setBackground(new Color(220, 220, 215));
+
+        JPanel paper = new JPanel();
+        paper.setLayout(new BoxLayout(paper, BoxLayout.Y_AXIS));
+        paper.setBackground(PAPER);
+        paper.setBorder(BorderFactory.createCompoundBorder(
+                new LineBorder(INK, 2),
+                new EmptyBorder(18, 18, 18, 18)
+        ));
+
+        JLabel title = new JLabel("Cluedo: Tarjeta del detective");
+        title.setAlignmentX(Component.LEFT_ALIGNMENT);
+        title.setFont(new Font("Serif", Font.BOLD, 25));
+        title.setForeground(INK);
+        paper.add(title);
+        paper.add(Box.createVerticalStrut(15));
+
+        JPanel playerPanel = new JPanel(new BorderLayout());
+        playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        playerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        playerPanel.setBackground(Color.WHITE);
+        playerPanel.setBorder(new LineBorder(INK, 1));
+
+        JLabel playerLabel = new JLabel("JUGADOR");
+        playerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        playerLabel.setPreferredSize(new Dimension(110, 38));
+        playerLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
+        playerLabel.setForeground(Color.WHITE);
+        playerLabel.setBackground(INK);
+        playerLabel.setOpaque(true);
+
+        JTextField playerName = new JTextField();
+        playerName.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        playerName.setBorder(new EmptyBorder(4, 8, 4, 8));
+
+        playerPanel.add(playerLabel, BorderLayout.WEST);
+        playerPanel.add(playerName, BorderLayout.CENTER);
+        paper.add(playerPanel);
+        paper.add(Box.createVerticalStrut(15));
+
+        String[] actorNames = new String[actors.size()];
+        for (int i = 0; i < actors.size(); i++) {
+            actorNames[i] = actors.get(i).getName();
+        }
+        addSection(paper, "SOSPECHOSOS", actorNames);
+
+        String[] weaponNames = new String[weapons.size()];
+        for (int i = 0; i < weapons.size(); i++) {
+            weaponNames[i] = weapons.get(i).getName();
+        }
+        addSection(paper, "ARMAS", weaponNames);
+
+        String[] roomNames = new String[rooms.size()];
+        for (int i = 0; i < rooms.size(); i++) {
+            roomNames[i] = rooms.get(i).getName();
+        }
+        addSection(paper, "UBICACIONES", roomNames);
+
+        JScrollPane scrollPane = new JScrollPane(paper);
+        scrollPane.setBorder(null);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        add(scrollPane, BorderLayout.CENTER);
+    }
+
+    private void addSection(JPanel parent, String title, String[] entries) {
+        JLabel header = new JLabel(" " + title);
+        header.setAlignmentX(Component.LEFT_ALIGNMENT);
+        header.setOpaque(true);
+        header.setBackground(INK);
+        header.setForeground(Color.WHITE);
+        header.setFont(new Font("SansSerif", Font.BOLD, 14));
+        header.setPreferredSize(new Dimension(0, 32));
+        header.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
+        parent.add(header);
+
+        JPanel rows = new JPanel();
+        rows.setLayout(new BoxLayout(rows, BoxLayout.Y_AXIS));
+        rows.setBackground(PAPER);
+        rows.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        for (String entry : entries) {
+            JPanel row = new JPanel(new BorderLayout());
+            row.setBackground(PAPER);
+            row.setPreferredSize(new Dimension(0, 34));
+            row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 34));
+
+            JLabel name = new JLabel(" " + entry);
+            name.setFont(new Font("SansSerif", Font.PLAIN, 14));
+            name.setForeground(INK);
+
+            JCheckBox check = new JCheckBox();
+            check.setOpaque(false);
+            check.setFocusPainted(false);
+
+            row.add(name, BorderLayout.CENTER);
+            row.add(check, BorderLayout.EAST);
+            rows.add(row);
+        }
+
+        parent.add(rows);
+        parent.add(Box.createVerticalStrut(12));
+    }
+
+    public static void showCard(List<Actor> actors, List<Weapon> weapons, List<Room> rooms) {
+        JFrame frame = new JFrame("Cluedo - Tarjeta de detective");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setContentPane(new DetectiveCard(actors, weapons, rooms));
+        frame.setSize(520, 800);
+        frame.setMinimumSize(new Dimension(450, 600));
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        List<Actor> actors = new ArrayList<>();
+        List<Weapon> weapons = new ArrayList<>();
+        List<Room> rooms = new ArrayList<>();
+        showCard(actors, weapons, rooms);
+    }
+}
+
+==================================================
+FILE: innerProy/src/ui/RoomsLook.java
+==================================================
+package ui;
+
+import model.Room;
+
+import javax.swing.JComponent;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.geom.Area;
+import java.awt.geom.Rectangle2D;
+
+class RoomsLook extends JComponent {
+
+    private final Room room;
+    private final int minColumn;
+    private final int minRow;
+    private final int maxColumn;
+    private final int maxRow;
+    private int tileSize = 1;
+    private Area localRoomShape = new Area();
+
+    RoomsLook(Room room) {
+        if (room == null) {
+            throw new IllegalArgumentException("Room cannot be null");
+        }
+
+        if (room.getOccupiedCells().isEmpty()) {
+            throw new IllegalArgumentException("Room '" + room.getName() + "' does not occupy any grid cells");
+        }
+
+        this.room = room;
+
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int maxY = Integer.MIN_VALUE;
+
+        for (Room.Cell cell : room.getOccupiedCells()) {
+            minX = Math.min(minX, cell.column());
+            minY = Math.min(minY, cell.row());
+            maxX = Math.max(maxX, cell.column());
+            maxY = Math.max(maxY, cell.row());
+        }
+
+        minColumn = minX;
+        minRow = minY;
+        maxColumn = maxX;
+        maxRow = maxY;
+        setOpaque(false);
+    }
+
+    void placeOnGrid(int gridStartX, int gridStartY, int tileSize) {
+        this.tileSize = tileSize;
+
+        int widthInTiles = maxColumn - minColumn + 1;
+        int heightInTiles = maxRow - minRow + 1;
+
+        setBounds(
+                gridStartX + minColumn * tileSize,
+                gridStartY + minRow * tileSize,
+                widthInTiles * tileSize,
+                heightInTiles * tileSize
+        );
+
+        rebuildShape();
+    }
+
+    private void rebuildShape() {
+        Area shape = new Area();
+
+        for (Room.Cell cell : room.getOccupiedCells()) {
+            int localColumn = cell.column() - minColumn;
+            int localRow = cell.row() - minRow;
+
+            shape.add(new Area(new Rectangle2D.Double(
+                    localColumn * tileSize,
+                    localRow * tileSize,
+                    tileSize,
+                    tileSize
+            )));
+        }
+
+        localRoomShape = shape;
+    }
+
+    @Override
+    protected void paintComponent(Graphics graphics) {
+        super.paintComponent(graphics);
+
+        Graphics2D g2 = (Graphics2D) graphics.create();
+
+        try {
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(Color.WHITE);
+            g2.fill(localRoomShape);
+
+            float wallThickness = Math.max(2.0f, tileSize / 10.0f);
+
+            g2.setStroke(new BasicStroke(
+                    wallThickness,
+                    BasicStroke.CAP_SQUARE,
+                    BasicStroke.JOIN_MITER
+            ));
+
+            g2.setColor(Color.BLACK);
+            g2.draw(localRoomShape);
+        } finally {
+            g2.dispose();
+        }
+    }
+
+    @Override
+    public boolean contains(int x, int y) {
+        return localRoomShape.contains(x, y);
+    }
+}
+
+==================================================
+FILE: innerProy/src/ui/TileAspect.java
+==================================================
+package ui;
+
+import model.Piece;
+import model.Tile;
+
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+
+class TileAspect extends JPanel {
+
+    enum TileDirection {
         NORTH,
         SOUTH,
         EAST,
         WEST
     }
 
-    public static final int SIZE = 30;
+    static final int SIZE = 30;
 
     private final Tile tile;
-
-    private Color color = Color.GRAY;
-
+    private Color color = Color.WHITE;
     private int x;
     private int y;
 
-    public TileAspect(Tile tile) {
+    TileAspect(Tile tile) {
         this(tile, 0, 0);
     }
 
-    public TileAspect(Tile tile, int x, int y) {
-
+    TileAspect(Tile tile, int x, int y) {
         this.tile = tile;
-
         this.x = x;
         this.y = y;
-
-        setBounds(
-                x,
-                y,
-                SIZE,
-                SIZE
-        );
-
+        setBounds(x, y, SIZE, SIZE);
         setBackground(color);
-
-        setBorder(
-                BorderFactory.createLineBorder(
-                        Color.BLUE,
-                        5
-                )
-        );
+        setGridLineThickness(1);
     }
 
-    public Tile getTile() {
+    Tile getTile() {
         return tile;
     }
 
-    public void darker() {
+    void setTileColor(Color color) {
+        if (color == null) {
+            throw new IllegalArgumentException("Tile color cannot be null");
+        }
 
+        this.color = color;
+        setBackground(color);
+        repaint();
+    }
+
+    void setGridLineThickness(int thickness) {
+        setBorder(BorderFactory.createLineBorder(
+                new Color(145, 145, 145),
+                Math.max(1, thickness)
+        ));
+    }
+
+    void darker() {
         color = color.darker();
-
         setBackground(color);
     }
 
-    public void concatenate(
-            JPanel root,
-            TileDirection direction
-    ) {
-
-        concatenate(
-                root,
-                direction,
-                1
-        );
+    void concatenate(JPanel root, TileDirection direction) {
+        concatenate(root, direction, 1);
     }
 
-    public void concatenate(
-            JPanel root,
-            TileDirection direction,
-            int numberOfTiles
-    ) {
-
+    void concatenate(JPanel root, TileDirection direction, int numberOfTiles) {
         if (numberOfTiles <= 0) {
             return;
         }
@@ -854,36 +3181,46 @@ public class TileAspect extends JPanel {
         int newY = y;
 
         switch (direction) {
-
-            case NORTH ->
-                    newY -= SIZE;
-
-            case SOUTH ->
-                    newY += SIZE;
-
-            case EAST ->
-                    newX += SIZE;
-
-            case WEST ->
-                    newX -= SIZE;
+            case NORTH -> newY -= SIZE;
+            case SOUTH -> newY += SIZE;
+            case EAST -> newX += SIZE;
+            case WEST -> newX -= SIZE;
         }
 
-        TileAspect newTile = new TileAspect(
-                new Tile(null),
-                newX,
-                newY
-        );
-
+        TileAspect newTile = new TileAspect(new Tile(null), newX, newY);
         root.add(newTile);
-
-        newTile.concatenate(
-                root,
-                direction,
-                numberOfTiles - 1
-        );
-
+        newTile.concatenate(root, direction, numberOfTiles - 1);
         root.revalidate();
         root.repaint();
+    }
+
+    @Override
+    protected void paintComponent(Graphics graphics) {
+        super.paintComponent(graphics);
+
+        Piece piece = tile.getPieceOnThisTile();
+
+        if (piece == null) {
+            return;
+        }
+
+        Graphics2D g2 = (Graphics2D) graphics.create();
+
+        try {
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            int margin = Math.max(3, Math.min(getWidth(), getHeight()) / 6);
+            int width = Math.max(1, getWidth() - margin * 2);
+            int height = Math.max(1, getHeight() - margin * 2);
+
+            g2.setColor(piece.getColor());
+            g2.fillOval(margin, margin, width, height);
+            g2.setColor(Color.BLACK);
+            g2.setStroke(new BasicStroke(Math.max(1.0f, Math.min(getWidth(), getHeight()) / 18.0f)));
+            g2.drawOval(margin, margin, width, height);
+        } finally {
+            g2.dispose();
+        }
     }
 }
 
