@@ -15,8 +15,9 @@ public class Player {
     private List <Card> cards;
     private List <Card> detectiveNotes;
     private Figure figure;
+    private PlayerActivity activity;
 
-    public Player(Actor self, List<Card> cards, int playerID, String name) {
+    public Player(Actor self, List<Card> cards, int playerID, String name, PlayerActivity activity) {
         this.self = self;
         cards = new ArrayList<>();
         detectiveNotes = new ArrayList<>();
@@ -25,6 +26,7 @@ public class Player {
         nextPlayerID++;
 
         this.name = name;
+        this.activity = activity;
     }
 
     public String getName() {
@@ -33,6 +35,10 @@ public class Player {
 
     public void setName() {
         this.name = name;
+    }
+
+    public PlayerActivity getActivity() {
+        return activity;
     }
 
     public void addCard(Card card) {

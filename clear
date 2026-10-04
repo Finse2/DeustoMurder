@@ -1,0 +1,42 @@
+* [33ma6e5c27[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mDavid[m[33m, [m[1;31morigin/David[m[33m)[m Changes
+* [33mb64e817[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m Add initial game flow
+* [33mbe15111[m Update README.md
+* [33mf364e29[m[33m ([m[1;31morigin/finse[m[33m)[m main menu added with basic (very basic) design
+* [33md6fb0ed[m main menue added with basic (very basic) design
+*   [33m83a43ba[m Merge branch 'main' of https://github.com/Finse2/DeustoMurder
+[32m|[m[33m\[m  
+* [33m|[m [33m51ce5c2[m Initial commit
+ [33m/[m  
+[33m|[m * [33m4a00491[m[33m ([m[1;31morigin/backup-after-rebase[m[33m)[m main menu added with basic (very basic) design
+[33m|[m * [33m212dca1[m main menue added with basic (very basic) design
+[33m|[m * [33m1fe6a7e[m Initial commit # Conflicts: #	README.md
+[33m|[m * [33mb5e0bd0[m Update README.md
+[33m|[m * [33mbc84f12[m Update README.md
+[33m|[m * [33m8427f25[m Update README.md
+[33m|[m[33m/[m  
+* [33ma7c0f87[m fused the networking with the board creation logic
+* [33m945851e[m reworked the package manager to have only two public classes, while the rest become package specific so they are not visible from the outside, also renamed ClientHandler to ServersClientHandler
+* [33mdcb0464[m dice completion
+* [33m22eb253[m dice class created rolling 2 dices outputing a random int from 2 to 12 but still follows probability of reality
+* [33mefc579c[m Networking phase 1
+* [33m5ed4f09[m Fix client handler
+* [33m986ecc1[m Complete networking implementation
+* [33maf5415a[m Networking completed
+* [33mae4f0a9[m Simplify error handling for socket closure
+* [33mca3a99d[m Implement ClientHandler networking
+* [33mc930c7c[m Networking
+* [33m063daa0[m networking start
+* [33m14173ed[m Update player system and project documentation
+* [33m16eae65[m Remove reference to 'Clue' in README
+* [33mcfe6864[m Initialize README with project overview and features
+* [33me20b952[m Implement card setup, dealing and player movement
+* [33m2da58d9[m minor changes to Main
+[34m|[m * [33m71029cf[m[33m ([m[1;31morigin/antal[m[33m)[m Update board layout and room system to a semi-final state (at list aspect wise), 1) first a grid table is built 2) ussing coordinate logic, rooms over-take certain coordinate sets and get drawn instead, this way making it align horizontally and vertically with the rest becomes substantially more easy, avoiding overlaps
+[34m|[m * [33mef7f494[m trying to improve layout to better match Cluedo-s one
+[34m|[m * [33mb1e9e33[m added basic layout made up entirely of squares
+[34m|[m * [33mac8cf5d[m minor changes to Main
+[34m|[m[34m/[m  
+* [33m7afc818[m Update branch
+* [33m6b2683c[m Update project
+* [33m6c68ea7[m Update antal branch
+* [33mb2db09f[m Initial commit

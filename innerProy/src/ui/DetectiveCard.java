@@ -1,207 +1,545 @@
 package ui;
+
 import model.Actor;
 import model.Room;
 import model.Weapon;
+import activation.Game;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class DetectiveCard extends JPanel {
-    private static final Color PAPER = new Color(248,246,238); // Fondo de la tarjeta
 
-    private static final Color INK = new Color(25, 25, 25); // Textos y encabezados
+    private static final Color PAPER =
+            new Color(248, 246, 238);
 
-    public DetectiveCard (
-            List <Actor> actors,
-            List <Weapon> weapons,
-            List <Room> rooms
+    private static final Color INK =
+            new Color(25, 25, 25);
+
+    private static final Color DARK =
+            new Color(25, 30, 25);
+
+    private static final Color RED =
+            new Color(120, 30, 30);
+
+    private static final Color GOLD =
+            new Color(180, 145, 70);
+
+    private static final Color PAPER_DARK =
+            new Color(225, 215, 190);
+
+    private static Font createMysteryFont(
+            int style,
+            int size
+    ) {
+
+        String[] fonts = {
+                "Georgia",
+                "Book Antiqua",
+                "Palatino Linotype",
+                "Serif"
+        };
+
+        String selectedFont = "Serif";
+
+        String[] availableFonts =
+                GraphicsEnvironment
+                        .getLocalGraphicsEnvironment()
+                        .getAvailableFontFamilyNames();
+
+        for (String font : fonts) {
+
+            for (String available : availableFonts) {
+
+                if (available.equalsIgnoreCase(font)) {
+
+                    selectedFont = available;
+                    break;
+                }
+            }
+
+            if (!selectedFont.equals("Serif")) {
+                break;
+            }
+        }
+
+        return new Font(
+                selectedFont,
+                style,
+                size
+        );
+    }
+
+    private static final Font MYSTERY_FONT =
+            createMysteryFont(
+                    Font.BOLD,
+                    25
+            );
+
+
+    private static final Font MYSTERY_SMALL_FONT =
+            createMysteryFont(
+                    Font.BOLD,
+                    14
+            );
+
+    private Game game;
+
+    private Timer scrollSoundTimer;
+
+    public DetectiveCard(
+            List<Actor> actors,
+            List<Weapon> weapons,
+            List<Room> rooms
     ) {
 
         setLayout(new BorderLayout());
-        setBackground(new Color (220,220,215));
 
-
-        // PAPEL DE LA TARJETA
+        setBackground(
+                new Color(220, 220, 215)
+        );
 
         JPanel paper = new JPanel();
 
-        paper.setLayout(new BoxLayout(paper, BoxLayout.Y_AXIS));
+        paper.setLayout(
+                new BoxLayout(
+                        paper,
+                        BoxLayout.Y_AXIS
+                )
+        );
 
-        paper.setBackground(PAPER); // Le ponemos el color al papel
+        paper.setBackground(PAPER);
 
-        paper.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(INK, 2),
-                new EmptyBorder(18, 18, 18, 18)
-        ));
+        paper.setBorder(
+                BorderFactory.createCompoundBorder(
+                        new LineBorder(INK, 2),
+                        new EmptyBorder(
+                                18,
+                                18,
+                                18,
+                                18
+                        )
+                )
+        );
 
-        // TÍTULO
+        JLabel title =
+                new JLabel(
+                        "Cluedo: Tarjeta del detective"
+                );
 
-        JLabel title = new JLabel("Cluedo: Tarjeta del detective");
-        title.setAlignmentX(Component.LEFT_ALIGNMENT);
-        title.setFont(new Font("Serif", Font.BOLD, 25));
+        title.setAlignmentX(
+                Component.LEFT_ALIGNMENT
+        );
+
+        title.setFont(MYSTERY_FONT);
+
         title.setForeground(INK);
+
         paper.add(title);
-        paper.add(Box.createVerticalStrut(15));
 
-        // JUGADOR
+        paper.add(
+                Box.createVerticalStrut(15)
+        );
 
-        JPanel playerPanel = new JPanel(new BorderLayout());
+        JPanel playerPanel =
+                new JPanel(
+                        new BorderLayout()
+                );
 
-        playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        playerPanel.setMaximumSize(new Dimension (Integer.MAX_VALUE, 40));
+        playerPanel.setAlignmentX(
+                Component.LEFT_ALIGNMENT
+        );
 
-        playerPanel.setBackground(Color.WHITE);
-        playerPanel.setBorder(new LineBorder(INK, 1));
+        playerPanel.setMaximumSize(
+                new Dimension(
+                        Integer.MAX_VALUE,
+                        40
+                )
+        );
 
-        JLabel playerLabel = new JLabel("JUGADOR");
+        playerPanel.setBackground(
+                Color.WHITE
+        );
 
-        playerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        playerPanel.setBorder(
+                new LineBorder(
+                        INK,
+                        1
+                )
+        );
 
-        playerLabel.setPreferredSize(new Dimension (110, 38));
 
-        playerLabel.setFont(new Font ("SansSerif", Font.BOLD, 13));
+        JLabel playerLabel =
+                new JLabel("JUGADOR");
 
-        playerLabel.setForeground(Color.WHITE);
+        playerLabel.setHorizontalAlignment(
+                SwingConstants.CENTER
+        );
+
+        playerLabel.setPreferredSize(
+                new Dimension(
+                        110,
+                        38
+                )
+        );
+
+        playerLabel.setFont(
+                new Font(
+                        "SansSerif",
+                        Font.BOLD,
+                        13
+                )
+        );
+
+        playerLabel.setForeground(
+                Color.WHITE
+        );
 
         playerLabel.setBackground(INK);
 
         playerLabel.setOpaque(true);
 
-        JTextField playerName = new JTextField();
 
-        playerName.setFont(new Font ("SansSerif", Font.PLAIN, 14));
+        JTextField playerName =
+                new JTextField();
 
-        playerName.setBorder(new EmptyBorder(4, 8,4,8));
+        playerName.setFont(
+                new Font(
+                        "SansSerif",
+                        Font.PLAIN,
+                        14
+                )
+        );
 
-        playerPanel.add(playerLabel, BorderLayout.WEST);
+        playerName.setBorder(
+                new EmptyBorder(
+                        4,
+                        8,
+                        4,
+                        8
+                )
+        );
 
-        playerPanel.add(playerName, BorderLayout.CENTER);
+
+        playerPanel.add(
+                playerLabel,
+                BorderLayout.WEST
+        );
+
+        playerPanel.add(
+                playerName,
+                BorderLayout.CENTER
+        );
+
 
         paper.add(playerPanel);
 
-        paper.add(Box.createVerticalStrut(15));
+        paper.add(
+                Box.createVerticalStrut(15)
+        );
 
-        // SOSPECHOSOS
+        String[] actorNames =
+                new String[actors.size()];
 
-        String [] actorNames = new String [actors.size()];
+        for (int i = 0;
+             i < actors.size();
+             i++) {
 
-        for (int i = 0; i < actors.size(); i++) {
-            Actor actor = actors.get(i);
+            Actor actor =
+                    actors.get(i);
 
-            actorNames[i] = actor.getName();
-
+            actorNames[i] =
+                    actor.getName();
         }
 
-        addSection(paper, "SOSPECHOSOS", actorNames);
+        addSection(
+                paper,
+                "SOSPECHOSOS",
+                actorNames
+        );
 
+        String[] weaponNames =
+                new String[weapons.size()];
 
-        // ARMAS
+        for (int i = 0;
+             i < weapons.size();
+             i++) {
 
-        String [] weaponNames = new String[weapons.size()];
+            Weapon weapon =
+                    weapons.get(i);
 
-        for (int i = 0; i < weapons.size(); i++) {
-            Weapon weapon = weapons.get(i);
-
-            weaponNames[i] = weapon.getName();
-        }
-        addSection(paper, "ARMAS", weaponNames);
-
-        String [] roomNames = new String [rooms.size()];
-
-        for (int i = 0; i < rooms.size(); i++) {
-            Room room = rooms.get(i);
-
-            roomNames[i] = room.getName();
+            weaponNames[i] =
+                    weapon.getName();
         }
 
-        addSection (paper, "UBICACIONES", roomNames);
+        addSection(
+                paper,
+                "ARMAS",
+                weaponNames
+        );
 
-        // SCROLL
+        String[] roomNames =
+                new String[rooms.size()];
 
-        JScrollPane scrollPane = new JScrollPane(paper);
+        for (int i = 0;
+             i < rooms.size();
+             i++) {
+
+            Room room =
+                    rooms.get(i);
+
+            roomNames[i] =
+                    room.getName();
+        }
+
+        addSection(
+                paper,
+                "UBICACIONES",
+                roomNames
+        );
+
+        JScrollPane scrollPane =
+                new JScrollPane(paper);
 
         scrollPane.setBorder(null);
 
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane
+                .getVerticalScrollBar()
+                .setUnitIncrement(16);
 
-        add(scrollPane, BorderLayout.CENTER);
+
+        // SONIDO AL HACER SCROLL CON LA RUEDA
+
+        scrollPane.addMouseWheelListener(
+                e -> playScrollSound()
+        );
+
+        paper.addMouseWheelListener(
+                e -> playScrollSound()
+        );
+
+
+        // SONIDO AL MOVER LA BARRA VERTICAL
+        JScrollBar verticalBar =
+                scrollPane.getVerticalScrollBar();
+
+        verticalBar.addAdjustmentListener(
+                e -> playScrollSound()
+        );
+
+
+        add(
+                scrollPane,
+                BorderLayout.CENTER
+        );
     }
 
-    private void addSection(JPanel parent, String title, String [] entries) {
-        JLabel header = new JLabel(" " + title);
+    private void playScrollSound() {
 
-        header.setAlignmentX(Component.LEFT_ALIGNMENT);
+        if (scrollSoundTimer != null
+                && scrollSoundTimer.isRunning()) {
+
+            return;
+        }
+
+
+        SoundEffect.playScroll();
+
+
+        scrollSoundTimer =
+                new Timer(
+                        120,
+                        e -> {
+
+                            scrollSoundTimer.stop();
+
+                        }
+                );
+
+
+        scrollSoundTimer.setRepeats(false);
+
+        scrollSoundTimer.start();
+    }
+
+
+    private void addSection(
+            JPanel parent,
+            String title,
+            String[] entries
+    ) {
+
+        JLabel header =
+                new JLabel(
+                        " " + title
+                );
+
+        header.setAlignmentX(
+                Component.LEFT_ALIGNMENT
+        );
+
         header.setOpaque(true);
+
         header.setBackground(INK);
-        header.setForeground(Color.WHITE);
-        header.setFont(new Font("SansSerif", Font.BOLD, 14));
-        header.setPreferredSize(new Dimension(0, 32));
-        header.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
+
+        header.setForeground(
+                Color.WHITE
+        );
+
+        // FUENTE MISTERIOSA
+        header.setFont(
+                MYSTERY_SMALL_FONT
+        );
+
+        header.setPreferredSize(
+                new Dimension(
+                        0,
+                        32
+                )
+        );
+
+        header.setMaximumSize(
+                new Dimension(
+                        Integer.MAX_VALUE,
+                        32
+                )
+        );
+
 
         parent.add(header);
 
-        JPanel rows = new JPanel();
+        JPanel rows =
+                new JPanel();
 
-        rows.setLayout(new BoxLayout(rows, BoxLayout.Y_AXIS));
+        rows.setLayout(
+                new BoxLayout(
+                        rows,
+                        BoxLayout.Y_AXIS
+                )
+        );
+
         rows.setBackground(PAPER);
-        rows.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        rows.setAlignmentX(
+                Component.LEFT_ALIGNMENT
+        );
+
 
         for (String entry : entries) {
-            JPanel row = new JPanel(new BorderLayout());
+
+            JPanel row =
+                    new JPanel(
+                            new BorderLayout()
+                    );
 
             row.setBackground(PAPER);
 
-            row.setPreferredSize(new Dimension (0, 34));
+            row.setPreferredSize(
+                    new Dimension(
+                            0,
+                            34
+                    )
+            );
 
-            row.setMaximumSize(new Dimension (Integer.MAX_VALUE, 34));
+            row.setMaximumSize(
+                    new Dimension(
+                            Integer.MAX_VALUE,
+                            34
+                    )
+            );
 
-            JLabel name = new JLabel (" " + entry);
+            JLabel name =
+                    new JLabel(
+                            " " + entry
+                    );
 
-            name.setFont(new Font ("SansSerif", Font.PLAIN, 14));
+            name.setFont(
+                    new Font(
+                            "SansSerif",
+                            Font.PLAIN,
+                            14
+                    )
+            );
 
             name.setForeground(INK);
 
-            JCheckBox check = new JCheckBox();
+            JCheckBox check =
+                    new JCheckBox();
+
             check.setOpaque(false);
+
             check.setFocusPainted(false);
 
-            row.add(name, BorderLayout.CENTER);
-            row.add(check, BorderLayout.EAST);
+
+            row.add(
+                    name,
+                    BorderLayout.CENTER
+            );
+
+            row.add(
+                    check,
+                    BorderLayout.EAST
+            );
+
             rows.add(row);
         }
 
+
         parent.add(rows);
 
-        parent.add(Box.createVerticalStrut(12));
-
-        }
-
-        public static void showCard (List <Actor> actors, List <Weapon> weapons, List <Room> rooms) {
-            JFrame frame = new JFrame("Cluedo - Tarjeta de detective");
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-            DetectiveCard card = new DetectiveCard(actors, weapons, rooms);
-
-            frame.setContentPane(card);
-
-            frame.setSize(520, 800);
-
-            frame.setMinimumSize(new Dimension (450, 600));
-
-            frame.setLocationRelativeTo(null);
-
-            frame.setVisible(true);
-        }
-
-        public static void main(String[] args) {
-            List <Actor> actors = new ArrayList<>();
-            List <Weapon> weapons = new ArrayList<>();
-            List <Room> rooms = new ArrayList<>();
-        }
-
+        parent.add(
+                Box.createVerticalStrut(12)
+        );
     }
 
+    public static void showCard(
+            List<Actor> actors,
+            List<Weapon> weapons,
+            List<Room> rooms
+    ) {
+
+        JFrame frame =
+                new JFrame(
+                        "Cluedo - Tarjeta de detective"
+                );
+
+
+        frame.setDefaultCloseOperation(
+                JFrame.DISPOSE_ON_CLOSE
+        );
+
+
+        DetectiveCard card =
+                new DetectiveCard(
+                        actors,
+                        weapons,
+                        rooms
+                );
+
+
+        frame.setContentPane(card);
+
+
+        frame.setSize(
+                520,
+                800
+        );
+
+
+        frame.setMinimumSize(
+                new Dimension(
+                        450,
+                        600
+                )
+        );
+
+
+        frame.setLocationRelativeTo(null);
+
+        frame.setVisible(true);
+    }
+}
