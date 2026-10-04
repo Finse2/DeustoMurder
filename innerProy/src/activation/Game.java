@@ -5,6 +5,10 @@ import model.Card;
 import model.Player;
 import model.Room;
 import model.Weapon;
+import model.Figure;
+
+import javax.swing.*;
+import java.util.ArrayList;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -51,6 +55,18 @@ public class Game {
     }
 
     // MÉTODO PARA INICIALIZAR LA PARTIDA
+
+    public List <Figure> getFigures () {
+        List <Figure> figures = new ArrayList<>();
+
+        for (Player player : players) {
+            if (player.getFigure() != null) {
+                figures.add(player.getFigure());
+            }
+        }
+
+        return figures;
+    }
 
     public void startGame() {
 
@@ -184,6 +200,12 @@ public class Game {
         Actor solutionActor = actors.remove(0);
 
         Weapon solutionWeapon = weapons.remove(0);
+
+        solutionList.clear();
+
+        solutionList.add(solutionRoom);
+        solutionList.add(solutionActor);
+        solutionList.add(solutionWeapon);
     }
 
     // CREAR LA BARAJA
@@ -254,8 +276,6 @@ public class Game {
             movePlayer (currentPlayer, totalMv);
         }
 
-
-
          // falta por implementar este método
 
 
@@ -295,28 +315,64 @@ public class Game {
         return currentPlayer;
     }
 
+
+    // PARA ESTABLECER EL JUGADOR ACTUAL
+    private void setCurrentPlayer (Player player) {
+        currentPlayer = player;
+    }
+
     // ENVIAR TURNO
 
     private void sendTurn(Player player) {
-        /*
-        El turno se tiene que enviar mediante el networking después
-         */
+        if (player == null) {
+            return; // si el jugador es nulo return
+        }
+
+        currentPlayer = player;
     }
 
     // MOVER JUGADOR
 
     private  void movePlayer (Player player, int totalMv) {
-        /*
-        El movimiento en el tablero se implementa después
-         */
+        if (player == null) {
+            return;
+        }
+
+        Figure figure = player.getFigure();
+
+        if (figure == null) {
+            return;
+        }
+
+        for (int i = 0; i < totalMv; i++) {
+            int newX = figure.getX() + 1;
+            int newY = figure.getY();
+
+            if (figure.canMoveTo(newX, newY, getFigures())){
+                figure.moveTo (newX, newY);
+            } else {
+                break;
+            }
+        }
     }
 
     // COMPROBAR SI EL JUGADOR SE ENCUENTRA EN LA HABITACIÓN PARA LA ACUSACIÓN FINAL
 
     private boolean playerIsInRoom (Player player) {
-        /*
-        Este método chequea si el jugador puede hacer la acusación final o no
-         */
+       if (player == null || player.getFigure() == null) {
+           return false;
+       }
+
+       Figure figure = player.getFigure();
+
+       int x = figure.getX();
+       int y = figure.getY();
+
+       for (Room room : rooms) {
+           if (room.occupies (x,y)) {
+               return true;
+           }
+       }
 
         return false;
     }
@@ -325,35 +381,59 @@ public class Game {
 
     private boolean playerWantsToAccuse (Player player) {
 
-        /*
-        El método pregunta si el jugador quiere hacer la acusación o no
-        Se conectará a la GUI
-         */
+        if (player == null) {
+            return false; 
+        }
+        
+        int option = JOptionPane.showConfirmDialog(
+                null, player.getName() + ", ¿quieres realizar una acusación final?", 
+                "Acusación final",
+                JOptionPane.YES_NO_OPTION
+        );
 
-        return false;
+        return option == JOptionPane.YES_NO_OPTION;
     }
 
     // ACTUALIZAR LOS JUGADORES
 
     private void updatePlayers() {
-        /*
-        Actualiza la información del jugador
-         */
+        for (Player player : players) {
+            if (player.getFigure() == null) {
+                continue;
+            }
+        }
     }
 
     // ACTUALIZAR TABLERO
 
     private void updateBoard() {
-        // Actualiza el tablero y deja a los jugadores en la posición inicial de partida
+        for (Player player : players) {
+            if (player.getFigure() == null) {
+                continue;
+            }
+            
+            Figure figure = player.getFigure();
+
+            System.out.printf(player.getName() + "esta en (" + figure.getX() + ", " + figure.getY() + ")");
+        }
     }
 
     // SIGUIENTE JUGADOR
 
    private Player getNextPlayer(Player currentPlayer, List <Player> players) {
+        if (players == null || players.isEmpty()) {
+            return null;
+        }
+
         int position = players.indexOf(currentPlayer);
+
+        if (position == -1) {
+            return players.get(0);
+        }
+
         position++;
 
-        if (position >= players.size()) {
+        if (position >= players.size()){
             position = 0;
         }
 
@@ -363,18 +443,27 @@ public class Game {
    // MOSTRAR EL RESULTADO FINAL
 
     private void showFinalResult() {
-        // Se muestra a través de la GUI el resultado final
+        JOptionPane.showMessageDialog(
+                null, "La partida ha terminado.",
+                "Fin de la partida",
+                JOptionPane.INFORMATION_MESSAGE
+        );
     }
 
     // CERRAR PARTIDA
 
     private void closeGame() {
-        // Se cierra la partida
+        gameIsOver = true;
+        currentPlayer = null;
     }
 
     // AÑADIR JUGADOR
 
     private void addPlayer(Player player) {
+        if (player == null) {
+            return;
+        }
+
         players.add(player);
     }
 
