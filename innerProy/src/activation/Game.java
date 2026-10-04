@@ -6,6 +6,7 @@ import model.Player;
 import model.Room;
 import model.Weapon;
 import model.Figure;
+import model.PlayerActivity;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 
 public class Game {
 
@@ -212,18 +214,9 @@ public class Game {
 
     private void createDeck() {
         deck.clear();
-
-        for (Room room : rooms) {
-            deck.add(room);
-        }
-
-        for (Actor actor : actors) {
-            deck.add(actor);
-        }
-
-        for (Weapon weapon : weapons) {
-            deck.add(weapon);
-        }
+        deck.addAll(rooms);
+        deck.addAll(actors);
+        deck.addAll(weapons);
     }
 
     // BARAJAR LA BARAJA
@@ -237,7 +230,7 @@ public class Game {
         for (Player player : players) {
             for (int i = 0; i <4; i++) {
                 if (!deck.isEmpty()) {
-                    Card card = deck.remove(0);
+                    Card card = deck.removeFirst();
 
                     player.addCard(card);
                 }
@@ -251,7 +244,7 @@ public class Game {
         clues.clear();
 
         while (!deck.isEmpty()) {
-            Card card = deck.remove(0);
+            Card card = deck.removeFirst();
             clues.add(card);
         }
     }
@@ -259,7 +252,7 @@ public class Game {
     // EMPEZAR LA PARTIDA
 
     private void playGame() {
-        while (!gameIsOver) {
+        while (!gameIsOver && !players.isEmpty()) {
             currentPlayer = getCurrentPlayer();
 
             sendTurn(currentPlayer);
@@ -333,7 +326,7 @@ public class Game {
 
     // MOVER JUGADOR
 
-    private  void movePlayer (Player player, int totalMv) {
+    private void movePlayer (Player player, int totalMv) {
         if (player == null) {
             return;
         }
@@ -353,6 +346,41 @@ public class Game {
             } else {
                 break;
             }
+        }
+    }
+
+    private void registerInactiveTurn (Player player) {
+        if (player == null) {
+            return;
+        }
+
+        player.getActivity().registerInactiveTurn();
+
+        if (player.getActivity().hasTooManyInactiveTurns()) {
+            removePlayer(player);
+        }
+    }
+
+    private void removePlayer (Player player) {
+        if (player == null) {
+            return;
+        }
+
+        int position = players.indexOf(player);
+
+        players.remove(player);
+        System.out.println(player.getName() + "has been removed for inactivity");
+
+        if (players.isEmpty()) {
+            gameIsOver = true;
+            currentPlayer = null;
+            return;
+        }
+
+        if (position >= players.size()) position = 0;
+
+        if (player == currentPlayer) {
+            currentPlayer = getNextPlayer(player, players);
         }
     }
 
