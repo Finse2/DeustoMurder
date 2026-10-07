@@ -39,7 +39,7 @@ public class Main {
         resetListContents();
 
         SwingUtilities.invokeLater(
-                () -> new Window(rooms)
+                () -> new Window(rooms, actors, weapons)
         );
     }
 

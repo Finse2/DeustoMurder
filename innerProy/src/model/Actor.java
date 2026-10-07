@@ -13,4 +13,12 @@ public class Actor extends Card {
         this.name = name;
         this.color = color;
     }
+
+    public String getName () {
+        return this.name;
+    }
+
+    public Color getColor() {
+        return this.color; 
+    }
 }

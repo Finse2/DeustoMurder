@@ -1,5 +1,6 @@
 package model;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,18 +11,32 @@ public class Player {
     private int playerPosY;
     private static int nextPlayerID = 0;
     private int playerID;
+    private String name;
+    private List <Card> cards;
+    private List <Card> detectiveNotes;
+    private Figure figure;
 
-    private List<Card> player_cards = new ArrayList<>();
-
-    public Player(Actor self, List<Card> player_cards, int playerID) {
+    public Player(Actor self, List<Card> cards, int playerID, String name) {
         this.self = self;
-        this.player_cards = player_cards;
+        cards = new ArrayList<>();
+        detectiveNotes = new ArrayList<>();
 
         this.playerID = nextPlayerID;
         nextPlayerID++;
+
+        this.name = name;
     }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName() {
+        this.name = name;
+    }
+
     public void addCard(Card card) {
-        player_cards.add(card);
+        cards.add(card);
     }
 
     public void moveUP() {
@@ -60,6 +75,32 @@ public class Player {
 
     public void setPlayerPosY(int PlayerPosY) {
         this.playerPosY = PlayerPosY;
+    }
+
+    public Figure getFigure() {
+        return figure;
+    }
+
+    public void setFigure() {
+        this.figure = figure;
+    }
+
+    public void addDetectiveNote(Card card) {
+        if (!detectiveNotes.contains(card)) {
+            detectiveNotes.add(card);
+        }
+    }
+
+    public void removeDetectiveNote (Card card) {
+        detectiveNotes.remove(card);
+    }
+
+    public boolean hasDetectiveNote (Card card) {
+        return detectiveNotes.contains(card);
+    }
+
+    public List<Card> getDetectiveNotes() {
+        return detectiveNotes;
     }
 
 
