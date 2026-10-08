@@ -3,7 +3,8 @@ package activation.Screen;
 import javax.swing.*;
 import java.awt.*;
 
-public class BackGround extends JPanel {
+public class
+BackGround extends JPanel {
 
     private Image backgroundImage;
 
