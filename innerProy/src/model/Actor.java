@@ -1,6 +1,7 @@
 package model;
 
-import java.awt.Color;
+
+import java.awt.*;
 
 public class Actor extends Card {
 
@@ -12,11 +13,11 @@ public class Actor extends Card {
         this.color = color;
     }
 
-    public String getName() {
-        return name;
+    public String getName () {
+        return this.name;
     }
 
     public Color getColor() {
-        return color;
+        return this.color; 
     }
 }

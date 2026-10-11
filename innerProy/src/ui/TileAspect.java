@@ -66,6 +66,7 @@ class TileAspect extends JPanel {
         setBackground(color);
     }
 
+    //ended up being useless but in my mind it made a lot of sense xd
     void concatenate(JPanel root, TileDirection direction) {
         concatenate(root, direction, 1);
     }
