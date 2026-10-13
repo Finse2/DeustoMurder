@@ -2,15 +2,14 @@ package ui;
 
 import model.Actor;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
+import java.awt.Color;
 
-public class ActorsLook {
+class ActorsLook {
 
     Color color;
     Actor actor;
 
-    public ActorsLook(Color color, Actor actor) {
+    ActorsLook(Color color, Actor actor) {
         this.color = color;
         this.actor = actor;
     }
