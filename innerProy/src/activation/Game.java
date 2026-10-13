@@ -5,7 +5,8 @@ import model.Card;
 import model.Player;
 import model.Room;
 import model.Weapon;
-import model.Figure;
+import model.Piece;
+import ui.BoardLayout;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ public class Game {
     // Game state
 
     private boolean gameIsOver;
+    private BoardLayout board;
 
     // MÉTODO CONSTRUCTOR DE LA CLASE
 
@@ -56,16 +58,20 @@ public class Game {
 
     // MÉTODO PARA INICIALIZAR LA PARTIDA
 
-    public List <Figure> getFigures () {
-        List <Figure> figures = new ArrayList<>();
+    public List<Piece> getPieces() {
+        List<Piece> pieces = new ArrayList<>();
 
         for (Player player : players) {
-            if (player.getFigure() != null) {
-                figures.add(player.getFigure());
+            if (player.getPiece() != null) {
+                pieces.add(player.getPiece());
             }
         }
 
-        return figures;
+        return pieces;
+    }
+
+    public void setBoard(BoardLayout board) {
+        this.board = board;
     }
 
     public void startGame() {
@@ -86,7 +92,9 @@ public class Game {
             currentPlayer = players.get(0);
         }
 
-        playGame();
+        if (!players.isEmpty()) {
+            playGame();
+        }
     }
 
     // CREAR HABITACIONES
@@ -338,35 +346,54 @@ public class Game {
             return;
         }
 
-        Figure figure = player.getFigure();
+        Piece piece = player.getPiece();
 
-        if (figure == null) {
+        if (piece == null) {
             return;
         }
 
         for (int i = 0; i < totalMv; i++) {
-            int newX = figure.getX() + 1;
-            int newY = figure.getY();
+            int newX = piece.getX() + 1;
+            int newY = piece.getY();
 
-            if (figure.canMoveTo(newX, newY, getFigures())){
-                figure.moveTo (newX, newY);
+            if (board != null) {
+                if (!board.canMovePiece(piece, newX, newY)) {
+                    break;
+                }
+                board.movePiece(piece, piece.getX(), piece.getY(), newX, newY);
+            } else if (canMoveTo(piece, newX, newY)) {
+                piece.setPosition(newX, newY);
             } else {
                 break;
             }
         }
     }
 
+    private boolean canMoveTo(Piece piece, int x, int y) {
+        if (x < 0 || x >= BoardLayout.GRID_COLUMNS || y < 0 || y >= BoardLayout.GRID_ROWS) {
+            return false;
+        }
+
+        for (Piece other : getPieces()) {
+            if (other != piece && other.getX() == x && other.getY() == y) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     // COMPROBAR SI EL JUGADOR SE ENCUENTRA EN LA HABITACIÓN PARA LA ACUSACIÓN FINAL
 
     private boolean playerIsInRoom (Player player) {
-       if (player == null || player.getFigure() == null) {
+       if (player == null || player.getPiece() == null) {
            return false;
        }
 
-       Figure figure = player.getFigure();
+       Piece piece = player.getPiece();
 
-       int x = figure.getX();
-       int y = figure.getY();
+       int x = piece.getX();
+       int y = piece.getY();
 
        for (Room room : rooms) {
            if (room.occupies (x,y)) {
@@ -398,7 +425,7 @@ public class Game {
 
     private void updatePlayers() {
         for (Player player : players) {
-            if (player.getFigure() == null) {
+            if (player.getPiece() == null) {
                 continue;
             }
         }
@@ -408,13 +435,13 @@ public class Game {
 
     private void updateBoard() {
         for (Player player : players) {
-            if (player.getFigure() == null) {
+            if (player.getPiece() == null) {
                 continue;
             }
             
-            Figure figure = player.getFigure();
+            Piece piece = player.getPiece();
 
-            System.out.printf(player.getName() + "esta en (" + figure.getX() + ", " + figure.getY() + ")");
+            System.out.printf(player.getName() + "esta en (" + piece.getX() + ", " + piece.getY() + ")");
         }
     }
 

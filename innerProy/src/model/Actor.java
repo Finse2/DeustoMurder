@@ -1,6 +1,5 @@
 package model;
 
-import ui.ActorsLook;
 
 import java.awt.*;
 
