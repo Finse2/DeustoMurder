@@ -31,7 +31,7 @@ public class MainScreen extends JFrame {
     profile.setBorderPainted(false);
     profile.setContentAreaFilled(false);
     profile.setFocusPainted(false);
-    ImageIcon icon1 = new ImageIcon("innerProy/ressources/settings.jpg"); //remove background from settings icon
+    ImageIcon icon1 = new ImageIcon("innerProy/ressources/settings.png");
     Image image1 = icon1.getImage();
     Image reseizedImage1 = image1.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
     JButton settings = new JButton(new ImageIcon(reseizedImage1));
