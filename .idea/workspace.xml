@@ -5,12 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8563273f-b94d-4691-9ec1-cace6571287c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/innerProy/ressources/settings.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/innerProy/src/activation/Screen/connectionValues.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/innerProy/ressources/settings.jpg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Screen/MainScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/activation/Screen/MainScreen.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$2.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/Settings.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/Settings.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,61 +36,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="2.9174455565095102E-18" />
-      <entry key="MS500" value="3.199359011684547E-4" />
-      <entry key="S2" value="0.18773544346958565" />
-      <entry key="S5" value="0.8151463545435295" />
-      <entry key="S10" value="1.6047888258435623" />
-      <entry key="S30" value="3.4183011062210507" />
-      <entry key="S60" value="4.448082962040145" />
-      <entry key="M2" value="5.188570308025702" />
-      <entry key="M5" value="8.797253086320636" />
-      <entry key="M10" value="21.493918874724027" />
-      <entry key="M15" value="35.03421929393717" />
-      <entry key="M30" value="74.63465973783276" />
-      <entry key="H1" value="156.9585249064017" />
-      <entry key="H2" value="281.42814335665116" />
-      <entry key="H4" value="423.86799272926504" />
-      <entry key="D1" value="1235.2608135674755" />
-      <entry key="W1" value="2135.6087575779297" />
+      <entry key="MS100" value="8.037774736614577E-128" />
+      <entry key="MS500" value="3.811247632893745E-26" />
+      <entry key="S2" value="5.45776462866323E-7" />
+      <entry key="S5" value="0.0074589385434546285" />
+      <entry key="S10" value="0.28346923306880295" />
+      <entry key="S30" value="5.295680725573482" />
+      <entry key="S60" value="13.140839073078679" />
+      <entry key="M2" value="23.949414835260793" />
+      <entry key="M5" value="46.21637814595502" />
+      <entry key="M10" value="77.70577075226831" />
+      <entry key="M15" value="102.02357301246855" />
+      <entry key="M30" value="154.50448961316116" />
+      <entry key="H1" value="242.07401515795385" />
+      <entry key="H2" value="388.0720648748846" />
+      <entry key="H4" value="573.3769847771412" />
+      <entry key="D1" value="1459.9870218558071" />
+      <entry key="W1" value="2409.7676646029604" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="1.000000616241851" />
-      <entry key="MS500" value="1.0572730402946264" />
-      <entry key="S2" value="1.4905649596314245" />
-      <entry key="S5" value="1.8531144198921703" />
-      <entry key="S10" value="2.400361196638266" />
-      <entry key="S30" value="3.8884460298076964" />
-      <entry key="S60" value="4.737597672165316" />
-      <entry key="M2" value="5.30570633026233" />
-      <entry key="M5" value="5.825507634258762" />
-      <entry key="M10" value="7.146270117649299" />
-      <entry key="M15" value="9.142966400471197" />
-      <entry key="M30" value="14.659044259595085" />
-      <entry key="H1" value="20.75507439986771" />
-      <entry key="H2" value="25.731027327233797" />
-      <entry key="H4" value="29.98779445119486" />
-      <entry key="D1" value="48.62667313908287" />
-      <entry key="W1" value="66.10513965728968" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0000007053336248" />
+      <entry key="S5" value="1.003579966101002" />
+      <entry key="S10" value="1.0700437143054133" />
+      <entry key="S30" value="1.7594848702639894" />
+      <entry key="S60" value="3.0523692974943475" />
+      <entry key="M2" value="5.650018647142529" />
+      <entry key="M5" value="11.677704181695473" />
+      <entry key="M10" value="18.049512450000297" />
+      <entry key="M15" value="21.9744349442808" />
+      <entry key="M30" value="28.87026181384756" />
+      <entry key="H1" value="37.63830547995829" />
+      <entry key="H2" value="47.746734795209825" />
+      <entry key="H4" value="57.02551097338655" />
+      <entry key="D1" value="82.06784031862439" />
+      <entry key="W1" value="101.60962134107658" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.04210104928198812" />
-      <entry key="MS500" value="0.5362003376901371" />
-      <entry key="S2" value="1.2105336939689988" />
-      <entry key="S5" value="2.2059397645520624" />
-      <entry key="S10" value="3.582790593042523" />
-      <entry key="S30" value="7.0202925706060455" />
-      <entry key="S60" value="9.003001284041344" />
-      <entry key="M2" value="10.389822016927484" />
-      <entry key="M5" value="14.574134511130659" />
-      <entry key="M10" value="28.605915331777407" />
-      <entry key="M15" value="44.145353116920006" />
-      <entry key="M30" value="89.26461102928594" />
-      <entry key="H1" value="177.6907788339851" />
-      <entry key="H2" value="307.14410804189913" />
-      <entry key="H4" value="453.84662892327424" />
-      <entry key="D1" value="1283.8844028644237" />
-      <entry key="W1" value="2201.713154250996" />
+      <entry key="MS100" value="0.002243551474603584" />
+      <entry key="MS500" value="0.29524816535738263" />
+      <entry key="S2" value="0.7371353414331115" />
+      <entry key="S5" value="0.8942576630107528" />
+      <entry key="S10" value="1.2661081812255044" />
+      <entry key="S30" value="6.89283252600875" />
+      <entry key="S60" value="16.00850867089813" />
+      <entry key="M2" value="29.427642865597768" />
+      <entry key="M5" value="57.75335411054139" />
+      <entry key="M10" value="95.63752572499803" />
+      <entry key="M15" value="123.89684056931536" />
+      <entry key="M30" value="183.30340969332815" />
+      <entry key="H1" value="279.66429756695953" />
+      <entry key="H2" value="435.7878553930622" />
+      <entry key="H4" value="630.3837905699461" />
+      <entry key="D1" value="1542.0498565717762" />
+      <entry key="W1" value="2511.3762501911165" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -113,6 +114,7 @@
     "Application.NetworkTestMain.executor": "Run",
     "Application.createFileChunkTxt.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -155,8 +157,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-34e2839f716b-intellij.indexing.shared.core-IU-262.9437.185" />
-        <option value="bundled-js-predefined-d6986cc7102b-4abd2a77f808-JavaScript-IU-262.9437.185" />
+        <option value="bundled-jdk-30f59d01ecdd-a203e0a19954-intellij.indexing.shared.core-IU-262.10315.125" />
+        <option value="bundled-js-predefined-d6986cc7102b-4abd2a77f808-JavaScript-IU-262.10315.125" />
       </set>
     </attachedChunks>
   </component>

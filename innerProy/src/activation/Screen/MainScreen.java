@@ -55,6 +55,7 @@ public class MainScreen extends JFrame {
     });
 
 
+
         // WEST MENU BUTTONS
 
     JPanel menuPanel = new JPanel(new GridLayout(7, 1,10,10));
@@ -83,6 +84,21 @@ public class MainScreen extends JFrame {
     eastPanel.setOpaque(false);
     add(eastPanel, BorderLayout.EAST);
 
+        // Host button action
+    HostButton.addActionListener(e -> {
+    System.out.println("Host Game button clicked");
+        HostGame();
+    });
+        // Join button action
+    JoinButton.addActionListener(e     -> {
+        System.out.println("Join Game button clicked");
+        JoinGame();
+    });
+        // Exit button action
+    ExitButton.addActionListener(e -> {
+        System.out.println("Exit Game button clicked");
+        Exit();
+    });
 
 
 
@@ -104,8 +120,99 @@ public class MainScreen extends JFrame {
     add(southPanel, BorderLayout.SOUTH);
 
     setVisible(true);
-
     }
+
+    private void HostGame() {
+        connectionValues connection = openConnection();
+        System.out.println(connection.toString());
+    }
+
+    private void JoinGame() {
+        openConnection();
+    }
+
+    private void Exit() {
+        dispose();
+    }
+
+    private connectionValues openConnection() {
+        connectionValues connect = new connectionValues();
+
+        JDialog connectionDialog = new JDialog(
+                this, "Connection Parameters", true
+        );
+
+        String[] columns = {"Parameter", "Value"};
+
+        Settings[] data = {
+                new Settings("Host name", connectionValues.hostName),
+                new Settings("IP Address", connectionValues.ipAddress),
+                new Settings("Port", connectionValues.port)
+        };
+
+        JTable connectionTable = new JTable(Settings.toArray(data), columns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column != 0;
+            }
+        };
+
+        JScrollPane scrollPane = new JScrollPane(connectionTable);
+        connectionDialog.add(scrollPane, BorderLayout.CENTER);
+
+        JButton confirmButton = new JButton("Confirm");
+
+        confirmButton.addActionListener(e -> {
+            try {
+                // Make sure the current cell edit is saved
+                if (connectionTable.isEditing()) {
+                    connectionTable.getCellEditor().stopCellEditing();
+                }
+
+                String hostName = connectionTable.getValueAt(0, 1).toString();
+                String ipAddress = connectionTable.getValueAt(1, 1).toString();
+                int port = Integer.parseInt(
+                        connectionTable.getValueAt(2, 1).toString()
+                );
+
+                if (port < 1 || port > 65535) {
+                    throw new IllegalArgumentException("Invalid port");
+                }
+
+                connect.setHostName(hostName);
+                connect.setIpAddress(ipAddress);
+                connect.setPort(port);
+
+                connectionDialog.dispose();
+
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(
+                        connectionDialog,
+                        "Please enter a valid numeric port.",
+                        "Invalid Port",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            } catch (IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(
+                        connectionDialog,
+                        ex.getMessage(),
+                        "Invalid Connection Parameters",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+        });
+
+        connectionDialog.add(confirmButton, BorderLayout.SOUTH);
+
+        connectionDialog.setSize(450, 300);
+        connectionDialog.setLocationRelativeTo(this);
+        connectionDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+        connectionDialog.setVisible(true);
+
+        return connect;
+    }
+
     private void openSettings() {
         JFrame settingsFrame = new JFrame("Settings");
         String[] colums = {"Settings", "Value"};
