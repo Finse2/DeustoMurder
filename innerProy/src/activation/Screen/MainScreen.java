@@ -21,6 +21,8 @@ public class MainScreen extends JFrame {
     Title.setForeground(Color.RED);
     northPanel.add(Title, BorderLayout.CENTER);
     northPanel.setOpaque(false);
+    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+    buttonPanel.setOpaque(false);
     ImageIcon icon = new ImageIcon("innerProy/ressources/DefaultProfile.jpg");
     Image image = icon.getImage();
     Image reseizedImage = image.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
@@ -29,7 +31,17 @@ public class MainScreen extends JFrame {
     profile.setBorderPainted(false);
     profile.setContentAreaFilled(false);
     profile.setFocusPainted(false);
-    northPanel.add(profile, BorderLayout.EAST);
+    ImageIcon icon1 = new ImageIcon("innerProy/ressources/settings.jpg"); //remove background from settings icon
+    Image image1 = icon1.getImage();
+    Image reseizedImage1 = image1.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+    JButton settings = new JButton(new ImageIcon(reseizedImage1));
+    settings.setOpaque(false);
+    settings.setBorderPainted(false);
+    settings.setContentAreaFilled(false);
+    settings.setFocusPainted(false);
+    buttonPanel.add(settings);
+    buttonPanel.add(profile);
+    northPanel.add(buttonPanel, BorderLayout.EAST);
     add(northPanel, BorderLayout.NORTH);
 
     // profile JTable
@@ -37,14 +49,21 @@ public class MainScreen extends JFrame {
         openProfileStats();
     });
 
+    // settings JTable
+    settings.addActionListener(e -> {
+        openSettings();
+    });
 
 
         // WEST MENU BUTTONS
 
-    JPanel menuPanel = new JPanel(new GridLayout(3, 1,10,10));
+    JPanel menuPanel = new JPanel(new GridLayout(7, 1,10,10));
     menuPanel.setPreferredSize(new Dimension(250,220));
     menuPanel.setOpaque(false);
-
+    JLabel empty = new JLabel();
+    menuPanel.add(empty);
+    JLabel empty2 = new JLabel();
+    menuPanel.add(empty2);
     JButton HostButton = new JButton("Host Game");
     HostButton.setPreferredSize(new Dimension(250,10));
     JButton JoinButton = new JButton("Join Game");
@@ -58,13 +77,21 @@ public class MainScreen extends JFrame {
 
     add(menuPanel, BorderLayout.WEST);
 
+    // EAST MENU BUTTONS
+    JPanel eastPanel = new JPanel();
+    eastPanel.setPreferredSize(new Dimension(250, 220));
+    eastPanel.setOpaque(false);
+    add(eastPanel, BorderLayout.EAST);
+
+
+
 
         // Center MENU
-    JPanel centerPanel = new JPanel();
-    JLabel welcome = new JLabel("Welcome to Deusto Murder");
-    JLabel welcome2 = new JLabel("A Deusto version of the famous game Cluedo");
-    centerPanel.add(welcome);
-    centerPanel.add(welcome2);
+    JPanel centerPanel = new JPanel(new BorderLayout());
+    JLabel welcome = new JLabel("Welcome to Deusto Murder", SwingConstants.CENTER);
+    JLabel welcome2 = new JLabel("A Deusto version of the famous game Cluedo", SwingConstants.CENTER);
+    centerPanel.add(welcome, BorderLayout.NORTH);
+    centerPanel.add(welcome2, BorderLayout.SOUTH);
     centerPanel.setOpaque(false);
     add(centerPanel, BorderLayout.CENTER);
 
@@ -79,6 +106,8 @@ public class MainScreen extends JFrame {
     setVisible(true);
 
     }
+    // to do -> openSettings
+
 
     private void openProfileStats() {
 
@@ -93,7 +122,13 @@ public class MainScreen extends JFrame {
                 {"Win Rate", "0%"},
                 {"correct Accusations",0}
         };
-        JTable statsTable = new JTable(data,colums);
+        JTable statsTable = new JTable(data,colums) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Make all cells non-editable
+            }
+        };
+
         JScrollPane scrollPane = new JScrollPane(statsTable);
         statFrame.add(scrollPane);
 

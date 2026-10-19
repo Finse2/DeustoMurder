@@ -5,38 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8563273f-b94d-4691-9ec1-cace6571287c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Game.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Main.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Screen/BackGround.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Screen/MainScreen.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Window.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/dice.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/innerProy/src/model/RawPiece.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/innerProy/src/model/RawRoom.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/innerProy/src/model/Tile.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/innerProy/src/module-info.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/innerProy/src/ui/ActorsLook.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/innerProy/src/ui/BoardLayout.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/innerProy/src/ui/DetectiveCard.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/innerProy/src/ui/RoomsLook.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/innerProy/src/ui/TileAspect.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Screen/MainScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/activation/Screen/MainScreen.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Game.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Main.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/BackGround.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Window.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/dice.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/model/RawPiece.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/model/RawRoom.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/model/Tile.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/module-info.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/ui/ActorsLook.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/ui/BoardLayout$PlacedTile.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/ui/BoardLayout.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/ui/DetectiveCard.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/ui/RoomsLook.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/ui/TileAspect$TileDirection.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/ui/TileAspect.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/model/Figure.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/ui/menu/BackGround.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/ui/menu/BackGround.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/networking/module-info.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/networking/module-info.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -56,63 +29,67 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0067541971195928" />
-      <entry key="MS500" value="1.3680567155420447" />
-      <entry key="S2" value="1.778894588583299" />
-      <entry key="S5" value="1.904881011043138" />
-      <entry key="S10" value="1.9512523382589597" />
-      <entry key="S30" value="1.983479367051768" />
-      <entry key="S60" value="1.992034523690609" />
-      <entry key="M2" value="2.08164229653667" />
-      <entry key="M5" value="5.445517182484401" />
-      <entry key="M10" value="15.255255583576368" />
-      <entry key="M15" value="26.164639969876124" />
-      <entry key="M30" value="70.19299654367356" />
-      <entry key="H1" value="159.59481876635536" />
-      <entry key="H2" value="270.53952006874954" />
-      <entry key="H4" value="388.4428872066616" />
-      <entry key="D1" value="1165.0817532928527" />
-      <entry key="W1" value="2040.01835258004" />
+      <entry key="MS100" value="1.0000000000064224" />
+      <entry key="MS500" value="1.0057968081222635" />
+      <entry key="S2" value="1.4707927041385296" />
+      <entry key="S5" value="2.941870039051193" />
+      <entry key="S10" value="4.429683032647874" />
+      <entry key="S30" value="7.860878405752128" />
+      <entry key="S60" value="11.866609567509574" />
+      <entry key="M2" value="17.956243714749853" />
+      <entry key="M5" value="31.5173531646963" />
+      <entry key="M10" value="47.144687774068515" />
+      <entry key="M15" value="59.252972353504994" />
+      <entry key="M30" value="96.11075272833521" />
+      <entry key="H1" value="177.77324039076822" />
+      <entry key="H2" value="297.351283949751" />
+      <entry key="H4" value="431.6982853303582" />
+      <entry key="D1" value="1231.2056484134505" />
+      <entry key="W1" value="2123.307109387242" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="0.0" />
-      <entry key="S2" value="4.900736293449302E-153" />
-      <entry key="S5" value="1.1916793092079653E-61" />
-      <entry key="S10" value="3.4906520003884825E-31" />
-      <entry key="S30" value="8.586189270855686E-11" />
-      <entry key="S60" value="1.2339492706923302E-5" />
-      <entry key="M2" value="0.004885026508712063" />
-      <entry key="M5" value="0.17962179772240855" />
-      <entry key="M10" value="0.5994042268166406" />
-      <entry key="M15" value="0.9010033721580518" />
-      <entry key="M30" value="1.4171373235697513" />
-      <entry key="H1" value="1.9827695001914842" />
-      <entry key="H2" value="2.7637548750388836" />
-      <entry key="H4" value="4.479970452317724" />
-      <entry key="D1" value="20.694684051459955" />
-      <entry key="W1" value="37.326306754177665" />
+      <entry key="MS500" value="9.842411675720241E-125" />
+      <entry key="S2" value="9.960367935736653E-32" />
+      <entry key="S5" value="3.974753062360891E-13" />
+      <entry key="S10" value="6.304564269131448E-7" />
+      <entry key="S30" value="0.008574735029615487" />
+      <entry key="S60" value="0.09298260710068854" />
+      <entry key="M2" value="0.3435556445461252" />
+      <entry key="M5" value="1.5489554386195301" />
+      <entry key="M10" value="4.647241129227005" />
+      <entry key="M15" value="7.596637107995891" />
+      <entry key="M30" value="13.32851386391863" />
+      <entry key="H1" value="18.284188733505044" />
+      <entry key="H2" value="21.959517808917898" />
+      <entry key="H4" value="25.304748447384252" />
+      <entry key="D1" value="43.00724499493202" />
+      <entry key="W1" value="60.18144536101947" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.01607719884961203" />
-      <entry key="MS500" value="0.542953534048184" />
-      <entry key="S2" value="1.3829708867431834" />
-      <entry key="S5" value="1.719107114188791" />
-      <entry key="S10" value="1.853067507528297" />
-      <entry key="S30" value="1.9494967462787387" />
-      <entry key="S60" value="1.9748904434118164" />
-      <entry key="M2" value="2.0771643969033264" />
-      <entry key="M5" value="5.607601238415008" />
-      <entry key="M10" value="15.826702402527237" />
-      <entry key="M15" value="27.037246571952632" />
-      <entry key="M30" value="71.588097744296" />
-      <entry key="H1" value="161.56356079100595" />
-      <entry key="H2" value="273.29511704009326" />
-      <entry key="H4" value="392.91798106495435" />
-      <entry key="D1" value="1185.7741959493908" />
-      <entry key="W1" value="2077.3440448140486" />
+      <entry key="MS100" value="2.7467248612350896E-4" />
+      <entry key="MS500" value="0.1993843791546291" />
+      <entry key="S2" value="1.1248368670527786" />
+      <entry key="S5" value="2.76997883277719" />
+      <entry key="S10" value="4.330374263962431" />
+      <entry key="S30" value="7.82170007050938" />
+      <entry key="S60" value="11.918645280863075" />
+      <entry key="M2" value="18.260336703460464" />
+      <entry key="M5" value="33.028392258286765" />
+      <entry key="M10" value="51.754548358716114" />
+      <entry key="M15" value="66.81303635342478" />
+      <entry key="M30" value="109.40746726579722" />
+      <entry key="H1" value="196.03441928966072" />
+      <entry key="H2" value="319.29641513606254" />
+      <entry key="H4" value="456.99450217880934" />
+      <entry key="D1" value="1274.2099624672508" />
+      <entry key="W1" value="2183.4878364097335" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -142,7 +119,7 @@
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "finse",
     "ignore.virus.scanning.warn.message": "true",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
