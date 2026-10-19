@@ -106,9 +106,38 @@ public class MainScreen extends JFrame {
     setVisible(true);
 
     }
-    // to do -> openSettings
+    private void openSettings() {
+        JFrame settingsFrame = new JFrame("Settings");
+        String[] colums = {"Settings", "Value"};
 
+        Settings[] data = {
+                new Settings("Music Volume", 0),
+                new Settings("Sound Effects", 0),
+                new Settings("Mute Sound", false),
+                new Settings("Brightness", 0),
+                new Settings("FullScreen", false),
+                new Settings("Highlight Possible Moves", true),
+                new Settings("Player Name", "Finse"),
+                new Settings("Default Server IP", "127.0.0.1"),
+                new Settings("Default Server Port", "5000")
+        };
 
+        JTable settingsTable = new JTable(Settings.toArray(data),colums) {
+            @Override
+
+            public boolean isCellEditable(int row, int column) {
+                return column != 0; // Make all cells oof the first column non-editable
+            }
+        };
+
+        JScrollPane scrollPane = new JScrollPane(settingsTable);
+        settingsFrame.add(scrollPane);
+
+        settingsFrame.setSize(450, 300);
+        settingsFrame.setLocationRelativeTo(this);
+        settingsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        settingsFrame.setVisible(true);
+    }
     private void openProfileStats() {
 
         JFrame statFrame = new JFrame("Profile Statistics");
@@ -143,4 +172,18 @@ public class MainScreen extends JFrame {
         MainScreen m = new MainScreen();
     }
 
+}
+
+record Settings(String option, Object value) {
+
+    public static Object[][] toArray(Settings[] settings) {
+        Object[][] result = new Object[settings.length][2];
+
+        for (int i = 0; i < settings.length; i++) {
+            result[i][0] = settings[i].option();
+            result[i][1] = settings[i].value();
+        }
+
+        return result;
+    }
 }
