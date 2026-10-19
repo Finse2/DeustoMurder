@@ -15,10 +15,28 @@ public class MainScreen extends JFrame {
 
 
         // NORTH MAIN TITLE
+    JPanel northPanel = new JPanel(new BorderLayout());
     JLabel Title = new JLabel("Deusto Cluedo", SwingConstants.CENTER);
     Title.setFont(new Font("Arial", Font.BOLD, 32));
     Title.setForeground(Color.RED);
-    add(Title, BorderLayout.NORTH);
+    northPanel.add(Title, BorderLayout.CENTER);
+    northPanel.setOpaque(false);
+    ImageIcon icon = new ImageIcon("innerProy/ressources/DefaultProfile.jpg");
+    Image image = icon.getImage();
+    Image reseizedImage = image.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+    JButton profile = new JButton(new ImageIcon(reseizedImage));
+    profile.setOpaque(false);
+    profile.setBorderPainted(false);
+    profile.setContentAreaFilled(false);
+    profile.setFocusPainted(false);
+    northPanel.add(profile, BorderLayout.EAST);
+    add(northPanel, BorderLayout.NORTH);
+
+    // profile JTable
+    profile.addActionListener(e -> {
+        openProfileStats();
+    });
+
 
 
         // WEST MENU BUTTONS
@@ -59,6 +77,31 @@ public class MainScreen extends JFrame {
     add(southPanel, BorderLayout.SOUTH);
 
     setVisible(true);
+
+    }
+
+    private void openProfileStats() {
+
+        JFrame statFrame = new JFrame("Profile Statistics");
+
+        String[] colums = {"Statistic", "Value"};
+
+        Object[][] data = {
+                {"Games Played", 0},
+                {"Games Won", 0},
+                {"Games Lost", 0},
+                {"Win Rate", "0%"},
+                {"correct Accusations",0}
+        };
+        JTable statsTable = new JTable(data,colums);
+        JScrollPane scrollPane = new JScrollPane(statsTable);
+        statFrame.add(scrollPane);
+
+        statFrame.setSize(450, 300);
+        statFrame.setLocationRelativeTo(this);
+        statFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        statFrame.setVisible(true);
+
 
     }
     public static void main(String[] args) {
