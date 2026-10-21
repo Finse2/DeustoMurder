@@ -42,6 +42,11 @@ public class MainScreen extends JFrame {
     buttonPanel.add(settings);
     buttonPanel.add(profile);
     northPanel.add(buttonPanel, BorderLayout.EAST);
+    JPanel westEqualizePanel = new JPanel();
+    westEqualizePanel.setOpaque(false);
+    Dimension eastSize = buttonPanel.getPreferredSize();
+    westEqualizePanel.setPreferredSize(eastSize);
+    northPanel.add(westEqualizePanel, BorderLayout.WEST);
     add(northPanel, BorderLayout.NORTH);
 
     // profile JTable
@@ -56,7 +61,7 @@ public class MainScreen extends JFrame {
 
 
 
-        // WEST MENU BUTTONS
+    // WEST MENU BUTTONS
 
     JPanel menuPanel = new JPanel(new GridLayout(7, 1,10,10));
     menuPanel.setPreferredSize(new Dimension(250,220));
