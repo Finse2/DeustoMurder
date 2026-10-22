@@ -16,11 +16,13 @@ public class MainScreen extends JFrame {
 
         // NORTH MAIN TITLE
     JPanel northPanel = new JPanel(new BorderLayout());
+
     JLabel Title = new JLabel("Deusto Cluedo", SwingConstants.CENTER);
     Title.setFont(new Font("Arial", Font.BOLD, 32));
     Title.setForeground(Color.RED);
     northPanel.add(Title, BorderLayout.CENTER);
     northPanel.setOpaque(false);
+
     JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     buttonPanel.setOpaque(false);
     ImageIcon icon = new ImageIcon("innerProy/ressources/DefaultProfile.jpg");
@@ -42,6 +44,7 @@ public class MainScreen extends JFrame {
     buttonPanel.add(settings);
     buttonPanel.add(profile);
     northPanel.add(buttonPanel, BorderLayout.EAST);
+
     JPanel westEqualizePanel = new JPanel();
     westEqualizePanel.setOpaque(false);
     Dimension eastSize = buttonPanel.getPreferredSize();
@@ -62,55 +65,41 @@ public class MainScreen extends JFrame {
 
 
     // WEST MENU BUTTONS
-
-    JPanel menuPanel = new JPanel(new GridLayout(7, 1,10,10));
-    menuPanel.setPreferredSize(new Dimension(250,220));
+    JPanel menuPanel = new JPanel(new GridLayout(3, 1, 0, 15));
     menuPanel.setOpaque(false);
-    JLabel empty = new JLabel();
-    menuPanel.add(empty);
-    JLabel empty2 = new JLabel();
-    menuPanel.add(empty2);
-    JButton HostButton = new JButton("Host Game");
-    HostButton.setPreferredSize(new Dimension(250,10));
-    JButton JoinButton = new JButton("Join Game");
-    JoinButton.setPreferredSize(new Dimension(250,10));
-    JButton ExitButton = new JButton("Exit Game");
-    ExitButton.setPreferredSize(new Dimension(250,10));
+    menuPanel.setPreferredSize(new Dimension(230, 210));
 
-    menuPanel.add(HostButton);
-    menuPanel.add(JoinButton);
-    menuPanel.add(ExitButton);
+    InlaidMenuButton hostButton = new InlaidMenuButton("Host Game", this::HostGame);
+    InlaidMenuButton joinButton = new InlaidMenuButton("Join Game", this::JoinGame);
+    InlaidMenuButton exitButton = new InlaidMenuButton("Exit Game", this::Exit);
 
-    add(menuPanel, BorderLayout.WEST);
+    menuPanel.add(hostButton);
+    menuPanel.add(joinButton);
+    menuPanel.add(exitButton);
 
-    // EAST MENU BUTTONS
-    JPanel eastPanel = new JPanel();
-    eastPanel.setPreferredSize(new Dimension(250, 220));
+// Container to position the menu
+    JPanel westPanel = new JPanel(new GridBagLayout());
+    westPanel.setOpaque(false);
+    westPanel.setPreferredSize(new Dimension(280, 0));
+
+    westPanel.add(menuPanel);
+
+    add(westPanel, BorderLayout.WEST);
+
+    // East Menu
+    JPanel eastPanel = new JPanel(new GridBagLayout());
     eastPanel.setOpaque(false);
+    eastPanel.setPreferredSize(new Dimension(280, 0));
     add(eastPanel, BorderLayout.EAST);
-
-        // Host button action
-    HostButton.addActionListener(e -> {
-    System.out.println("Host Game button clicked");
-        HostGame();
-    });
-        // Join button action
-    JoinButton.addActionListener(e     -> {
-        System.out.println("Join Game button clicked");
-        JoinGame();
-    });
-        // Exit button action
-    ExitButton.addActionListener(e -> {
-        System.out.println("Exit Game button clicked");
-        Exit();
-    });
-
-
 
         // Center MENU
     JPanel centerPanel = new JPanel(new BorderLayout());
-    JLabel welcome = new JLabel("Welcome to Deusto Murder", SwingConstants.CENTER);
+    JLabel welcome = new JLabel("Welcome, Detective", SwingConstants.CENTER);
+    welcome.setFont(new Font("Georgia", Font.BOLD, 24));
+    welcome.setForeground(new Color(235,215,100));
     JLabel welcome2 = new JLabel("A Deusto version of the famous game Cluedo", SwingConstants.CENTER);
+    welcome2.setFont(new Font("Georgia", Font.PLAIN, 14));
+    welcome2.setForeground(new Color(220, 200, 175));
     centerPanel.add(welcome, BorderLayout.NORTH);
     centerPanel.add(welcome2, BorderLayout.SOUTH);
     centerPanel.setOpaque(false);
