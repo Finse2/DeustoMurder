@@ -1,7 +1,8 @@
 package app;
 
+import activation.Screen.MainScreen;
 import ui.match.InGameScreen;
-import ui.menu.MainScreen;
+import activation.Screen.MainScreen;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -21,10 +22,7 @@ public final class Main {
     }
 
     private static void showMainMenu() {
-        MainScreen menu = new MainScreen(
-                Main::openLocalGame,
-                Main::showJoinNotImplemented
-        );
+        MainScreen menu = new MainScreen();
         menu.setVisible(true);
     }
 
