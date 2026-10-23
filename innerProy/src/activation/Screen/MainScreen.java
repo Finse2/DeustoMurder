@@ -1,5 +1,7 @@
 package activation.Screen;
 
+import Networking.Client;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -231,7 +233,8 @@ public class MainScreen extends JFrame {
             }
         };
 
-        JScrollPane scrollPane = new JScrollPane(settingsTable);
+        JScrollPane scrollPane = CluedoTableTheme.style(settingsTable);
+        settingsFrame.getContentPane().setBackground(new Color(20, 22, 27));
         settingsFrame.add(scrollPane);
 
         settingsFrame.setSize(450, 300);
@@ -259,7 +262,8 @@ public class MainScreen extends JFrame {
             }
         };
 
-        JScrollPane scrollPane = new JScrollPane(statsTable);
+        JScrollPane scrollPane = CluedoTableTheme.style(statsTable);
+        statFrame.getContentPane().setBackground(new Color(20, 22, 27));
         statFrame.add(scrollPane);
 
         statFrame.setSize(450, 300);
