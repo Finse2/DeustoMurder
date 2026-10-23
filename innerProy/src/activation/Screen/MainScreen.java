@@ -14,6 +14,7 @@ import java.nio.file.Path;
 
 public class MainScreen extends JFrame {
     private static final Path PROFILE_PATH = Path.of(System.getProperty("user.home"),".deustoCluedo","profile.png");
+    private static final Path DEFAULT_PROFILE_PATH = Path.of("innerProy", "ressources", "DefaultProfile.jpg");
     private ProfileButton profileButton;
 
     public MainScreen() {
@@ -36,17 +37,9 @@ public class MainScreen extends JFrame {
 
     JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     buttonPanel.setOpaque(false);
-    BufferedImage defaultProfile = null;
-    try {
-        defaultProfile = ImageIO.read(PROFILE_PATH.toFile());
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-    JButton profile = new ProfileButton(defaultProfile);
-    profile.setOpaque(false);
-    profile.setBorderPainted(false);
-    profile.setContentAreaFilled(false);
-    profile.setFocusPainted(false);
+
+    profileButton = new ProfileButton(loadProfilePicture());
+    profileButton.addActionListener(e -> openProfileStats());
     ImageIcon icon1 = new ImageIcon("innerProy/ressources/settings.png");
     Image image1 = icon1.getImage();
     Image reseizedImage1 = image1.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
@@ -56,7 +49,7 @@ public class MainScreen extends JFrame {
     settings.setContentAreaFilled(false);
     settings.setFocusPainted(false);
     buttonPanel.add(settings);
-    buttonPanel.add(profile);
+    buttonPanel.add(profileButton);
     northPanel.add(buttonPanel, BorderLayout.EAST);
 
     JPanel westEqualizePanel = new JPanel();
@@ -67,7 +60,7 @@ public class MainScreen extends JFrame {
     add(northPanel, BorderLayout.NORTH);
 
     // profile JTable
-    profile.addActionListener(e -> {
+    profileButton.addActionListener(e -> {
         openProfileStats();
     });
 
@@ -278,6 +271,13 @@ public class MainScreen extends JFrame {
         statFrame.getContentPane().setBackground(new Color(20, 22, 27));
         statFrame.add(scrollPane);
 
+        JButton changePicture = createDialogButton(
+                "Change Profile Picture"
+        );
+
+        changePicture.addActionListener(e -> changeProfilePicture());
+        statFrame.add(changePicture, BorderLayout.SOUTH);
+
         statFrame.setSize(450, 300);
         statFrame.setLocationRelativeTo(this);
         statFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -285,84 +285,103 @@ public class MainScreen extends JFrame {
 
 
     }
-    public static void main(String[] args) {
-        MainScreen m = new MainScreen();
+    private JButton createDialogButton(String text) {
+        JButton button = new JButton(text);
+        button.setBackground(new Color(75, 38, 42));
+        button.setForeground(new Color(225, 190, 140));
+        button.setFont(new Font("Georgia", Font.BOLD, 14));
+        button.setFocusPainted(false);
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 18, 10, 18));
+        button.setOpaque(true);
+        return button;
     }
 
-
-record Settings(String option, Object value) {
-
-    public static Object[][] toArray(Settings[] settings) {
-        Object[][] result = new Object[settings.length][2];
-
-        for (int i = 0; i < settings.length; i++) {
-            result[i][0] = settings[i].option();
-            result[i][1] = settings[i].value();
-        }
-
-        return result;
-    }
-}
     private BufferedImage loadProfilePicture() {
+        BufferedImage saved = readImage(PROFILE_PATH);
+        if (saved != null) {
+            return saved;
+        }
+        return readImage(DEFAULT_PROFILE_PATH);
+    }
+
+    private BufferedImage readImage(Path path) {
+        if (!Files.isRegularFile(path)) {
+            return null;
+        }
         try {
-            if (Files.exists(MainScreen.PROFILE_PATH)) {
-                return ImageIO.read(PROFILE_PATH.toFile());
-            } else {
-                // Load a default profile picture if the file doesn't exist
-                return ImageIO.read(getClass().getResource("innerProy/ressources/defaultProfile.png"));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+            return ImageIO.read(path.toFile());
+        } catch (IOException ex) {
+            System.err.println("Could not read image " + path + ": " + ex.getMessage());
             return null;
         }
     }
 
-private void changeProfilePicture() {
+    private void changeProfilePicture() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Choose Profile Picture");
+        chooser.setFileFilter(new FileNameExtensionFilter(
+                "Image files (*.png, *.jpg, *.jpeg)", "png", "jpg", "jpeg"
+        ));
+        chooser.setAcceptAllFileFilterUsed(false);
 
-    JFileChooser chooser = new JFileChooser();
+        if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
 
-    chooser.setDialogTitle("Choose Profile Picture");
-    chooser.setFileFilter(
-            new FileNameExtensionFilter(
-                    "Image files (*.png, *.jpg, *.jpeg)",
-                    "png", "jpg", "jpeg"
-            )
-    );
+        try {
+            BufferedImage selected = ImageIO.read(chooser.getSelectedFile());
+            if (selected == null) {
+                throw new IOException("Unsupported or damaged image file.");
+            }
 
-    int result = chooser.showOpenDialog(this);
+            // Resize very large pictures before saving, preserving their aspect ratio.
+            BufferedImage picture = resizeIfNecessary(selected, 512);
+            Files.createDirectories(PROFILE_PATH.getParent());
+            if (!ImageIO.write(picture, "png", PROFILE_PATH.toFile())) {
+                throw new IOException("Could not save the profile image as PNG.");
+            }
 
-    if (result != JFileChooser.APPROVE_OPTION) {
-        return;
+            profileButton.setPicture(picture);
+        } catch (IOException | IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Could not update profile picture: " + ex.getMessage(),
+                    "Image Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
-    try {
-        BufferedImage selected = ImageIO.read(
-                chooser.getSelectedFile()
-        );
-
-        if (selected == null) {
-            throw new IOException("Unsupported image format");
+    private BufferedImage resizeIfNecessary(BufferedImage source, int maxSide) {
+        int originalWidth = source.getWidth();
+        int originalHeight = source.getHeight();
+        if (originalWidth <= maxSide && originalHeight <= maxSide) {
+            return source;
         }
 
-        // Save image permanently in the user's folder
-        Files.createDirectories(PROFILE_PATH.getParent());
+        double factor = Math.min((double) maxSide / originalWidth,
+                (double) maxSide / originalHeight);
+        int width = Math.max(1, (int) Math.round(originalWidth * factor));
+        int height = Math.max(1, (int) Math.round(originalHeight * factor));
+        BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = result.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g2.drawImage(source, 0, 0, width, height, null);
+        g2.dispose();
+        return result;
+    }
 
-        if (!ImageIO.write(
-                selected, "png", PROFILE_PATH.toFile()
-        )) {
-            throw new IOException("Unable to save PNG image");
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(MainScreen::new);
+    }
+}
+
+record Settings(String option, Object value) {
+    public static Object[][] toArray(Settings[] settings) {
+        Object[][] result = new Object[settings.length][2];
+        for (int i = 0; i < settings.length; i++) {
+            result[i][0] = settings[i].option();
+            result[i][1] = settings[i].value();
         }
-
-        // Immediately update the main menu
-        profileButton.setPicture(selected);
-
-    } catch (IOException e) {
-        JOptionPane.showMessageDialog(
-                this,
-                "Could not load profile picture: " + e.getMessage(),
-                "Image Error",
-                JOptionPane.ERROR_MESSAGE
-            );
-        }
+        return result;
     }
 }
