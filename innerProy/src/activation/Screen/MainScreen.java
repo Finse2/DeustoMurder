@@ -119,20 +119,177 @@ public class MainScreen extends JFrame {
     }
 
     private void HostGame() {
-        connectionValues connection = openConnection();
+        ConnectionResult connection = openConnection();
         System.out.println(connection.toString());
     }
 
     private void JoinGame() {
-        openConnection();
-    }
 
+        connectionValues clientConnect = ClientConnection();
+        if (clientConnect == null) {
+            return;
+        }
+        System.out.println(clientConnect.toString());
+    }
     private void Exit() {
         dispose();
     }
 
-    private connectionValues openConnection() {
+
+    private connectionValues ClientConnection() {
+
         connectionValues connect = new connectionValues();
+        final connectionValues[] result = {null};
+
+        JDialog connectionDialog = new JDialog(
+                this, "Connection Parameters", true
+        );
+
+        connectionDialog.setLayout(new BorderLayout(10, 10));
+
+        // SERVER CODE INPUT
+        JPanel codePanel = new JPanel(new BorderLayout(10, 0));
+
+        JLabel codeLabel = new JLabel("Server Code:");
+        JTextField codeHolder = new JTextField();
+
+        codePanel.add(codeLabel, BorderLayout.WEST);
+        codePanel.add(codeHolder, BorderLayout.CENTER);
+
+        connectionDialog.add(codePanel, BorderLayout.NORTH);
+
+        // MANUAL CONNECTION TABLE
+        String[] columns = {"Parameter", "Value"};
+
+        Settings[] data = {
+                new Settings("Host name", connectionValues.hostName),
+                new Settings("IP Address", connectionValues.ipAddress),
+                new Settings("Port", connectionValues.port)
+        };
+
+        JTable connectionTable = new JTable(
+                Settings.toArray(data), columns
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column != 0;
+            }
+        };
+
+        JScrollPane scrollPane =
+                new JScrollPane(connectionTable);
+
+        connectionDialog.add(scrollPane, BorderLayout.CENTER);
+
+        // CONFIRM BUTTON
+        JButton confirmButton = new JButton("Confirm");
+
+        confirmButton.addActionListener(e -> {
+            try {
+                String hostName;
+                String ipAddress;
+                int port;
+
+                String code = codeHolder.getText().trim();
+
+                if (!code.isEmpty()) {
+
+                    // CONNECTION USING SERVER CODE
+                    ServerCode.ServerInfo info =
+                            ServerCode.decode(code);
+
+                    hostName = info.hostname();
+                    ipAddress = info.ip();
+                    port = info.port();
+
+                } else {
+
+                    // MANUAL CONNECTION
+                    if (connectionTable.isEditing()) {
+                        if (!connectionTable.getCellEditor()
+                                .stopCellEditing()) {
+                            return;
+                        }
+                    }
+
+                    Object nameValue = connectionTable.getValueAt(0, 1);
+                    Object ipValue = connectionTable.getValueAt(1, 1);
+                    Object portValue = connectionTable.getValueAt(2, 1);
+
+                    hostName = nameValue == null ? ""
+                            : nameValue.toString().trim();
+
+                    ipAddress = ipValue == null ? ""
+                            : ipValue.toString().trim();
+
+                    port = Integer.parseInt(
+                            portValue == null ? ""
+                                    : portValue.toString().trim()
+                    );
+                }
+
+                // VALIDATE PARAMETERS
+                if (hostName.isBlank() || ipAddress.isBlank()) {
+                    throw new IllegalArgumentException(
+                            "Hostname and IP cannot be empty."
+                    );
+                }
+
+                if (port < 1 || port > 65535) {
+                    throw new IllegalArgumentException(
+                            "Invalid port."
+                    );
+                }
+
+                // SAVE CONNECTION VALUES
+                connect.setHostName(hostName);
+                connect.setIpAddress(ipAddress);
+                connect.setPort(port);
+
+                result[0] = connect;
+
+                connectionDialog.dispose();
+
+            } catch (NumberFormatException ex) {
+
+                JOptionPane.showMessageDialog(
+                        connectionDialog,
+                        "Please enter a valid numeric port.",
+                        "Invalid Port",
+                        JOptionPane.ERROR_MESSAGE
+                );
+
+            } catch (Exception ex) {
+
+                JOptionPane.showMessageDialog(
+                        connectionDialog,
+                        "Connection parameters error: "
+                                + ex.getMessage(),
+                        "Connection Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+        });
+
+        connectionDialog.add(confirmButton, BorderLayout.SOUTH);
+
+        connectionDialog.setSize(450, 300);
+        connectionDialog.setLocationRelativeTo(this);
+        connectionDialog.setDefaultCloseOperation(
+                JDialog.DISPOSE_ON_CLOSE
+        );
+
+        connectionDialog.setVisible(true);
+        return result[0];
+    }
+
+
+    private ConnectionResult openConnection() {
+
+        connectionValues connect = new connectionValues();
+
+        // Stores the result after confirmation
+        final ConnectionResult[] result = {null};
 
         JDialog connectionDialog = new JDialog(
                 this, "Connection Parameters", true
@@ -160,24 +317,30 @@ public class MainScreen extends JFrame {
 
         confirmButton.addActionListener(e -> {
             try {
-                // Make sure the current cell edit is saved
                 if (connectionTable.isEditing()) {
                     connectionTable.getCellEditor().stopCellEditing();
                 }
 
-                String hostName = connectionTable.getValueAt(0, 1).toString();
-                String ipAddress = connectionTable.getValueAt(1, 1).toString();
+                String hostName = connectionTable.getValueAt(0, 1).toString().trim();
+                String ipAddress = connectionTable.getValueAt(1, 1).toString().trim();
                 int port = Integer.parseInt(
-                        connectionTable.getValueAt(2, 1).toString()
+                        connectionTable.getValueAt(2, 1).toString().trim()
                 );
 
                 if (port < 1 || port > 65535) {
                     throw new IllegalArgumentException("Invalid port");
                 }
 
+                // Generate the server code
+                String code = ServerCode.Encode(ipAddress, port, hostName);
+
+                // Store the connection parameters
                 connect.setHostName(hostName);
                 connect.setIpAddress(ipAddress);
                 connect.setPort(port);
+
+                // Save both values together
+                result[0] = new ConnectionResult(connect, code);
 
                 connectionDialog.dispose();
 
@@ -188,11 +351,20 @@ public class MainScreen extends JFrame {
                         "Invalid Port",
                         JOptionPane.ERROR_MESSAGE
                 );
+
             } catch (IllegalArgumentException ex) {
                 JOptionPane.showMessageDialog(
                         connectionDialog,
                         ex.getMessage(),
                         "Invalid Connection Parameters",
+                        JOptionPane.ERROR_MESSAGE
+                );
+
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(
+                        connectionDialog,
+                        "Unable to generate server code: " + ex.getMessage(),
+                        "Connection Error",
                         JOptionPane.ERROR_MESSAGE
                 );
             }
@@ -206,8 +378,9 @@ public class MainScreen extends JFrame {
 
         connectionDialog.setVisible(true);
 
-        return connect;
+        return result[0];
     }
+
 
     private void openSettings() {
         JFrame settingsFrame = new JFrame("Settings");
@@ -369,6 +542,11 @@ public class MainScreen extends JFrame {
         SwingUtilities.invokeLater(MainScreen::new);
     }
 }
+
+record ConnectionResult (
+        connectionValues connection,
+        String code
+){}
 
 record Settings(String option, Object value) {
     public static Object[][] toArray(Settings[] settings) {
