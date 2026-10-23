@@ -59,11 +59,6 @@ public class MainScreen extends JFrame {
     northPanel.add(westEqualizePanel, BorderLayout.WEST);
     add(northPanel, BorderLayout.NORTH);
 
-    // profile JTable
-    profileButton.addActionListener(e -> {
-        openProfileStats();
-    });
-
     // settings JTable
     settings.addActionListener(e -> {
         openSettings();
