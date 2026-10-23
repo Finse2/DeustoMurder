@@ -1,0 +1,57 @@
+warning: in the working copy of '.idea/workspace.xml', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/.idea/workspace.xml b/.idea/workspace.xml[m
+[1mindex 4cb5cdd..4844b9c 100644[m
+[1m--- a/.idea/workspace.xml[m
+[1m+++ b/.idea/workspace.xml[m
+[36m@@ -4,41 +4,7 @@[m
+     <option name="autoReloadType" value="SELECTIVE" />[m
+   </component>[m
+   <component name="ChangeListManager">[m
+[31m-    <list default="true" id="8563273f-b94d-4691-9ec1-cace6571287c" name="Changes" comment="">[m
+[31m-      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Game.java" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Main.java" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Screen/BackGround.java" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Screen/MainScreen.java" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Window.java" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/dice.java" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/innerProy/src/model/RawPiece.java" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/innerProy/src/model/RawRoom.java" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/innerProy/src/model/Tile.java" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/innerProy/src/module-info.java" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/innerProy/src/ui/ActorsLook.java" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/innerProy/src/ui/BoardLayout.java" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/innerProy/src/ui/DetectiveCard.java" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/innerProy/src/ui/RoomsLook.java" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/innerProy/src/ui/TileAspect.java" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Game.class" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Main.class" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/BackGround.class" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen.class" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Window.class" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/dice.class" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/model/RawPiece.class" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/model/RawRoom.class" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/model/Tile.class" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/module-info.class" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/ui/ActorsLook.class" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/ui/BoardLayout$PlacedTile.class" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/ui/BoardLayout.class" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/ui/DetectiveCard.class" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/ui/RoomsLook.class" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/ui/TileAspect$TileDirection.class" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/ui/TileAspect.class" beforeDir="false" />[m
+[31m-      <change beforePath="$PROJECT_DIR$/out/production/networking/module-info.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/networking/module-info.class" afterDir="false" />[m
+[31m-    </list>[m
+[32m+[m[32m    <list default="true" id="8563273f-b94d-4691-9ec1-cace6571287c" name="Changes" comment="" />[m
+     <option name="SHOW_DIALOG" value="false" />[m
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />[m
+     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />[m
+[36m@@ -142,7 +108,7 @@[m
+     "RunOnceActivity.typescript.service.memoryLimit.init": "true",[m
+     "codeWithMe.voiceChat.enabledByDefault": "false",[m
+     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",[m
+[31m-    "git-widget-placeholder": "main",[m
+[32m+[m[32m    "git-widget-placeholder": "mainscreen-update",[m
+     "ignore.virus.scanning.warn.message": "true",[m
+     "junie.onboarding.icon.badge.shown": "true",[m
+     "kotlin-language-version-configured": "true",[m
