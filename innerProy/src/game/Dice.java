@@ -1,6 +1,6 @@
 package game;
 
-public class dice {
+public class Dice {
 
     static int min = 1;
     static int max = 6;

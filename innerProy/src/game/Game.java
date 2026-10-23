@@ -12,7 +12,6 @@ import javax.swing.*;
 import java.util.ArrayList;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -274,7 +273,7 @@ public class Game {
 
             // TIRAR DADOS
 
-            dice diceRoll = new dice();
+            Dice diceRoll = new Dice();
 
             int dice1 = diceRoll.roll(); // Dado 1
             int dice2 = diceRoll.roll(); // Dado 2
