@@ -5,16 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8563273f-b94d-4691-9ec1-cace6571287c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/innerProy/src/activation/Screen/CluedoTableTheme.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/innerProy/src/activation/Screen/ProfileButton.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Screen/MainScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/activation/Screen/MainScreen.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$2.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$3.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/Settings.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/Settings.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/game/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/game/Game.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/game/dice.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/game/dice.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/Settings.class" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,61 +42,61 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="2.786015515812554E-25" />
-      <entry key="MS500" value="1.2982173653016258E-5" />
-      <entry key="S2" value="0.08819721872214568" />
-      <entry key="S5" value="0.5694295271532838" />
-      <entry key="S10" value="1.1239512047846139" />
-      <entry key="S30" value="2.016379491098124" />
-      <entry key="S60" value="2.4888845664006" />
-      <entry key="M2" value="5.632618676810907" />
-      <entry key="M5" value="34.94315713433816" />
-      <entry key="M10" value="79.74983510627155" />
-      <entry key="M15" value="113.06889382970701" />
-      <entry key="M30" value="178.20883833754257" />
-      <entry key="H1" value="238.63532842960373" />
-      <entry key="H2" value="282.0471983884556" />
-      <entry key="H4" value="320.8259058683443" />
-      <entry key="D1" value="1176.6675984952315" />
-      <entry key="W1" value="2722.0122594083896" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.000000000000003" />
+      <entry key="S5" value="1.0000029733518536" />
+      <entry key="S10" value="1.0032278725734536" />
+      <entry key="S30" value="1.537812334009351" />
+      <entry key="S60" value="4.337137451647525" />
+      <entry key="M2" value="12.966673985212921" />
+      <entry key="M5" value="47.73635017247539" />
+      <entry key="M10" value="105.38812291656407" />
+      <entry key="M15" value="153.27473232269173" />
+      <entry key="M30" value="254.81530482671158" />
+      <entry key="H1" value="359.1996306351386" />
+      <entry key="H2" value="440.58385193987925" />
+      <entry key="H4" value="504.0763417624325" />
+      <entry key="D1" value="1375.606501949854" />
+      <entry key="W1" value="2932.5936848332303" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="1.0000000000000229" />
-      <entry key="MS500" value="1.0018709672230912" />
-      <entry key="S2" value="1.2079993685240513" />
-      <entry key="S5" value="1.557516148644349" />
-      <entry key="S10" value="1.9937025620429667" />
-      <entry key="S30" value="3.228485305297321" />
-      <entry key="S60" value="3.9449768148083266" />
-      <entry key="M2" value="4.483209051855367" />
-      <entry key="M5" value="5.640440315848772" />
-      <entry key="M10" value="7.712664039430393" />
-      <entry key="M15" value="9.996395565921208" />
-      <entry key="M30" value="15.832572696695786" />
-      <entry key="H1" value="22.06149183258184" />
-      <entry key="H2" value="26.764972045165102" />
-      <entry key="H4" value="30.606111849185503" />
-      <entry key="D1" value="75.07056334834763" />
-      <entry key="W1" value="127.70262345562567" />
+      <entry key="MS100" value="9.167322153235097E-299" />
+      <entry key="MS500" value="2.5079694969083974E-60" />
+      <entry key="S2" value="1.7010085725202618E-15" />
+      <entry key="S5" value="1.940873849402787E-6" />
+      <entry key="S10" value="0.002388575648769483" />
+      <entry key="S30" value="0.32889391941837365" />
+      <entry key="S60" value="1.2949617135847569" />
+      <entry key="M2" value="3.00177960372711" />
+      <entry key="M5" value="5.692530447785083" />
+      <entry key="M10" value="8.144465428596238" />
+      <entry key="M15" value="10.370551002054356" />
+      <entry key="M30" value="16.576048883045214" />
+      <entry key="H1" value="24.60186248006148" />
+      <entry key="H2" value="31.586176519637853" />
+      <entry key="H4" value="37.13766957199337" />
+      <entry key="D1" value="83.05134012852996" />
+      <entry key="W1" value="136.45511396449024" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.5839169193513096E-7" />
-      <entry key="MS500" value="0.04386643045839902" />
-      <entry key="S2" value="0.6359465538647379" />
-      <entry key="S5" value="1.6578815368040232" />
-      <entry key="S10" value="2.7856694546777105" />
-      <entry key="S30" value="5.079112376180959" />
-      <entry key="S60" value="6.337787695150442" />
-      <entry key="M2" value="10.061393045483431" />
-      <entry key="M5" value="40.54701216623247" />
-      <entry key="M10" value="87.42400403018243" />
-      <entry key="M15" value="123.02227937975267" />
-      <entry key="M30" value="193.99616111426113" />
-      <entry key="H1" value="260.66106426093444" />
-      <entry key="H2" value="308.78926028640007" />
-      <entry key="H4" value="351.41864365334976" />
-      <entry key="D1" value="1251.7329114390798" />
-      <entry key="W1" value="2849.7135095732715" />
+      <entry key="MS100" value="7.227499802162161E-7" />
+      <entry key="MS500" value="0.05912860292034973" />
+      <entry key="S2" value="0.4931163522466834" />
+      <entry key="S5" value="0.7536719228749166" />
+      <entry key="S10" value="0.8734935877568113" />
+      <entry key="S30" value="1.806273289401871" />
+      <entry key="S60" value="5.570720066327266" />
+      <entry key="M2" value="15.901556836262731" />
+      <entry key="M5" value="53.37514218206769" />
+      <entry key="M10" value="113.49195931596752" />
+      <entry key="M15" value="163.607553510922" />
+      <entry key="M30" value="271.35320353243685" />
+      <entry key="H1" value="383.7679732498428" />
+      <entry key="H2" value="472.146607334626" />
+      <entry key="H4" value="541.1996823529378" />
+      <entry key="D1" value="1458.6523257418366" />
+      <entry key="W1" value="3069.0473800281666" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{

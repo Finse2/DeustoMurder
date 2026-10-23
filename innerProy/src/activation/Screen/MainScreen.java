@@ -2,10 +2,19 @@ package activation.Screen;
 
 import Networking.Client;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.nio.Buffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class MainScreen extends JFrame {
+    private static final Path PROFILE_PATH = Path.of(System.getProperty("user.home"),".deustoCluedo","profile.png");
+    private ProfileButton profileButton;
 
     public MainScreen() {
         setTitle("Deusto Cluedo");
@@ -27,10 +36,13 @@ public class MainScreen extends JFrame {
 
     JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     buttonPanel.setOpaque(false);
-    ImageIcon icon = new ImageIcon("innerProy/ressources/DefaultProfile.jpg");
-    Image image = icon.getImage();
-    Image reseizedImage = image.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
-    JButton profile = new JButton(new ImageIcon(reseizedImage));
+    BufferedImage defaultProfile = null;
+    try {
+        defaultProfile = ImageIO.read(PROFILE_PATH.toFile());
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    JButton profile = new ProfileButton(defaultProfile);
     profile.setOpaque(false);
     profile.setBorderPainted(false);
     profile.setContentAreaFilled(false);
@@ -277,7 +289,6 @@ public class MainScreen extends JFrame {
         MainScreen m = new MainScreen();
     }
 
-}
 
 record Settings(String option, Object value) {
 
@@ -290,5 +301,68 @@ record Settings(String option, Object value) {
         }
 
         return result;
+    }
+}
+    private BufferedImage loadProfilePicture() {
+        try {
+            if (Files.exists(MainScreen.PROFILE_PATH)) {
+                return ImageIO.read(PROFILE_PATH.toFile());
+            } else {
+                // Load a default profile picture if the file doesn't exist
+                return ImageIO.read(getClass().getResource("innerProy/ressources/defaultProfile.png"));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+private void changeProfilePicture() {
+
+    JFileChooser chooser = new JFileChooser();
+
+    chooser.setDialogTitle("Choose Profile Picture");
+    chooser.setFileFilter(
+            new FileNameExtensionFilter(
+                    "Image files (*.png, *.jpg, *.jpeg)",
+                    "png", "jpg", "jpeg"
+            )
+    );
+
+    int result = chooser.showOpenDialog(this);
+
+    if (result != JFileChooser.APPROVE_OPTION) {
+        return;
+    }
+
+    try {
+        BufferedImage selected = ImageIO.read(
+                chooser.getSelectedFile()
+        );
+
+        if (selected == null) {
+            throw new IOException("Unsupported image format");
+        }
+
+        // Save image permanently in the user's folder
+        Files.createDirectories(PROFILE_PATH.getParent());
+
+        if (!ImageIO.write(
+                selected, "png", PROFILE_PATH.toFile()
+        )) {
+            throw new IOException("Unable to save PNG image");
+        }
+
+        // Immediately update the main menu
+        profileButton.setPicture(selected);
+
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(
+                this,
+                "Could not load profile picture: " + e.getMessage(),
+                "Image Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 }
