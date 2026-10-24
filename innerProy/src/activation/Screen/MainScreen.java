@@ -167,8 +167,7 @@ public class MainScreen extends JFrame {
                 new Settings("Port", connectionValues.port)
         };
 
-        JTable connectionTable = new JTable(
-                Settings.toArray(data), columns
+        JTable connectionTable = new JTable(Settings.toArray(data), columns
         ) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -176,8 +175,7 @@ public class MainScreen extends JFrame {
             }
         };
 
-        JScrollPane scrollPane =
-                new JScrollPane(connectionTable);
+        JScrollPane scrollPane = CluedoTableTheme.style(connectionTable);
 
         connectionDialog.add(scrollPane, BorderLayout.CENTER);
 
@@ -310,7 +308,7 @@ public class MainScreen extends JFrame {
             }
         };
 
-        JScrollPane scrollPane = new JScrollPane(connectionTable);
+        JScrollPane scrollPane = CluedoTableTheme.styleConnection(connectionTable);
         connectionDialog.add(scrollPane, BorderLayout.CENTER);
 
         JButton confirmButton = new JButton("Confirm");
@@ -406,7 +404,7 @@ public class MainScreen extends JFrame {
             }
         };
 
-        JScrollPane scrollPane = CluedoTableTheme.style(settingsTable);
+        JScrollPane scrollPane = CluedoTableTheme.styleConnection(settingsTable);
         settingsFrame.getContentPane().setBackground(new Color(20, 22, 27));
         settingsFrame.add(scrollPane);
 
