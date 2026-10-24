@@ -175,4 +175,45 @@ public class CluedoTableTheme {
 
         return scrollPane;
     }
+    public static JScrollPane styleConnection(JTable table){
+        JScrollPane scrollPane = style(table);
+        table.setRowHeight(50);
+        TableCellRenderer panelRenderer = (t, value, isSelected, hasFocus, row, column) -> {
+            Color rowColor = isSelected ? SELECTED: row % 2 == 0 ? BACKGROUND : ALT_ROW;
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.setBackground(rowColor);
+
+            panel.setBorder(BorderFactory.createEmptyBorder(5,10,5,10));
+
+            JLabel label = new JLabel(value == null ? "" : value.toString());
+
+            label.setFont(new Font("Georgia", Font.PLAIN, 15));
+            label.setForeground(isSelected ? Color.WHITE : column == 0 ? GOLD : TEXT);
+
+            if (column == 0) {
+                panel.add(label, BorderLayout.CENTER);
+            } else {
+                JPanel fieldPanel = new JPanel(new BorderLayout());
+                fieldPanel.setBackground(isSelected ? new Color(75,43,44) : new Color(55,43,39));
+                fieldPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(hasFocus ? GOLD : new Color(110,85,55), 1), BorderFactory.createEmptyBorder(5,12,5,12)));
+                fieldPanel.add(label, BorderLayout.CENTER);
+                panel.add(fieldPanel, BorderLayout.CENTER);
+            }
+            return panel;
+        };
+        table.getColumnModel().getColumn(0).setCellRenderer(panelRenderer);
+        table.getColumnModel().getColumn(1).setCellRenderer(panelRenderer);
+        JTextField editorField = new JTextField();
+
+        editorField.setBackground(new Color(55,43,39));
+        editorField.setForeground(TEXT);
+        editorField.setCaretColor(GOLD);
+
+        editorField.setFont(new Font("Georgia", Font.PLAIN, 15));
+        editorField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(GOLD, 1),BorderFactory.createEmptyBorder(5, 12, 5, 12)));
+
+        table.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(editorField));
+
+        return scrollPane;
+    }
 }
