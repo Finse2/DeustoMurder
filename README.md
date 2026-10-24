@@ -1,72 +1,67 @@
 # DeustoMurder
 
-DeustoMurder is a Java-based multiplayer murder mystery game inspired by **Cluedo**.
+DeustoMurder es un juego de misterio y asesinato multijugador desarrolado en Java e inspirado en **Cluedo**.
 
-The game uses custom characters, weapons, and rooms based around Deusto. Players will be able to join the same game from different computers, move around the board, make suggestions, gather information, and attempt to discover the hidden murder solution.
+El juego utiliza personajes, armas y habitaciones personalizados basados en la Universidad de Deusto. Los jugadores podrán unirse a la misma partida desde diferentes ordenadores, moverse por el tablero, hacer sugerencias, reunir información e intentar descubrir la solución oculta del asesinato. 
 
-## Game Objective
+## Objetivo del juego
 
-At the beginning of the game, one random card from each category is selected:
+Al principio de la partida, se selecciona una carta aleatoria de cada categoría:
 
 * 1 Actor
-* 1 Weapon
-* 1 Room
+* 1 Arma
+* 1 Habitación
 
-These three cards form the hidden murder solution.
+Estas tres cartas forman la solución oculta del asesinato.
 
-The remaining cards are shuffled and distributed between the players. Any cards left over are made visible to all players.
+Las cartas restantes se barajan y se reparten entre los jugadores. Las cartas sobrantes se muestran visibles para todos los jugadores.
 
-The objective is to determine:
+El objetivo es determinar:
 
-**Who committed the murder, with which weapon, and in which room?**
+**¿Quién cometió el asesinato, con qué arma y en qué habitación?**
 
-## Current Features
+## Funcionalidades actuales
 
-* Actor card system
-* Weapon card system
-* Room card system
-* Random murder solution generation
-* Random card shuffling
-* Card distribution between players
-* Visible leftover cards
-* Player hand management
-* Player X/Y position system
-* Basic player movement
+* Sistema de cartas de Actor
+* Sistema de cartas de Arma
+* Sistema de cartas de Habitación
+* Generación aleatoria de la solución del asesinato
+* Barajado aleatorio de cartas
+* Reparto de cartas entre los jugadores
+* Cartas sobrantes visibles
+* Gestión de la mano de cada jugador
+* Sistema de posiciones X/Y de los jugadores
+* Movimiento básico del jugador hacia las cuatro direcciones posibles
 
-  * Up
-  * Down
-  * Left
-  * Right
+## Funcionalidades planeadas
 
-## Planned Features
+* Interfaz gráfica utilizando Java Swing
+* Tablero de juego completo
+* Validación de movimientos
+* Habitaciones y entradas a las habitaciones
+* Sistema de turnos con dados / movimiento
+* Sugerencias
+* Acusaciones
+* Sistema de revelación de cartas
+* Gestión de turnos
+* Condiciones de victoria/derrota
+* Selección de personaje
+* Red para multijugador
+* Sistema para hostear/unirse a una partida
+* Múltiples ordenadores conectados a la misma partida
 
-* Graphical interface using Java Swing
-* Full game board
-* Movement validation
-* Rooms and room entrances
-* Dice / movement turn system
-* Suggestions
-* Accusations
-* Card revealing system
-* Turn management
-* Win / lose conditions
-* Character selection
-* Multiplayer networking
-* Host / join game system
-* Multiple computers connected to the same match
+## Personajes
 
-## Characters
+Los personajes actuales son: 
 
-The current characters are:
+* Garaizar — Rosa
+* Luka — Morado
+* David — Azul
+* Andrada — Rojo
+* Antal — Verde
+* Bringas — Amarillo
 
-* Garaizar — Pink
-* Luka — Purple
-* David — Blue
-* Andrada — Red
-* Antal — Green
-* Bringas — Yellow
-
-## Weapons
+## Armas
 
 * Machete
 * Tiza 
@@ -75,7 +70,7 @@ The current characters are:
 * Silla
 * Destornillador
 
-## Rooms
+## Habitaciones
 
 * CRAI
 * Baños
@@ -87,18 +82,18 @@ The current characters are:
 * Decanato
 * Polideportivo
 
-## Technologies
+## Tecnologías empleadas
 
 * Java
 * Java Swing
 * Java Collections
-* Object-Oriented Programming
+* Programación Orientada a Objetos
 * Git
 * GitHub
 
-Networking will later be added to allow multiple players to participate from different computers.
+Más adelante se añadirá red para permitir que varios jugadores participen desde diferentes ordenadores.
 
-## Project Structure
+## Estructura del proyecto
 
 ```text
 DeustoMurder/
@@ -120,26 +115,26 @@ DeustoMurder/
 └── README.md
 ```
 
-The project structure will grow as networking, board logic, UI, and game-management systems are implemented.
+La estructura del proyecto irá creciendo a medida que se implementen la red, la lógica del tablero, la interfaz de usuario y los sistemas de gestión del juego.
 
-## Current Game Setup
+## Configuración actual del juego
 
-When a game starts:
+Cuando comienza la partida: 
 
-1. Actors, weapons, and rooms are created.
-2. Each category is shuffled.
-3. One Actor, Weapon, and Room are removed to create the hidden solution.
-4. All remaining cards are combined into the playable deck.
-5. The deck is shuffled.
-6. Each player receives 4 cards.
-7. Remaining cards become visible to every player.
+1. Se crean los actores, las armas y las habitaciones.
+2. Se baraja cada categoría.
+3. Se extrae un Actor, un Arma y una Habitación para crear la solución oculta.
+4. Todas las cartas restantes se combinan en el mazo jugable.
+5. Se baraja el mazo.
+6. Cada jugador recibe 4 cartas.
+7. Las cartas sobrantes se vuelven visibles para todos los jugadores.
 
-## Development Status
+## Estado de desarrollo
 
-DeustoMurder is currently under development.
+DeustoMurder se encuentra actualmente en desarrollo.
 
-The core card and player model is being implemented first. The next major systems will include the board, movement rules, user interface, and multiplayer networking.
+En primer lugar se está implementando el modelo base de cartas y jugadores. Los siguientes sistemas principales incluirán el tablero, las reglas de movimiento, la interfaz de usuario y la red multijugador.
 
-## Contributors
+## Contribuidores
 
-Developed as a group project by students at the University of Deusto.
+Desarrollado como un proyecto grupal por estudiantes de la Universidad de Deusto.

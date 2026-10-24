@@ -1,94 +1,89 @@
 package model;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
 
     final private Actor self;
-    private int playerPosX;
-    private int playerPosY;
+    private final Piece piece;
     private static int nextPlayerID = 0;
     private int playerID;
     private String name;
-    private List <Card> cards;
-    private List <Card> detectiveNotes;
-    private Figure figure;
-    private PlayerActivity activity;
+    private List<Card> player_cards;
+    private final List<Card> detectiveNotes = new ArrayList<>();
 
-    public Player(Actor self, List<Card> cards, int playerID, String name, PlayerActivity activity) {
+    public Player(Actor self, List<Card> player_cards, int playerID) {
+        this(self, player_cards, playerID, self == null ? null : self.getName());
+    }
+
+    public Player(Actor self, List<Card> player_cards, int playerID, String name) {
         this.self = self;
-        cards = new ArrayList<>();
-        detectiveNotes = new ArrayList<>();
-
+        this.player_cards = player_cards == null ? new ArrayList<>() : player_cards;
         this.playerID = nextPlayerID;
-        nextPlayerID++;
-
         this.name = name;
-        this.activity = activity;
+        this.piece = new Piece(this);
+        nextPlayerID++;
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
-    public void setName() {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public PlayerActivity getActivity() {
-        return activity;
-    }
-
     public void addCard(Card card) {
-        cards.add(card);
+        player_cards.add(card);
     }
 
     public void moveUP() {
-        playerPosY++;
+        piece.setPosition(piece.getX(), piece.getY() + 1);
     }
 
     public void moveDOWN() {
-        playerPosY--;
+        piece.setPosition(piece.getX(), piece.getY() - 1);
     }
 
     public void moveLEFT() {
-        playerPosX--;
+        piece.setPosition(piece.getX() - 1, piece.getY());
     }
 
     public void moveRIGHT() {
-        playerPosX++;
+        piece.setPosition(piece.getX() + 1, piece.getY());
     }
 
     public int getPlayerPosX() {
-        return playerPosX;
+        return piece.getX();
     }
 
     public int getPlayerPosY() {
-        return playerPosY;
+        return piece.getY();
     }
 
-    public int getPlayerID() {return playerID; }
+    public int getPlayerID() {
+        return playerID;
+    }
 
     public void setPlayerID(int playerID) {
         this.playerID = playerID;
     }
 
-    public void setPlayerPosX(int PlayerPosX) {
-        this.playerPosX = PlayerPosX;
+    public void setPlayerPosX(int playerPosX) {
+        piece.setPosition(playerPosX, piece.getY());
     }
 
-    public void setPlayerPosY(int PlayerPosY) {
-        this.playerPosY = PlayerPosY;
+    public void setPlayerPosY(int playerPosY) {
+        piece.setPosition(piece.getX(), playerPosY);
     }
 
-    public Figure getFigure() {
-        return figure;
+    Actor getSelf() {
+        return self;
     }
 
-    public void setFigure() {
-        this.figure = figure;
+    public Piece getPiece() {
+        return piece;
     }
 
     public void addDetectiveNote(Card card) {
@@ -97,17 +92,15 @@ public class Player {
         }
     }
 
-    public void removeDetectiveNote (Card card) {
+    public void removeDetectiveNote(Card card) {
         detectiveNotes.remove(card);
     }
 
-    public boolean hasDetectiveNote (Card card) {
+    public boolean hasDetectiveNote(Card card) {
         return detectiveNotes.contains(card);
     }
 
     public List<Card> getDetectiveNotes() {
         return detectiveNotes;
     }
-
-
 }
