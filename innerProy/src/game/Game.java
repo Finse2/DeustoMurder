@@ -38,6 +38,11 @@ public class Game {
 
     private boolean gameIsOver;
     private BoardLayout board;
+    private GameState gameState;
+    private RoundManager roundManager;
+    private MoveValidator moveValidator;
+    private AccusationValidator accusationValidator;
+
 
     // MÉTODO CONSTRUCTOR DE LA CLASE
 
@@ -87,13 +92,30 @@ public class Game {
         getRemainingCards();
         gameIsOver = false;
 
-        if (!players.isEmpty()) {
-            currentPlayer = players.get(0);
+        if (players.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "There's not enough players to start the game", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
 
-        if (!players.isEmpty()) {
-            playGame();
-        }
+        // INICIALIZAR LOS COMPONENTES DE LA PARTIDA
+        gameState = new GameState(players);
+        roundManager = new RoundManager(players);
+        moveValidator = new MoveValidator(board, roundManager);
+        accusationValidator = new AccusationValidator();
+
+        // INICIAR EL ESTADO Y LOS TURNOS
+        gameState.start();
+        roundManager.startTurns();
+
+        currentPlayer = roundManager.getCurrentPlayer();
+
+        // ACTUALIZAR TABLERO
+
+        updateBoard();
+
+        // COMENZAR LA LÓGICA ACTUAL DEL JUEGO
+
+        playGame();
     }
 
     // CREAR HABITACIONES
@@ -202,11 +224,11 @@ public class Game {
         Collections.shuffle(actors);
         Collections.shuffle(weapons);
 
-        Room solutionRoom = rooms.remove(0);
+        Room solutionRoom = rooms.removeFirst();
 
-        Actor solutionActor = actors.remove(0);
+        Actor solutionActor = actors.removeFirst();
 
-        Weapon solutionWeapon = weapons.remove(0);
+        Weapon solutionWeapon = weapons.removeFirst();
 
         solutionList.clear();
 
@@ -221,15 +243,21 @@ public class Game {
         deck.clear();
 
         for (Room room : rooms) {
-            deck.add(room);
+            if (!solutionList.contains(room)) {
+                deck.add(room);
+            }
         }
 
         for (Actor actor : actors) {
-            deck.add(actor);
+            if (!solutionList.contains(actor)) {
+                deck.add(actor);
+            }
         }
 
         for (Weapon weapon : weapons) {
-            deck.add(weapon);
+            if (!solutionList.contains(weapon)) {
+                deck.add(weapon);
+            }
         }
     }
 
@@ -265,60 +293,18 @@ public class Game {
 
     // EMPEZAR LA PARTIDA
 
-    private void playGame() {
-        while (!gameIsOver) {
-            currentPlayer = getCurrentPlayer();
+    public void playGame() {
+        currentPlayer = getCurrentPlayer();
 
-            sendTurn(currentPlayer);
+        sendTurn(currentPlayer);
 
-            // TIRAR DADOS
+        Dice diceRoll = new Dice();
 
-            Dice diceRoll = new Dice();
-
-            int dice1 = diceRoll.roll(); // Dado 1
-            int dice2 = diceRoll.roll(); // Dado 2
-
-            int totalMv = dice1 + dice2; // Suma de los dos dados
-            // MOVER JUGADOR
-            movePlayer (currentPlayer, totalMv);
-        }
-
-         // falta por implementar este método
-
-
-        // HACER SOSPECHA
-
-        if (playerIsInRoom(currentPlayer)) {
-            // Se hace la sospecha
-        }
-
-        // HACER ACUSACIÓN FINAL
-
-        if (playerIsInRoom(currentPlayer)) {
-            if (playerWantsToAccuse(currentPlayer)) {
-                // Se hace la acusación
-            }
-        }
-
-        // ACTUALIZAR EL ESTADO
-
-        updatePlayers();
-        updateBoard();
-
-        // PASAMOS AL SIGUIENTE JUGADOR
-
-        if (!gameIsOver) {
-            currentPlayer = getNextPlayer(currentPlayer, players);
-        }
-
-        // FIN DE LA PARTIDA
-
-        showFinalResult();
-        closeGame();
-
+        int totalMv = diceRoll.roll();
     }
     // MÉTODO PARA CONSEGUIR EL JUGADOR ACTUAL
     private Player getCurrentPlayer() {
+
         return currentPlayer;
     }
 
@@ -327,6 +313,8 @@ public class Game {
     private void setCurrentPlayer (Player player) {
         currentPlayer = player;
     }
+
+
 
     // ENVIAR TURNO
 
@@ -340,30 +328,30 @@ public class Game {
 
     // MOVER JUGADOR
 
-    private  void movePlayer (Player player, int totalMv) {
-        if (player == null) {
+    private void movePlayer (Player player, int totalMv) {
+
+        if (player == null || player.getPiece() == null){
             return;
         }
 
         Piece piece = player.getPiece();
 
-        if (piece == null) {
-            return;
-        }
-
         for (int i = 0; i < totalMv; i++) {
             int newX = piece.getX() + 1;
             int newY = piece.getY();
 
-            if (board != null) {
-                if (!board.canMovePiece(piece, newX, newY)) {
+            if (board != null && moveValidator != null) {
+                if (!moveValidator.isValidMove(player, piece, newX, newY)) {
                     break;
                 }
+
                 board.movePiece(piece, piece.getX(), piece.getY(), newX, newY);
-            } else if (canMoveTo(piece, newX, newY)) {
-                piece.setPosition(newX, newY);
             } else {
-                break;
+                if (!canMoveTo(piece, newX, newY)) {
+                    break;
+                }
+
+                piece.setPosition(newX, newY);
             }
         }
     }
@@ -380,6 +368,83 @@ public class Game {
         }
 
         return true;
+    }
+
+    // MÉTODO EN EL QUE EL JUGADOR QUIERE ACUSAR
+
+    private boolean askForAccusation() {
+        JComboBox<Room> roomBox = new JComboBox<>(rooms.toArray(new Room[0]));
+
+        JComboBox<Actor> actorBox = new JComboBox<>(actors.toArray(new Actor[0]));
+
+        JComboBox<Weapon> weaponBox = new JComboBox<>(weapons.toArray(new Weapon[0]));
+
+        JPanel panel = new JPanel(new GridLayout(0,2, 5, 5));
+
+        panel.add (new JLabel("Room: "));
+        panel.add(roomBox);
+
+        panel.add (new JLabel ("Actor: "));
+        panel.add(actorBox);
+
+        panel.add (new JLabel ("Weapon: "));
+        panel.add (weaponBox);
+
+        int option = JOptionPane.showConfirmDialog(null, panel, "Final accusation", JOptionPane.OK_CANCEL_OPTION);
+
+        if (option != JOptionPane.OK_OPTION) {
+            return false;
+        }
+
+        return checkAccusation((Room) roomBox.getSelectedItem(),
+                (Actor) actorBox.getSelectedItem(),
+                (Weapon) weaponBox.getSelectedItem());
+    }
+
+    // JUGAR TURNO
+
+    public void playTurn() {
+        if (gameIsOver || roundManager == null) {
+            return;
+        }
+
+        currentPlayer = roundManager.getCurrentPlayer();
+
+        if (currentPlayer == null) {
+            return;
+        }
+
+        sendTurn(currentPlayer);
+
+        Dice diceRoll = new Dice();
+        int totalMv = diceRoll.roll();
+
+        JOptionPane.showMessageDialog(null, currentPlayer.getName() + "ha sacado" + totalMv, "Tirada de dados", JOptionPane.INFORMATION_MESSAGE);
+
+        // MOVER AL JUGADOR
+        movePlayer(currentPlayer, totalMv);
+
+        // ACTUALIZAR EL TABLERO
+        updateBoard();
+
+        // SI EL JUGADOR ESTÁ EN LA HABITACIÓN PUEDE ACUSAR
+
+        if (playerIsInRoom(currentPlayer) && playerWantsToAccuse(currentPlayer)) {
+            boolean correct = askForAccusation();
+
+            if (correct) {
+                gameIsOver = true;
+                showFinalResult();
+                closeGame();
+                return;
+            }
+
+            // FINALIZAR EL TURNO Y PASAR AL SIGUIENTE JUGADOR
+
+            roundManager.nextTurn();
+            currentPlayer = roundManager.getCurrentPlayer();
+        }
+
     }
 
     // COMPROBAR SI EL JUGADOR SE ENCUENTRA EN LA HABITACIÓN PARA LA ACUSACIÓN FINAL
@@ -412,12 +477,22 @@ public class Game {
         }
         
         int option = JOptionPane.showConfirmDialog(
-                null, player.getName() + ", ¿quieres realizar una acusación final?", 
-                "Acusación final",
+                null, player.getName() + ", Do you want to make the final accusation?",
+                "Final accusation",
                 JOptionPane.YES_NO_OPTION
         );
 
         return option == JOptionPane.YES_NO_OPTION;
+    }
+
+    // COMPROBAR ACUSACIÓN
+
+    public boolean checkAccusation (Card room, Card actor, Card weapon) {
+        if (gameState == null || !gameState.canContinue()) {
+            return false;
+        }
+
+        return accusationValidator.isCorrectAccusation(room, actor, weapon, solutionList);
     }
 
     // ACTUALIZAR LOS JUGADORES
@@ -478,14 +553,26 @@ public class Game {
 
     // CERRAR PARTIDA
 
-    private void closeGame() {
+    public void closeGame() {
         gameIsOver = true;
         currentPlayer = null;
+
+        if (gameState != null) {
+            gameState.finish();
+        }
+
+        if (roundManager != null) {
+            roundManager.stopTurns();
+        }
+
+        if (board != null) {
+            board.repaint();
+        }
     }
 
     // AÑADIR JUGADOR
 
-    private void addPlayer(Player player) {
+    public void addPlayer(Player player) {
         if (player == null) {
             return;
         }
@@ -533,6 +620,18 @@ public class Game {
 
     public void setGameIsOver(boolean gameIsOver) {
         this.gameIsOver = gameIsOver;
+    }
+
+    public GameState getGameState () {
+        return gameState;
+    }
+
+    public RoundManager getRoundManager () {
+        return roundManager;
+    }
+
+    public MoveValidator getMoveValidator() {
+        return moveValidator;
     }
 
 }
