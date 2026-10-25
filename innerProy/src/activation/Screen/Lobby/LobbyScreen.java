@@ -19,6 +19,7 @@ public class LobbyScreen extends JFrame {
     private static final Path DEFAULT_PROFILE_PATH = Path.of("innerProy", "ressources", "DefaultProfile.jpg");
     private ProfileButton profileButton;
     public ArrayList<Player> players;
+    private LoadingSpinner loadingSpinner;
 
 public static void main(String[] args) {
     LobbyScreen lobbyScreen = new LobbyScreen();
@@ -123,7 +124,7 @@ public static void main(String[] args) {
         JPanel loadingPanel = new JPanel(new GridBagLayout());
         loadingPanel.setOpaque(false);
 
-        LoadingSpinner loadingSpinner = new LoadingSpinner();
+       loadingSpinner = new LoadingSpinner();
         loadingPanel.add(loadingSpinner);
 
         JPanel spinnerContainer = new JPanel(new BorderLayout());
@@ -156,13 +157,21 @@ public static void main(String[] args) {
 
         loadingSpinner.start();
 
-
-
         setContentPane(lobbyPanel);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
+
     }
+
+    @Override
+    public void dispose() {
+        if (loadingSpinner != null) {
+            loadingSpinner.stop();
+        }
+        super.dispose();
+    }
+
     private void openSettings() {
         JFrame settingsFrame = new JFrame("Settings");
         String[] colums = {"Settings", "Value"};
@@ -181,7 +190,6 @@ public static void main(String[] args) {
 
         JTable settingsTable = new JTable(Settings.toArray(data), colums) {
             @Override
-
             public boolean isCellEditable(int row, int column) {
                 return column != 0; // Make all cells oof the first column non-editable
             }
