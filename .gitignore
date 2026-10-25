@@ -1,1 +1,16 @@
+# IntelliJ IDEA local settings
 .idea/workspace.xml
+
+# Java compiled files
+*.class
+
+# IntelliJ build output
+out/
+
+# Other Java build directories
+target/
+build/
+
+# Temporary files
+*.log
+*.tmp
