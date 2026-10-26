@@ -1,6 +1,6 @@
 package ui.match.mockClasses;
 
-import game.core.GameSetup;
+import game.GameSetup;
 import model.Actor;
 import model.Player;
 import model.board.BoardFactory;
