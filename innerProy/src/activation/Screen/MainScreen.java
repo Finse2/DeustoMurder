@@ -787,21 +787,24 @@ public class MainScreen extends JFrame {
             return source;
         }
 
-        double factor = Math.min((double) maxSide / originalWidth,
-                (double) maxSide / originalHeight);
+        double factor = Math.min((double) maxSide / originalWidth, (double) maxSide / originalHeight);
         int width = Math.max(1, (int) Math.round(originalWidth * factor));
         int height = Math.max(1, (int) Math.round(originalHeight * factor));
         BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = result.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         g2.drawImage(source, 0, 0, width, height, null);
         g2.dispose();
         return result;
     }
 
     private void openHostLobby() {
-        LobbyScreen lobbyScreen = new LobbyScreen(hostRoster);
+        LobbyScreen lobbyScreen = new LobbyScreen(hostRoster,true,() -> {
+            if (hostClient == null || !hostClient.isConnected()) {
+            throw new IllegalStateException("Host is Disconected");
+            }
+            hostClient.startGame();
+        });
         lobbyScreen.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
