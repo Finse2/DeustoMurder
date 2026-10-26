@@ -18,14 +18,13 @@ public class LobbyScreen extends JFrame {
     private static final Path PROFILE_PATH = Path.of(System.getProperty("user.home"), ".deustoCluedo", "profile.png");
     private static final Path DEFAULT_PROFILE_PATH = Path.of("innerProy", "ressources", "DefaultProfile.jpg");
     private ProfileButton profileButton;
-    public ArrayList<Player> players;
     private LoadingSpinner loadingSpinner;
+    private LobbyRoster roster;
+    private JPanel playerListPanel;
+    private JLabel playerCountLabel;
 
-public static void main(String[] args) {
-    LobbyScreen lobbyScreen = new LobbyScreen();
-}
-    public LobbyScreen() {
-        players = new ArrayList<>();
+    public LobbyScreen(LobbyRoster roster) {
+        this.roster = java.util.Objects.requireNonNull(roster, "roster required");
         setTitle("Lobby");
         setSize(1200, 900);
 
@@ -61,37 +60,38 @@ public static void main(String[] args) {
         lobbyPanel.add(northPanel, BorderLayout.NORTH);
 
         //crear el panel de la izquierda(info de los jugadores)
-        JPanel westPanel = new JPanel(new GridLayout(4,1,5,5));
-        westPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
 
-        //crear el panel del host
-        JPanel hostPanel = new JPanel(new GridLayout(1,3,5,5));
-        hostPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
-        JLabel iconImagen = new JLabel("Profile Imagen"); //TO DO
-        JLabel hostName = new JLabel("Host Name");
-        JLabel hostCrown = new JLabel("Crown Imagen");
-        hostPanel.add(iconImagen);
-        hostPanel.add(hostName);
-        hostPanel.add(hostCrown);
-        //añadir el host al panel de jugadores
-        westPanel.add(hostPanel);
+        // PLAYER LIST
+        JPanel westPanel = new JPanel(new BorderLayout(5, 5));
+        westPanel.setPreferredSize(new Dimension(300, 0));
+        westPanel.setBorder(
+                BorderFactory.createLineBorder(Color.BLACK, 4)
+        );
 
-        //crear un panel por cada jugador invitado
-        for(Player player : players) {
-            JPanel playerPanel =new JPanel(new GridLayout(1,3,5,5));
-            playerPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
-            JLabel playerProfile = new JLabel("Player Profile imagen");
-            JLabel playerName = new JLabel("Player Name");
-            JLabel playerCrown = new JLabel("Player Crown imagen");
-            playerPanel.add(playerProfile);
-            playerPanel.add(playerName);
-            playerPanel.add(playerCrown);
+        playerCountLabel = new JLabel("Connected Players (0)");
+        playerCountLabel.setFont(
+                new Font("Georgia", Font.BOLD, 18)
+        );
+        playerCountLabel.setBorder(
+                BorderFactory.createEmptyBorder(12, 12, 12, 12)
+        );
 
-            //añadir el jugador al panel de jugadores
-            westPanel.add(playerPanel);
-        }
-        //añadir el panel de info de jugadores al panel principal
-        lobbyPanel.add(westPanel,BorderLayout.WEST);
+        westPanel.add(playerCountLabel, BorderLayout.NORTH);
+
+        // Container that will hold the player cards
+        playerListPanel = new JPanel();
+        playerListPanel.setLayout(
+                new BoxLayout(playerListPanel, BoxLayout.Y_AXIS)
+        );
+
+        JScrollPane playerScroll = new JScrollPane(playerListPanel);
+        playerScroll.setBorder(null);
+        playerScroll.getVerticalScrollBar().setUnitIncrement(16);
+
+        westPanel.add(playerScroll, BorderLayout.CENTER);
+
+        lobbyPanel.add(westPanel, BorderLayout.WEST);
+
 
         //crear el panel de la derecha (info de la conexion)
         JPanel eastPanel = new JPanel(new GridLayout(3,1,5,5));
@@ -160,17 +160,78 @@ public static void main(String[] args) {
         setContentPane(lobbyPanel);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
+        roster.setOnChanged(this::refreshPlayers);
         setVisible(true);
 
     }
 
     @Override
     public void dispose() {
+        roster.setOnChanged(null);
         if (loadingSpinner != null) {
             loadingSpinner.stop();
         }
         super.dispose();
     }
+
+    private void refreshPlayers() {
+
+        playerListPanel.removeAll();
+
+        var connectedPlayers = roster.snapshot();
+
+        playerCountLabel.setText(
+                "Connected Players (" + connectedPlayers.size() + ")"
+        );
+
+        for (LobbyRoster.Entry player : connectedPlayers) {
+
+            JPanel playerPanel = new JPanel(
+                    new BorderLayout(10, 5)
+            );
+
+            playerPanel.setBorder(
+                    BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(
+                                    new Color(85, 65, 55)
+                            ),
+                            BorderFactory.createEmptyBorder(
+                                    10, 12, 10, 12
+                            )
+                    )
+            );
+
+            playerPanel.setMaximumSize(
+                    new Dimension(Integer.MAX_VALUE, 70)
+            );
+            playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            JPanel infoPanel = new JPanel(new GridLayout(2, 1));
+            infoPanel.setOpaque(false);
+
+            JLabel name = new JLabel(player.name());
+            name.setFont(new Font("Georgia", Font.BOLD, 15));
+
+            JLabel details = new JLabel(
+                    "ID: " + player.playerID()
+                            + " | " + player.computerName()
+            );
+
+            details.setFont(new Font("Arial", Font.PLAIN, 11));
+
+            infoPanel.add(name);
+            infoPanel.add(details);
+
+            playerPanel.add(infoPanel, BorderLayout.CENTER);
+
+            playerListPanel.add(playerPanel);
+            playerListPanel.add(Box.createVerticalStrut(6));
+        }
+
+        playerListPanel.revalidate();
+        playerListPanel.repaint();
+    }
+
 
     private void openSettings() {
         JFrame settingsFrame = new JFrame("Settings");
