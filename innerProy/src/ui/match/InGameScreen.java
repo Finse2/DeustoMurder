@@ -2,18 +2,15 @@ package ui.match;
 
 import game.GameSetup;
 import model.Actor;
+import model.Player;
 import model.Room;
 import model.Weapon;
 import model.board.BoardFactory;
 import model.board.RawPiece;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Toolkit;
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,7 +24,7 @@ public final class InGameScreen extends JFrame {
     private final List<Actor> actors;
     private final List<Weapon> weapons;
     private final List<Room> rooms;
-
+    public ArrayList<Player> players;
     /** Creates the current local/demo board, without starting turn logic. */
     public InGameScreen() {
         this(new BoardLayout(
@@ -72,6 +69,23 @@ public final class InGameScreen extends JFrame {
         root.add(topPanel, BorderLayout.NORTH);
         root.add(board, BorderLayout.CENTER);
         setContentPane(root);
+
+        JPanel jugadoresPanel = new JPanel(new GridLayout(4,1,5,5));
+        JPanel hostPanel = new JPanel(new GridLayout(1,2,5,5) );
+        JLabel hostIcon = new JLabel("Imagen de perfil");
+        JLabel hostName = new JLabel("Nombre del detective");
+        hostPanel.add(hostIcon);
+        hostPanel.add(hostName);
+        jugadoresPanel.add(hostPanel);
+        for (Player player : players){
+            JPanel playerPanel = new JPanel(new  GridLayout(1,2,5,5));
+            JLabel playerIcon = new JLabel("Imagen de perfil");
+            JLabel playerName = new JLabel(player.getName());
+            playerPanel.add(playerIcon);
+            playerPanel.add(playerName);
+            jugadoresPanel.add(playerPanel);
+        }
+        root.add(jugadoresPanel, BorderLayout.WEST);
     }
 
     /** opens the detective card in its own window. */

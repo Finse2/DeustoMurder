@@ -5,19 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8563273f-b94d-4691-9ec1-cace6571287c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/innerProy/src/activation/Screen/Lobby/LobbyRoster.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Screen/Lobby/LobbyScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/activation/Screen/Lobby/LobbyScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Screen/MainScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/activation/Screen/MainScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/ConnectionResult.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/ConnectionResult.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$3.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$4.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/Settings.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/Settings.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/game/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/game/Game.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/game/GameState.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/game/GameState.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/ui/match/InGameScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/ui/match/InGameScreen.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -142,45 +131,45 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.DetectiveCard.executor": "Run",
-    "Application.GameScreen.executor": "Run",
-    "Application.Main.executor": "Run",
-    "Application.MainScreen.executor": "Run",
-    "Application.NetworkTestMain.executor": "Run",
-    "Application.ServerCode.executor": "Run",
-    "Application.createFileChunkTxt.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "copilot.chat.legacySessionMetadata.migrated": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/lukajacquespaul.arev/DeustoMurder/innerProy/ressources",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.jshint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.jshint": "",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "onboarding.tips.debug.path": "C:/Users/antaljanos.nistal/Desktop/world/programacion/Java/DeustoMurder/innerProy/src/Main.java",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "python.packages.toolwindow.project.migrated.to.right.top.v2": "true",
-    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable",
-    "to.speed.mode.migration.done": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.DetectiveCard.executor&quot;: &quot;Run&quot;,
+    &quot;Application.GameScreen.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Application.MainScreen.executor&quot;: &quot;Run&quot;,
+    &quot;Application.NetworkTestMain.executor&quot;: &quot;Run&quot;,
+    &quot;Application.ServerCode.executor&quot;: &quot;Run&quot;,
+    &quot;Application.createFileChunkTxt.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;copilot.chat.legacySessionMetadata.migrated&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/lukajacquespaul.arev/DeustoMurder/innerProy/ressources&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.jshint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.jshint&quot;: &quot;&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/antaljanos.nistal/Desktop/world/programacion/Java/DeustoMurder/innerProy/src/Main.java&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;python.packages.toolwindow.project.migrated.to.right.top.v2&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\lukajacquespaul.arev\DeustoMurder\innerProy\ressources" />
@@ -217,7 +206,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.30387.90" />
+        <option value="bundled-jdk-30f59d01ecdd-a203e0a19954-intellij.indexing.shared.core-IU-262.10315.125" />
+        <option value="bundled-js-predefined-d6986cc7102b-4abd2a77f808-JavaScript-IU-262.10315.125" />
       </set>
     </attachedChunks>
   </component>
