@@ -1,4 +1,4 @@
-package game;
+package game.core;
 
 import model.Actor;
 import model.Weapon;
@@ -9,6 +9,24 @@ import java.util.List;
 
 /** Initial data for the existing board preview (not multiplayer or turn setup). */
 public final class GameSetup {
+
+    // ESTA CLASE IMPLEMENTA:
+
+    /*
+    Crear la lista de habitaciones, personajes y armas
+    Genera la solución secreta
+    Mantiene las listas completas de habitaciones, personajes y armas, sin eliminar de ellas las cartas secretas
+    Proporcionar acceso a las listas de elementos creados
+    Comprobar que existen suficientes cartas para construir la baraja
+    Proporcionar los datos que necesita DeckManager para crear la baraja
+    Preparar los elementos necesarios para una nueva partida
+    Evitar duplicar habitaciones, personajes o armas al reinicializar el juego
+     */
+
+    /*
+    No debería implementar: reparto de cartas (DeckManager), control de turnos (RoundManager), validación de
+    acusaciones (AccusationValidator) y seguimiento del estado de la partida durante el juego (GameState)
+     */
 
     private GameSetup() {
     }

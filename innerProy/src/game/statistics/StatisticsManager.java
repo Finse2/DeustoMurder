@@ -1,4 +1,4 @@
-package game;
+package game.statistics;
 
 import model.Player;
 
@@ -10,6 +10,19 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class StatisticsManager {
+
+    // IMPLEMENTACIONES:
+
+    /*
+    Ranking por victorias y win-rate
+    Consultar los mejores jugadores de una categoría
+    Filtrar estadísticas por periodo
+    Añadir un sistema de puntos configurable
+    Importar estadísticas desde un CSV
+    Guardar y recuperar estadísticas entre ejecuciones
+    Detectar estadísticas inconsistentes
+    Generar informes generales de todas las partidas
+     */
 
     private final Map<Integer, PlayerStatistics> statisticsByPlayerId = new HashMap<>();
     private final Map<String, Integer> gamesPlayed = new HashMap<>();

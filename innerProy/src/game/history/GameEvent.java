@@ -1,9 +1,20 @@
-package game;
+package game.history;
 
 import java.time.Instant;
 import java.util.Objects;
 
 public class GameEvent {
+
+    // IMPLEMENTACIONES
+
+    /*
+    Añadir un eventID
+    Registrar el número de turno (turnNumber)
+    Guardar la habitación de origen y destino de un movimiento
+    Añadir datos adicionales, como cartas reveladas o acusaciones
+    Implementar métodos para generar un resumen legible del evento
+    Validar que los datos obligatorios sean correctos
+     */
 
     public enum Type {
         GAME_STARTED,

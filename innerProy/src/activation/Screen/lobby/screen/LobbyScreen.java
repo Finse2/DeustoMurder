@@ -1,4 +1,4 @@
-package activation.Screen.Lobby;
+package activation.Screen.lobby.screen;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import activation.Screen.ProfileButton;
 import activation.Screen.CluedoTableTheme;
+import activation.Screen.lobby.LoadingSpinner;
 import model.Player;
 
 public class LobbyScreen extends JFrame {
