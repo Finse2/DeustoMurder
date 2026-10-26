@@ -1,4 +1,4 @@
-package game.accusations;
+package game;
 
 import model.Card;
 
@@ -13,11 +13,4 @@ public class AccusationValidator {
 
         return solution.contains(room) && solution.contains(actor) && solution.contains(weapon);
     }
-
-    // FALTA POR AÑADIR:
-
-    /*
-    1. Comprobar las categorías de las cartas: una habitación, un personaje y un arma (no tres cartas cualquiera)
-    2. Comprobar que la solución sea coherente
-     */
 }

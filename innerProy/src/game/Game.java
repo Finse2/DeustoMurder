@@ -1,11 +1,5 @@
-package game.core;
+package game;
 
-import game.accusations.AccusationValidator;
-import game.dice.Dice;
-import game.history.GameHistory;
-import game.statistics.StatisticsManager;
-import game.turns.MoveValidator;
-import game.turns.RoundManager;
 import model.Actor;
 import model.Card;
 import model.Player;
@@ -21,22 +15,10 @@ import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
 public class Game {
-
-    // ESTA CLASE SE ENCARGA DE
-
-    /*
-    Coordinar el funcionamiento general de la partida.
-    Iniciar la partida mediante GameInitializer.
-    Gestionar el ciclo principal del juego.
-    Ejecutar los turnos de los jugadores.
-    Mantener el control del jugador actual.
-    Coordinar los movimientos y las acusaciones.
-    Finalizar la partida cuando se cumpla una condición de victoria o derrota.
-    Actualizar el estado general de la partida.
-    Coordinar el registro de eventos y las estadísticas.
-    Permitir reiniciar la partida cuando corresponda.
-     */
 
     // Estadísticas e historial
 

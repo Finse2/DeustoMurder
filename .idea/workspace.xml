@@ -5,7 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8563273f-b94d-4691-9ec1-cace6571287c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Screen/Lobby/screen/LobbyScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/activation/Screen/Lobby/screen/LobbyScreen.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/innerProy/src/activation/Screen/Lobby/LobbyRoster.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Screen/Lobby/LobbyScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/activation/Screen/Lobby/LobbyScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Screen/MainScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/activation/Screen/MainScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/ConnectionResult.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/ConnectionResult.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$3.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$4.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/Settings.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/Settings.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/game/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/game/Game.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/game/GameState.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/game/GameState.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,60 +60,60 @@
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
       <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0" />
-      <entry key="S2" value="1.0" />
-      <entry key="S5" value="1.0000000000024358" />
-      <entry key="S10" value="1.0000049024707447" />
-      <entry key="S30" value="1.078722310985952" />
-      <entry key="S60" value="1.8872538982895815" />
-      <entry key="M2" value="4.148830514799861" />
-      <entry key="M5" value="17.417373320449304" />
-      <entry key="M10" value="49.25768529213486" />
-      <entry key="M15" value="74.37717009670686" />
-      <entry key="M30" value="132.16716954331037" />
-      <entry key="H1" value="244.1734482385749" />
-      <entry key="H2" value="405.09200005763535" />
-      <entry key="H4" value="562.1250429600697" />
-      <entry key="D1" value="1525.3968491237285" />
-      <entry key="W1" value="3140.363065593152" />
+      <entry key="MS500" value="1.0003230399023213" />
+      <entry key="S2" value="1.134064577102246" />
+      <entry key="S5" value="1.447639631274917" />
+      <entry key="S10" value="1.6720443590645073" />
+      <entry key="S30" value="2.1983967363736916" />
+      <entry key="S60" value="3.1970577444070147" />
+      <entry key="M2" value="4.865024353855745" />
+      <entry key="M5" value="9.302333709263506" />
+      <entry key="M10" value="21.642312568226803" />
+      <entry key="M15" value="39.776836709607174" />
+      <entry key="M30" value="101.04554972319593" />
+      <entry key="H1" value="221.10947692800522" />
+      <entry key="H2" value="402.6201501034495" />
+      <entry key="H4" value="591.5742963957105" />
+      <entry key="D1" value="1597.208578570522" />
+      <entry key="W1" value="3235.7608858241733" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="0.0" />
-      <entry key="S2" value="0.0" />
-      <entry key="S5" value="7.49999157565573E-263" />
-      <entry key="S10" value="8.661261875164312E-132" />
-      <entry key="S30" value="2.153996465791938E-44" />
-      <entry key="S60" value="1.7499260268619258E-22" />
-      <entry key="M2" value="1.760027952219798E-11" />
-      <entry key="M5" value="7.466106702419069E-5" />
-      <entry key="M10" value="0.013851207730725373" />
-      <entry key="M15" value="0.10289097487709253" />
-      <entry key="M30" value="1.345404647417137" />
-      <entry key="H1" value="6.837759384967097" />
-      <entry key="H2" value="16.884376290478595" />
-      <entry key="H4" value="27.697119676004412" />
-      <entry key="D1" value="80.23057399066059" />
-      <entry key="W1" value="137.30149360656523" />
+      <entry key="MS100" value="1.881089600550382E-6" />
+      <entry key="MS500" value="0.07159486862373479" />
+      <entry key="S2" value="0.5172737907594567" />
+      <entry key="S5" value="0.7682263762240163" />
+      <entry key="S10" value="0.8783379596892453" />
+      <entry key="S30" value="1.1640183641349908" />
+      <entry key="S60" value="1.7642336360000497" />
+      <entry key="M2" value="2.721865123284277" />
+      <entry key="M5" value="4.51369831441744" />
+      <entry key="M10" value="6.589724522084106" />
+      <entry key="M15" value="7.947015367852525" />
+      <entry key="M30" value="10.430420127350123" />
+      <entry key="H1" value="15.442044838596317" />
+      <entry key="H2" value="25.241299480158933" />
+      <entry key="H4" value="36.970435583480494" />
+      <entry key="D1" value="91.49136032505393" />
+      <entry key="W1" value="149.88057223010395" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="9.315546929690913E-5" />
-      <entry key="MS500" value="0.15625778782315114" />
-      <entry key="S2" value="0.6287245488303856" />
-      <entry key="S5" value="0.8305851596648217" />
-      <entry key="S10" value="0.9113692929327625" />
-      <entry key="S30" value="1.0479514481971026" />
-      <entry key="S60" value="1.8701851717056124" />
-      <entry key="M2" value="4.1382246262026054" />
-      <entry key="M5" value="17.411347081887453" />
-      <entry key="M10" value="49.266225809936074" />
-      <entry key="M15" value="74.4729983223947" />
-      <entry key="M30" value="133.49876929671478" />
-      <entry key="H1" value="250.9908517992588" />
-      <entry key="H2" value="421.9557657061753" />
-      <entry key="H4" value="589.8065589534925" />
-      <entry key="D1" value="1605.6211282931745" />
-      <entry key="W1" value="3277.662991396989" />
+      <entry key="MS100" value="0.18174656627536487" />
+      <entry key="MS500" value="0.7285936958955282" />
+      <entry key="S2" value="1.3866461578572544" />
+      <entry key="S5" value="2.039452695740675" />
+      <entry key="S10" value="2.4414203496186917" />
+      <entry key="S30" value="3.305529337053941" />
+      <entry key="S60" value="4.910755210411367" />
+      <entry key="M2" value="7.543550297953779" />
+      <entry key="M5" value="13.783120734092197" />
+      <entry key="M10" value="28.205177107617498" />
+      <entry key="M15" value="47.70065116355835" />
+      <entry key="M30" value="111.45634433889383" />
+      <entry key="H1" value="236.5307196141322" />
+      <entry key="H2" value="427.8408176263602" />
+      <entry key="H4" value="628.528573011284" />
+      <entry key="D1" value="1688.6933607832807" />
+      <entry key="W1" value="3385.6398354833777" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -130,45 +142,45 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.DetectiveCard.executor&quot;: &quot;Run&quot;,
-    &quot;Application.GameScreen.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
-    &quot;Application.MainScreen.executor&quot;: &quot;Run&quot;,
-    &quot;Application.NetworkTestMain.executor&quot;: &quot;Run&quot;,
-    &quot;Application.ServerCode.executor&quot;: &quot;Run&quot;,
-    &quot;Application.createFileChunkTxt.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;copilot.chat.legacySessionMetadata.migrated&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/lukajacquespaul.arev/DeustoMurder/innerProy/ressources&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.jshint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.jshint&quot;: &quot;&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/antaljanos.nistal/Desktop/world/programacion/Java/DeustoMurder/innerProy/src/Main.java&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;python.packages.toolwindow.project.migrated.to.right.top.v2&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.DetectiveCard.executor": "Run",
+    "Application.GameScreen.executor": "Run",
+    "Application.Main.executor": "Run",
+    "Application.MainScreen.executor": "Run",
+    "Application.NetworkTestMain.executor": "Run",
+    "Application.ServerCode.executor": "Run",
+    "Application.createFileChunkTxt.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "copilot.chat.legacySessionMetadata.migrated": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/lukajacquespaul.arev/DeustoMurder/innerProy/ressources",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.jshint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.jshint": "",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "onboarding.tips.debug.path": "C:/Users/antaljanos.nistal/Desktop/world/programacion/Java/DeustoMurder/innerProy/src/Main.java",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "python.packages.toolwindow.project.migrated.to.right.top.v2": "true",
+    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable",
+    "to.speed.mode.migration.done": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\lukajacquespaul.arev\DeustoMurder\innerProy\ressources" />
@@ -244,6 +256,7 @@
         <line-breakpoint enabled="true" suspend="NONE" type="java-line">
           <url>file://$PROJECT_DIR$/innerProy/src/ui/BoardLayout.java</url>
           <line>145</line>
+          <placement>INTER_LINE</placement>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">

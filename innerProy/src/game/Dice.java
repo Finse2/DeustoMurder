@@ -1,17 +1,6 @@
-package game.dice;
+package game;
 
 public class Dice {
-
-    // IMPLEMENTACIONES:
-
-    /*
-    Generar resultado de una tirada
-    Simular dos dados
-    Devolver el resultado de cada dado
-    Calcular la suma de los resultados
-    Permitir consultar el resultado de la última tirada
-    Respetar el rango de valores permitido para cada dado
-     */
 
     static int min = 1;
     static int max = 6;

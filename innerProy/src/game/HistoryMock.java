@@ -1,22 +1,8 @@
-package game.history;
-
-import game.statistics.PlayerStatistics;
-import game.statistics.StatisticsManager;
+package game;
 
 import java.nio.file.Paths;
 
 public class HistoryMock {
-
-    // IMPLEMENTACIONES:
-
-    /*
-    Generar partidas ficticias con varios jugadores
-    Simular movimientos, turnos y acusaciones
-    Crear eventos correctos e incorrectos para comprobar filtros
-    Generar historiales grandes (1000-10000 eventos)
-    Comprobar que la exportación CSV contiene los datos esperados
-    Ejecutar escenarios de prueba repetibles
-     */
 
     public static void main (String [] args) throws Exception {
         GameHistory history = new GameHistory();
