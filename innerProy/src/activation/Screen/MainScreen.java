@@ -1,7 +1,16 @@
 package activation.Screen;
 
 import Networking.Client;
+import activation.Screen.Lobby.LobbyControl;
+import activation.Screen.Lobby.LobbyScreen;
 
+import javax.swing.SwingWorker;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.Serializable;
+import java.sql.Time;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -11,11 +20,15 @@ import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.TimeUnit;
 
 public class MainScreen extends JFrame {
     private static final Path PROFILE_PATH = Path.of(System.getProperty("user.home"),".deustoCluedo","profile.png");
     private static final Path DEFAULT_PROFILE_PATH = Path.of("innerProy", "ressources", "DefaultProfile.jpg");
     private ProfileButton profileButton;
+    private LobbyControl hostedLobby;
+    private Client hostClient;
+    private boolean hostingServer;
 
     public MainScreen() {
         setTitle("Deusto Cluedo");
@@ -118,10 +131,96 @@ public class MainScreen extends JFrame {
     setVisible(true);
     }
 
+
     private void HostGame() {
+
+        if (hostingServer ||
+                (hostedLobby != null && hostedLobby.isRunning())) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "You are already hosting a game."
+            );
+            return;
+        }
+
         ConnectionResult connection = openConnection();
-        System.out.println(connection.toString());
+
+        if (connection == null) {
+            return;
+        }
+
+        int port = connectionValues.getPort();
+        hostingServer = true;
+
+        new SwingWorker<HostedSession, Void>() {
+
+            @Override
+            protected HostedSession doInBackground() throws Exception {
+
+                LobbyControl lobby = LobbyControl.host(port);
+
+                CompletableFuture<Integer> accepted = new CompletableFuture<>();
+
+                Client client = new Client("127.0.0.1", port, new Client.Listener() {
+                            @Override
+                            public void onConnected(int playerID) {
+                                accepted.complete(playerID);
+                            }
+                            @Override
+                            public void onDisconnected() {accepted.completeExceptionally(new IOException("Disconnected before joining."));
+                            }
+                            @Override
+                            public void onError(Exception e) {
+                                accepted.completeExceptionally(e);
+                            }
+                        });
+
+                try {
+                    String username =  System.getProperty("user.name", "Host");
+                    String computerName = System.getenv().getOrDefault("COMPUTERNAME", "Host-PC");
+                    client.connect(username, computerName);
+
+                    int playerID = accepted.get(5, TimeUnit.SECONDS);
+
+                    return new HostedSession(lobby, client, playerID);
+
+                } catch (Exception e) {
+                    client.disconnect();
+                    lobby.close();
+                    throw e;
+                }
+            }
+
+            @Override
+            protected void done() {
+
+                hostingServer = false;
+
+                try {
+                    HostedSession session = get();
+
+                    hostedLobby = session.lobby();
+                    hostClient = session.client();
+
+                    System.out.println("Server started successfully.");
+                    System.out.println("Host connected successfully.");
+                    System.out.println("Player ID: " + session.playerId());
+                    System.out.println("Connected players: " + hostedLobby.getClientCount());
+
+                    System.out.println("Opening Lobby ...");
+                    openHostLobby();
+
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } catch (ExecutionException e) {
+                    JOptionPane.showMessageDialog(MainScreen.this, "Failed to host: " + e.getCause().getMessage(), "Server Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
+        }.execute();
     }
+
 
     private void JoinGame() {
 
@@ -398,7 +497,6 @@ public class MainScreen extends JFrame {
 
         JTable settingsTable = new JTable(Settings.toArray(data),colums) {
             @Override
-
             public boolean isCellEditable(int row, int column) {
                 return column != 0; // Make all cells oof the first column non-editable
             }
@@ -536,6 +634,26 @@ public class MainScreen extends JFrame {
         return result;
     }
 
+    private void openHostLobby() {
+        LobbyScreen lobbyScreen = new LobbyScreen();
+        lobbyScreen.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                if (hostClient != null) {
+                    hostClient.disconnect();
+                    hostClient = null;
+                }
+                if (hostedLobby != null) {
+                    hostedLobby.close();
+                    hostedLobby = null;
+                }
+                MainScreen.this.setVisible(true);
+            }
+        });
+        MainScreen.this.setVisible(false);
+    }
+
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(MainScreen::new);
     }
@@ -556,3 +674,5 @@ record Settings(String option, Object value) {
         return result;
     }
 }
+
+record HostedSession(LobbyControl lobby, Client client, int playerId){};
