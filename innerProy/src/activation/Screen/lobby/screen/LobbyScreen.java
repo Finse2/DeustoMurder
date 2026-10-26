@@ -1,4 +1,4 @@
-package activation.Screen.lobby.screen;
+package activation.Screen.Lobby.screen;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
+import activation.Screen.Lobby.LobbyRoster;
 import activation.Screen.ProfileButton;
 import activation.Screen.CluedoTableTheme;
 import activation.Screen.lobby.LoadingSpinner;
