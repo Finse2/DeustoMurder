@@ -1,6 +1,5 @@
-package game;
+package game.history;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -13,6 +12,19 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class GameHistory {
+
+    // IMPLEMENTACIONES:
+
+    /*
+    Filtrar eventos por intervalo de fechas
+    Buscar por palabras en las descripciones
+    Recuperar los últimos N eventos
+    Guardar y cargar el historial desde un archivo
+    Separar el historial por identificador de la partida
+    Obtener las estadísticas del historial, movimientos, acusaciones y duración
+    Exportar también a JSON
+    Añadir paginación para consultar historiales extensos
+     */
 
     private final List<GameEvent> events = new ArrayList<>();
 

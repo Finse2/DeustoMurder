@@ -6,15 +6,32 @@
   <component name="ChangeListManager">
     <list default="true" id="8563273f-b94d-4691-9ec1-cace6571287c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Screen/Lobby/LoadingSpinner.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/activation/Screen/Lobby/LoadingSpinner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Screen/Lobby/LobbyControl.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/activation/Screen/Lobby/LobbyControl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Screen/Lobby/LobbyRoster.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/activation/Screen/Lobby/LobbyRoster.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Screen/Lobby/LobbyScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/activation/Screen/Lobby/LobbyScreen.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Screen/MainScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/activation/Screen/MainScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/ConnectionResult.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/ConnectionResult.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$3.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen$4.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/MainScreen.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/Settings.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/activation/Screen/Settings.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/game/AccusationValidator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/game/Dice.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/game/Game.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/game/GameEvent.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/game/GameHistory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/game/GameSetup.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/game/GameState.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/game/HistoryMock.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/game/MoveValidator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/game/PlayerStatistics.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/game/RoundManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/game/StatisticsManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/ui/match/InGameScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/ui/match/InGameScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/ui/match/mockClasses/BoardLayoutMock.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/ui/match/mockClasses/BoardLayoutMock.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/game/Dice.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/game/Game.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/game/GameSetup.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/game/GameState.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/ui/match/InGameScreen.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/ui/match/InGameScreen.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/ui/match/mockClasses/BoardLayoutMock.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/innerProy/ui/match/mockClasses/BoardLayoutMock.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/networking/module-info.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/networking/module-info.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -253,7 +270,6 @@
         <line-breakpoint enabled="true" suspend="NONE" type="java-line">
           <url>file://$PROJECT_DIR$/innerProy/src/ui/BoardLayout.java</url>
           <line>145</line>
-          <placement>INTER_LINE</placement>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
