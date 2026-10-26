@@ -1,0 +1,21 @@
+DeustoMurder - Fusión David + main
+
+Base: DeustoMurder-David (con la versión de la mañana).
+
+Integrado desde DeustoMurder-main-2:
+- MainScreen.java sin marcadores de conflicto de Git.
+- Paquete activation.Screen.Lobby completo, incluido el botón INICIAR del anfitrión y su conexión a Client.startGame().
+
+Conservado desde David:
+- Paquetes refactorizados game.accusations, game.cards, game.core, game.dice,
+  game.history, game.statistics, game.testing y game.turns.
+- Clases auxiliares nuevas, recursos gráficos y el resto de la aplicación.
+- Referencias a game.core.GameSetup en las clases de interfaz.
+
+Comprobación: compilación correcta de todos los .java de los módulos,
+excluyendo module-info.java, con javac 21 (compatibilidad de sintaxis).
+
+Se excluyen los directorios .git originales (la copia David contenía
+un conflicto/merge en curso), compilados out/ y configuración local
+.idea/workspace.xml. Abre el proyecto en IntelliJ y vincula un repositorio
+Git si deseas versionarlo; este ZIP no conserva historial Git.
