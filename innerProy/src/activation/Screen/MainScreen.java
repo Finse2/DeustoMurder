@@ -23,16 +23,18 @@ import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
 public class MainScreen extends JFrame {
-    private static final Path PROFILE_PATH = Path.of(System.getProperty("user.home"),".deustoCluedo","profile.png");
+    private static final Path PROFILE_PATH = Path.of(System.getProperty("user.home"), ".deustoCluedo", "profile.png");
     private static final Path DEFAULT_PROFILE_PATH = Path.of("innerProy", "ressources", "DefaultProfile.jpg");
     private ProfileButton profileButton;
     private LobbyControl hostedLobby;
     private Client hostClient;
     private boolean hostingServer;
+    private Client joinedClient;
+    private boolean joiningServer = false;
 
     public MainScreen() {
         setTitle("Deusto Cluedo");
-        setSize(900,600);
+        setSize(900, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         BackGround backGround = new BackGround("innerProy/ressources/mainMenuBackground.png");
@@ -40,102 +42,100 @@ public class MainScreen extends JFrame {
 
 
         // NORTH MAIN TITLE
-    JPanel northPanel = new JPanel(new BorderLayout());
+        JPanel northPanel = new JPanel(new BorderLayout());
 
-    JLabel Title = new JLabel("Deusto Cluedo", SwingConstants.CENTER);
-    Title.setFont(new Font("Arial", Font.BOLD, 32));
-    Title.setForeground(Color.RED);
-    northPanel.add(Title, BorderLayout.CENTER);
-    northPanel.setOpaque(false);
+        JLabel Title = new JLabel("Deusto Cluedo", SwingConstants.CENTER);
+        Title.setFont(new Font("Arial", Font.BOLD, 32));
+        Title.setForeground(Color.RED);
+        northPanel.add(Title, BorderLayout.CENTER);
+        northPanel.setOpaque(false);
 
-    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-    buttonPanel.setOpaque(false);
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setOpaque(false);
 
-    profileButton = new ProfileButton(loadProfilePicture());
-    profileButton.addActionListener(e -> openProfileStats());
-    ImageIcon icon1 = new ImageIcon("innerProy/ressources/settings.png");
-    Image image1 = icon1.getImage();
-    Image reseizedImage1 = image1.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
-    JButton settings = new JButton(new ImageIcon(reseizedImage1));
-    settings.setOpaque(false);
-    settings.setBorderPainted(false);
-    settings.setContentAreaFilled(false);
-    settings.setFocusPainted(false);
-    buttonPanel.add(settings);
-    buttonPanel.add(profileButton);
-    northPanel.add(buttonPanel, BorderLayout.EAST);
+        profileButton = new ProfileButton(loadProfilePicture());
+        profileButton.addActionListener(e -> openProfileStats());
+        ImageIcon icon1 = new ImageIcon("innerProy/ressources/settings.png");
+        Image image1 = icon1.getImage();
+        Image reseizedImage1 = image1.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+        JButton settings = new JButton(new ImageIcon(reseizedImage1));
+        settings.setOpaque(false);
+        settings.setBorderPainted(false);
+        settings.setContentAreaFilled(false);
+        settings.setFocusPainted(false);
+        buttonPanel.add(settings);
+        buttonPanel.add(profileButton);
+        northPanel.add(buttonPanel, BorderLayout.EAST);
 
-    JPanel westEqualizePanel = new JPanel();
-    westEqualizePanel.setOpaque(false);
-    Dimension eastSize = buttonPanel.getPreferredSize();
-    westEqualizePanel.setPreferredSize(eastSize);
-    northPanel.add(westEqualizePanel, BorderLayout.WEST);
-    add(northPanel, BorderLayout.NORTH);
+        JPanel westEqualizePanel = new JPanel();
+        westEqualizePanel.setOpaque(false);
+        Dimension eastSize = buttonPanel.getPreferredSize();
+        westEqualizePanel.setPreferredSize(eastSize);
+        northPanel.add(westEqualizePanel, BorderLayout.WEST);
+        add(northPanel, BorderLayout.NORTH);
 
-    // settings JTable
-    settings.addActionListener(e -> {
-        openSettings();
-    });
+        // settings JTable
+        settings.addActionListener(e -> {
+            openSettings();
+        });
 
 
+        // WEST MENU BUTTONS
+        JPanel menuPanel = new JPanel(new GridLayout(3, 1, 0, 15));
+        menuPanel.setOpaque(false);
+        menuPanel.setPreferredSize(new Dimension(230, 210));
 
-    // WEST MENU BUTTONS
-    JPanel menuPanel = new JPanel(new GridLayout(3, 1, 0, 15));
-    menuPanel.setOpaque(false);
-    menuPanel.setPreferredSize(new Dimension(230, 210));
+        InlaidMenuButton hostButton = new InlaidMenuButton("Host Game", this::HostGame);
+        InlaidMenuButton joinButton = new InlaidMenuButton("Join Game", this::JoinGame);
+        InlaidMenuButton exitButton = new InlaidMenuButton("Exit Game", this::Exit);
 
-    InlaidMenuButton hostButton = new InlaidMenuButton("Host Game", this::HostGame);
-    InlaidMenuButton joinButton = new InlaidMenuButton("Join Game", this::JoinGame);
-    InlaidMenuButton exitButton = new InlaidMenuButton("Exit Game", this::Exit);
-
-    menuPanel.add(hostButton);
-    menuPanel.add(joinButton);
-    menuPanel.add(exitButton);
+        menuPanel.add(hostButton);
+        menuPanel.add(joinButton);
+        menuPanel.add(exitButton);
 
 // Container to position the menu
-    JPanel westPanel = new JPanel(new GridBagLayout());
-    westPanel.setOpaque(false);
-    westPanel.setPreferredSize(new Dimension(280, 0));
+        JPanel westPanel = new JPanel(new GridBagLayout());
+        westPanel.setOpaque(false);
+        westPanel.setPreferredSize(new Dimension(280, 0));
 
-    westPanel.add(menuPanel);
+        westPanel.add(menuPanel);
 
-    add(westPanel, BorderLayout.WEST);
+        add(westPanel, BorderLayout.WEST);
 
-    // East Menu
-    JPanel eastPanel = new JPanel(new GridBagLayout());
-    eastPanel.setOpaque(false);
-    eastPanel.setPreferredSize(new Dimension(280, 0));
-    add(eastPanel, BorderLayout.EAST);
+        // East Menu
+        JPanel eastPanel = new JPanel(new GridBagLayout());
+        eastPanel.setOpaque(false);
+        eastPanel.setPreferredSize(new Dimension(280, 0));
+        add(eastPanel, BorderLayout.EAST);
 
         // Center MENU
-    JPanel centerPanel = new JPanel(new BorderLayout());
-    JLabel welcome = new JLabel("Welcome, Detective", SwingConstants.CENTER);
-    welcome.setFont(new Font("Georgia", Font.BOLD, 24));
-    welcome.setForeground(new Color(235,215,100));
-    JLabel welcome2 = new JLabel("A Deusto version of the famous game Cluedo", SwingConstants.CENTER);
-    welcome2.setFont(new Font("Georgia", Font.PLAIN, 14));
-    welcome2.setForeground(new Color(220, 200, 175));
-    centerPanel.add(welcome, BorderLayout.NORTH);
-    centerPanel.add(welcome2, BorderLayout.SOUTH);
-    centerPanel.setOpaque(false);
-    add(centerPanel, BorderLayout.CENTER);
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        JLabel welcome = new JLabel("Welcome, Detective", SwingConstants.CENTER);
+        welcome.setFont(new Font("Georgia", Font.BOLD, 24));
+        welcome.setForeground(new Color(235, 215, 100));
+        JLabel welcome2 = new JLabel("A Deusto version of the famous game Cluedo", SwingConstants.CENTER);
+        welcome2.setFont(new Font("Georgia", Font.PLAIN, 14));
+        welcome2.setForeground(new Color(220, 200, 175));
+        centerPanel.add(welcome, BorderLayout.NORTH);
+        centerPanel.add(welcome2, BorderLayout.SOUTH);
+        centerPanel.setOpaque(false);
+        add(centerPanel, BorderLayout.CENTER);
 
 
         // South Menu
-    JPanel southPanel = new JPanel();
-    JLabel status = new JLabel("Deusto Clue version 1.0", SwingConstants.CENTER);
-    southPanel.add(status);
-    southPanel.setOpaque(false);
-    add(southPanel, BorderLayout.SOUTH);
+        JPanel southPanel = new JPanel();
+        JLabel status = new JLabel("Deusto Clue version 1.0", SwingConstants.CENTER);
+        southPanel.add(status);
+        southPanel.setOpaque(false);
+        add(southPanel, BorderLayout.SOUTH);
 
-    setVisible(true);
+        setVisible(true);
     }
 
 
     private void HostGame() {
 
-        if (hostingServer ||
-                (hostedLobby != null && hostedLobby.isRunning())) {
+        if (hostingServer || (hostedLobby != null && hostedLobby.isRunning())) {
 
             JOptionPane.showMessageDialog(
                     this,
@@ -163,21 +163,24 @@ public class MainScreen extends JFrame {
                 CompletableFuture<Integer> accepted = new CompletableFuture<>();
 
                 Client client = new Client("127.0.0.1", port, new Client.Listener() {
-                            @Override
-                            public void onConnected(int playerID) {
-                                accepted.complete(playerID);
-                            }
-                            @Override
-                            public void onDisconnected() {accepted.completeExceptionally(new IOException("Disconnected before joining."));
-                            }
-                            @Override
-                            public void onError(Exception e) {
-                                accepted.completeExceptionally(e);
-                            }
-                        });
+                    @Override
+                    public void onConnected(int playerID) {
+                        accepted.complete(playerID);
+                    }
+
+                    @Override
+                    public void onDisconnected() {
+                        accepted.completeExceptionally(new IOException("Disconnected before joining."));
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        accepted.completeExceptionally(e);
+                    }
+                });
 
                 try {
-                    String username =  System.getProperty("user.name", "Host");
+                    String username = System.getProperty("user.name", "Host");
                     String computerName = System.getenv().getOrDefault("COMPUTERNAME", "Host-PC");
                     client.connect(username, computerName);
 
@@ -223,13 +226,139 @@ public class MainScreen extends JFrame {
 
 
     private void JoinGame() {
+        if (joiningServer || (joinedClient != null && joinedClient.isConnected())) {
 
-        connectionValues clientConnect = ClientConnection();
-        if (clientConnect == null) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "You are already joining or connected to a game."
+            );
             return;
         }
-        System.out.println(clientConnect.toString());
+
+        // Open the existing connection dialog
+        connectionValues connection = ClientConnection();
+
+        if (connection == null) {
+            return;
+        }
+
+        String ipAddress = connectionValues.getIpAddress();
+        int port = connectionValues.getPort();
+
+        joiningServer = true;
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+        new SwingWorker<Client, Void>() {
+
+            @Override
+            protected Client doInBackground() throws Exception {
+
+                CompletableFuture<Integer> accepted =
+                        new CompletableFuture<>();
+
+                Client client = new Client(
+                        ipAddress,
+                        port,
+                        new Client.Listener() {
+
+                            @Override
+                            public void onConnected(int playerID) {
+                                accepted.complete(playerID);
+                            }
+
+                            @Override
+                            public void onDisconnected() {
+                                accepted.completeExceptionally(
+                                        new IOException(
+                                                "Disconnected before joining."
+                                        )
+                                );
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                accepted.completeExceptionally(e);
+                            }
+                        }
+                );
+
+                try {
+                    String username =
+                            System.getProperty("user.name", "Player");
+
+                    String computerName =
+                            System.getenv().getOrDefault(
+                                    "COMPUTERNAME", "Unknown-PC"
+                            );
+
+                    client.connect(username, computerName);
+
+                    // Wait for the server to assign our player ID
+                    int playerID = accepted.get(5, TimeUnit.SECONDS);
+
+                    if (!client.isConnected()) {
+                        throw new IOException(
+                                "Connection lost while joining."
+                        );
+                    }
+
+                    System.out.println("Joined server successfully.");
+                    System.out.println("Assigned Player ID: " + playerID);
+
+                    return client;
+
+                } catch (Exception e) {
+                    client.disconnect();
+                    throw e;
+                }
+            }
+
+            @Override
+            protected void done() {
+
+                joiningServer = false;
+                setCursor(Cursor.getDefaultCursor());
+
+                try {
+                    Client client = get();
+
+                    if (!client.isConnected()) {
+                        throw new IOException(
+                                "The server disconnected."
+                        );
+                    }
+
+                    joinedClient = client;
+
+                    System.out.println("Opening client lobby...");
+                    openJoinedLobby();
+
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+
+                } catch (ExecutionException e) {
+                    Throwable cause = e.getCause();
+
+                    JOptionPane.showMessageDialog(
+                            MainScreen.this,
+                            "Failed to join: " + cause.getMessage(),
+                            "Connection Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(
+                            MainScreen.this,
+                            e.getMessage(),
+                            "Connection Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                }
+            }
+
+        }.execute();
     }
+
     private void Exit() {
         dispose();
     }
@@ -495,7 +624,7 @@ public class MainScreen extends JFrame {
                 new Settings("Default Server Port", "5000")
         };
 
-        JTable settingsTable = new JTable(Settings.toArray(data),colums) {
+        JTable settingsTable = new JTable(Settings.toArray(data), colums) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return column != 0; // Make all cells oof the first column non-editable
@@ -511,6 +640,7 @@ public class MainScreen extends JFrame {
         settingsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         settingsFrame.setVisible(true);
     }
+
     private void openProfileStats() {
 
         JFrame statFrame = new JFrame("Profile Statistics");
@@ -522,9 +652,9 @@ public class MainScreen extends JFrame {
                 {"Games Won", 0},
                 {"Games Lost", 0},
                 {"Win Rate", "0%"},
-                {"correct Accusations",0}
+                {"correct Accusations", 0}
         };
-        JTable statsTable = new JTable(data,colums) {
+        JTable statsTable = new JTable(data, colums) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Make all cells non-editable
@@ -549,6 +679,7 @@ public class MainScreen extends JFrame {
 
 
     }
+
     private JButton createDialogButton(String text) {
         JButton button = new JButton(text);
         button.setBackground(new Color(75, 38, 42));
@@ -653,12 +784,31 @@ public class MainScreen extends JFrame {
         MainScreen.this.setVisible(false);
     }
 
+    private void openJoinedLobby() {
+
+        LobbyScreen lobbyScreen = new LobbyScreen();
+
+        lobbyScreen.addWindowListener(new WindowAdapter() {
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+
+                if (joinedClient != null) {
+                    joinedClient.disconnect();
+                    joinedClient = null;
+                }
+
+                MainScreen.this.setVisible(true);
+            }
+        });
+
+        MainScreen.this.setVisible(false);
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(MainScreen::new);
     }
 }
-
 record ConnectionResult (
         connectionValues connection,
         String code
