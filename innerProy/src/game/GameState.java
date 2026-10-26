@@ -21,7 +21,6 @@ public class GameState {
         this.finished = false;
     }
 
-    // MÉTODO PARA EMPEZAR LA PARTIDA
     public void start () {
         if (players.isEmpty()) {
             throw new IllegalStateException("There are no players");
@@ -34,13 +33,11 @@ public class GameState {
         started = true;
     }
 
-    // MÉTODO PARA FINALIZAR LA PARTIDA
     public void finish() {
         finished = true;
         started = false;
     }
 
-    // OTROS MÉTODOS APARTE
     public boolean isStarted(){
         return started;
     }

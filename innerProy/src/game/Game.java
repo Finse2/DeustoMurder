@@ -67,10 +67,6 @@ public class Game {
         players = new ArrayList<Player>();
 
         gameIsOver = false;
-
-        gameHistory = new GameHistory();
-        statisticsManager = new StatisticsManager();
-        statisticsUpdated = false;
     }
 
     // MÉTODO PARA INICIALIZAR LA PARTIDA
@@ -93,11 +89,6 @@ public class Game {
 
     public void startGame() {
 
-        // REINICIAMOS EL HISTORIAL AL EMPEZAR UNA PARTIDA
-
-        gameHistory = new GameHistory();
-        statisticsUpdated = false;
-        gameIsOver = false;
         // LISTA DE MÉTODOS AUXILIARES NECESARIOS PARA INICILIZAR LA PARTIDA
 
         createRooms();
@@ -363,17 +354,7 @@ public class Game {
                     break;
                 }
 
-                int oldX = piece.getX();
-                int oldY = piece.getY();
-
-                board.movePiece(piece, oldX, oldY, newX, newY);
-
-                gameHistory.addEvent(
-                        player.getName(),
-                        "MOVE",
-                        "From (" + oldX + ", " + oldY + ") to ("
-                                + newX + ", " + newY + ")"
-                );
+                board.movePiece(piece, piece.getX(), piece.getY(), newX, newY);
             } else {
                 if (!canMoveTo(piece, newX, newY)) {
                     break;
@@ -461,7 +442,9 @@ public class Game {
             boolean correct = askForAccusation();
 
             if (correct) {
-                finishGame(currentPlayer);
+                gameIsOver = true;
+                showFinalResult();
+                closeGame();
                 return;
             }
 
@@ -518,36 +501,7 @@ public class Game {
             return false;
         }
 
-        boolean correct = accusationValidator.isCorrectAccusation(
-                room, actor, weapon, solutionList
-        );
-
-        gameHistory.addEvent(
-                currentPlayer != null ? currentPlayer.getName() : "Unknown",
-                "ACCUSATION",
-                "Room: " + room + ", Actor: " + actor
-                        + ", Weapon: " + weapon
-                        + ", Correct: " + correct
-        );
-
-        return correct;
-    }
-
-    // MÉTODO PARA REGISTRAR LA SUGERENCIA
-
-    public void recordConfirmedSuggestion(
-            Player player, Card room, Card actor, Card weapon) {
-
-        if (player == null) {
-            return;
-        }
-
-        gameHistory.addEvent(
-                player.getName(),
-                "SUGGESTION",
-                "Room: " + room + ", Actor: " + actor
-                        + ", Weapon: " + weapon
-        );
+        return accusationValidator.isCorrectAccusation(room, actor, weapon, solutionList);
     }
 
     // ACTUALIZAR LOS JUGADORES
@@ -635,20 +589,6 @@ public class Game {
         players.add(player);
     }
 
-    private void finishGame(Player winner) {
-        if (statisticsUpdated) {
-            return;
-        }
-
-        statisticsManager.recordGame(players, winner);
-        statisticsUpdated = true;
-
-        gameIsOver = true;
-
-        showFinalResult();
-        closeGame();
-    }
-
     // GETTERS
 
     public List <Room> getRooms() {
@@ -701,26 +641,6 @@ public class Game {
 
     public MoveValidator getMoveValidator() {
         return moveValidator;
-    }
-
-    public void exportGameHistory() throws IOException {
-        gameHistory.exportCSV(
-                Path.of("exports", "game_history.csv")
-        );
-    }
-
-    public void exportStatistics() throws IOException {
-        statisticsManager.exportCSV(
-                Path.of("exports", "statistics.csv")
-        );
-    }
-
-    public GameHistory getGameHistory() {
-        return gameHistory;
-    }
-
-    public StatisticsManager getStatisticsManager() {
-        return statisticsManager;
     }
 
 }
