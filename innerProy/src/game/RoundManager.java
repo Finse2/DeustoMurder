@@ -40,12 +40,10 @@ public class RoundManager {
         return players.get(currentPlayerIndex);
     }
 
-    // DEVUELVE SI ES EL TURNO DEL JUGADOR ACTUAL O NO
     public boolean isPlayerTurn (Player player) {
         return turnsStarted && player != null && getCurrentPlayer() == player;
     }
 
-    // MÉTODO PARA AVANZAR AL SIGUIENTE TURNO
     public void nextTurn () {
         if (!turnsStarted || players.isEmpty()) {
             return;

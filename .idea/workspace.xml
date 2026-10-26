@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8563273f-b94d-4691-9ec1-cace6571287c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/innerProy/model/Figure.class" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_C:/Users/lukajacquespaul.arev/DeustoMurder" value="3L2iVSOs0GvyoO18nkht3WC2F2d" />
+    </persistenceIdMap>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="package-info" />
+        <option value="module-info" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Finse2&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Finse2/DeustoMurder.git",
+    "accountId": "c0b39b1c-5402-4ff5-abc6-28dcc0412554"
+  }
+}]]></component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0010041060882764" />
+      <entry key="MS500" value="1.3306804298639412" />
+      <entry key="S2" value="4.572133262665677" />
+      <entry key="S5" value="12.779859012865828" />
+      <entry key="S10" value="29.930131489804573" />
+      <entry key="S30" value="79.67643784951" />
+      <entry key="S60" value="109.85501069147578" />
+      <entry key="M2" value="130.76038970975364" />
+      <entry key="M5" value="146.1546328753985" />
+      <entry key="M10" value="152.53407004081933" />
+      <entry key="M15" value="157.26265119332672" />
+      <entry key="M30" value="189.8682627878351" />
+      <entry key="H1" value="291.4495179586702" />
+      <entry key="H2" value="440.4450349054621" />
+      <entry key="H4" value="582.5943057200566" />
+      <entry key="D1" value="1528.4480307358585" />
+      <entry key="W1" value="3133.4920297669205" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="1.2632343729697734E-193" />
+      <entry key="S10" value="3.554616473274879E-97" />
+      <entry key="S30" value="7.429886501085069E-33" />
+      <entry key="S60" value="1.0277518970493471E-16" />
+      <entry key="M2" value="1.3488195854920697E-8" />
+      <entry key="M5" value="0.0010638194141403864" />
+      <entry key="M10" value="0.05228468576528607" />
+      <entry key="M15" value="0.24944139227127776" />
+      <entry key="M30" value="2.094828835704049" />
+      <entry key="H1" value="8.532211732415947" />
+      <entry key="H2" value="18.860748647933654" />
+      <entry key="H4" value="29.27329167682819" />
+      <entry key="D1" value="80.97408664032007" />
+      <entry key="W1" value="137.48254724240772" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="0.07189143828676386" />
+      <entry key="MS500" value="0.8082180574067281" />
+      <entry key="S2" value="4.2875106350773775" />
+      <entry key="S5" value="12.618450578199331" />
+      <entry key="S10" value="29.825211426059504" />
+      <entry key="S30" value="79.6217771590732" />
+      <entry key="S60" value="109.82161677397721" />
+      <entry key="M2" value="130.74138792291237" />
+      <entry key="M5" value="146.1466278954332" />
+      <entry key="M10" value="152.57785165531934" />
+      <entry key="M15" value="157.5001183505695" />
+      <entry key="M30" value="191.94332184007294" />
+      <entry key="H1" value="299.95703588051356" />
+      <entry key="H2" value="459.283080046995" />
+      <entry key="H4" value="611.85125782561" />
+      <entry key="D1" value="1609.4157885361474" />
+      <entry key="W1" value="3270.9730105883955" />
+    </decayedShown>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3IzmsHv1OyfqxSUOmNcOGDvsryg" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectSessionTemplates">
+    <option name="inlineTemplate">
+      <template>
+        <option name="modeId" value="InlineAgent" />
+        <option name="model">
+          <model>
+            <option name="modelType" value="builtin_id" />
+            <option name="modelValue" value="auto" />
+          </model>
+        </option>
+        <option name="targetType" value="LOCAL" />
+      </template>
+    </option>
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.DetectiveCard.executor": "Run",
+    "Application.GameScreen.executor": "Run",
+    "Application.Main.executor": "Run",
+    "Application.MainScreen.executor": "Run",
+    "Application.NetworkTestMain.executor": "Run",
+    "Application.ServerCode.executor": "Run",
+    "Application.createFileChunkTxt.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "copilot.chat.legacySessionMetadata.migrated": "true",
+    "git-widget-placeholder": "David",
+    "ignore.virus.scanning.warn.message": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/lukajacquespaul.arev/DeustoMurder/innerProy/ressources",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.jshint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.jshint": "",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "onboarding.tips.debug.path": "C:/Users/antaljanos.nistal/Desktop/world/programacion/Java/DeustoMurder/innerProy/src/Main.java",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "python.packages.toolwindow.project.migrated.to.right.top.v2": "true",
+    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable",
+    "to.speed.mode.migration.done": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\lukajacquespaul.arev\DeustoMurder\innerProy\ressources" />
+      <recent name="C:\Users\antaljanos.nistal\Desktop\world\programacion\Java\DeustoMurder\innerProy\src\Networking" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/innerProy/src/Networking" />
+      <recent name="$PROJECT_DIR$/innerProy/src" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="ServerCode" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="activation.Screen.ServerCode" />
+      <module name="innerProy" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="activation.Screen.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.ServerCode" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.30387.90" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8563273f-b94d-4691-9ec1-cace6571287c" name="Changes" comment="" />
+      <created>1788775976504</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1788775976504</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/../../../.." />
+    </ignored-roots>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="NONE" type="java-line">
+          <url>file://$PROJECT_DIR$/innerProy/src/ui/BoardLayout.java</url>
+          <line>145</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/innerProy/src/activation/Screen/ServerCode.java</url>
+          <line>14</line>
+          <properties class="activation.Screen.ServerCode" method="main">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>
