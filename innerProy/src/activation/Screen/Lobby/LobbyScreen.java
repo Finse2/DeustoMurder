@@ -24,6 +24,9 @@ public class LobbyScreen extends JFrame {
     private JLabel playerCountLabel;
 
     public LobbyScreen(LobbyRoster roster) {
+        this(roster, false,null);
+    }
+    public LobbyScreen(LobbyRoster roster,boolean isHost,Runnable onStartGame){
         this.roster = java.util.Objects.requireNonNull(roster, "roster required");
         setTitle("Lobby");
         setSize(1200, 900);
@@ -146,7 +149,18 @@ public class LobbyScreen extends JFrame {
 
         //crear el boton de inicio de partida (solo visible para el host)
         JButton inicioButton = new JButton("INICIAR");
-        inicioButton.setVisible(false);
+        inicioButton.setVisible(isHost);
+        if (isHost){
+            inicioButton.addActionListener(e -> {
+                try {
+                    onStartGame.run();
+                    inicioButton.setEnabled(false);
+                    inicioButton.setText("Initializing...");
+            } catch (RuntimeException ex){
+                JOptionPane.showMessageDialog(this,"Unable to start game: " + ex.getMessage(), "Start Game Error", JOptionPane.ERROR_MESSAGE);
+                }
+            });
+        }
         botonesPanel.add(inicioButton);
 
         //añadir el panel de botones al panel central
