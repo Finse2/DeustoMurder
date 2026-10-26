@@ -1,4 +1,4 @@
-package game;
+package game.turns;
 
 import model.Player;
 
@@ -6,6 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RoundManager {
+
+    // IMPLEMENTACIONES:
+
+    /*
+    Llevar un contador de turnos y rondas completas.
+    Saltar jugadores eliminados o desconectados.
+    Evitar que un jugador actúe dos veces en el mismo turno.
+    Comprobar si la partida ha terminado antes de avanzar.
+    Registrar TURN_STARTED y TURN_ENDED en el historial.
+    Permitir pausar y reanudar las rondas.
+    Gestionar el orden de los jugadores.
+    Añadir eventos de inicio y fin de ronda.
+    Evitar avanzar cuando no hay jugadores activos.
+     */
 
     private final List<Player> players;
     private int currentPlayerIndex;

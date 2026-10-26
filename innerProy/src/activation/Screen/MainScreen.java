@@ -1,15 +1,12 @@
 package activation.Screen;
 
 import Networking.Client;
-import activation.Screen.Lobby.LobbyControl;
-import activation.Screen.Lobby.LobbyRoster;
-import activation.Screen.Lobby.LobbyScreen;
+import activation.Screen.lobby.LobbyControl;
+import activation.Screen.lobby.screen.LobbyScreen;
 
 import javax.swing.SwingWorker;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.Serializable;
-import java.sql.Time;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import javax.imageio.ImageIO;
@@ -18,7 +15,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.nio.Buffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
@@ -32,8 +28,6 @@ public class MainScreen extends JFrame {
     private boolean hostingServer;
     private Client joinedClient;
     private boolean joiningServer = false;
-    private LobbyRoster hostRoster;
-    private LobbyRoster joinedRoster;
 
     public MainScreen() {
         setTitle("Deusto Cluedo");
@@ -156,8 +150,6 @@ public class MainScreen extends JFrame {
         int port = connectionValues.getPort();
         hostingServer = true;
 
-        LobbyRoster roster = new LobbyRoster();
-
         new SwingWorker<HostedSession, Void>() {
 
             @Override
@@ -170,16 +162,7 @@ public class MainScreen extends JFrame {
                 Client client = new Client("127.0.0.1", port, new Client.Listener() {
                     @Override
                     public void onConnected(int playerID) {
-                        roster.upsert(
-                                playerID,
-                                System.getProperty("user.name", "Host"),
-                                System.getenv().getOrDefault("COMPUTERNAME", "Host-PC")
-                        );
                         accepted.complete(playerID);
-                    }
-                    @Override
-                    public void onPlayerJoined(int playerID, String name, String computerName) {
-                        roster.upsert(playerID, name, computerName);
                     }
 
                     @Override
@@ -219,7 +202,6 @@ public class MainScreen extends JFrame {
 
                     hostedLobby = session.lobby();
                     hostClient = session.client();
-                    hostRoster = roster;
 
                     System.out.println("Server started successfully.");
                     System.out.println("Host connected successfully.");
@@ -263,8 +245,6 @@ public class MainScreen extends JFrame {
         joiningServer = true;
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-        LobbyRoster roster = new LobbyRoster();
-
         new SwingWorker<Client, Void>() {
 
             @Override
@@ -280,24 +260,7 @@ public class MainScreen extends JFrame {
 
                             @Override
                             public void onConnected(int playerID) {
-                                roster.upsert(
-                                        playerID,
-                                        System.getProperty("user.name", "Player"),
-                                        System.getenv().getOrDefault("COMPUTERNAME", "Unknown-PC")
-                                );
                                 accepted.complete(playerID);
-                            }
-                            @Override
-                            public void onPlayerJoined(
-                                    int playerID,
-                                    String playerName,
-                                    String computerName
-                            ) {
-                                roster.upsert(
-                                        playerID,
-                                        playerName,
-                                        computerName
-                                );
                             }
 
                             @Override
@@ -363,7 +326,6 @@ public class MainScreen extends JFrame {
                     }
 
                     joinedClient = client;
-                    joinedRoster = roster;
 
                     System.out.println("Opening client lobby...");
                     openJoinedLobby();
@@ -801,7 +763,7 @@ public class MainScreen extends JFrame {
     }
 
     private void openHostLobby() {
-        LobbyScreen lobbyScreen = new LobbyScreen(hostRoster);
+        LobbyScreen lobbyScreen = new LobbyScreen();
         lobbyScreen.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
@@ -821,7 +783,7 @@ public class MainScreen extends JFrame {
 
     private void openJoinedLobby() {
 
-        LobbyScreen lobbyScreen = new LobbyScreen(joinedRoster);
+        LobbyScreen lobbyScreen = new LobbyScreen();
 
         lobbyScreen.addWindowListener(new WindowAdapter() {
 

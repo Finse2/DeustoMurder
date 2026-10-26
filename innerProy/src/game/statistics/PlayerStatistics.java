@@ -1,6 +1,19 @@
-package game;
+package game.statistics;
 
 public class PlayerStatistics {
+
+    // IMPLEMENTACIONES:
+
+    /*
+    Registrar partidas abandonadas
+    Calcular la racha actual y la mejor racha de victorias
+    Contar movimientos realizados y movimientos inválidos
+    Calcular el número medio de turnos por partida
+    Registrar tiempo total jugado y tiempo medio por turno
+    Guardar la última partida jugada
+    Calcular el porcentaje de acusaciones correctas
+    Añadir un sistema de puntos (ELO)
+     */
 
     private int playerId;
     private String playerName;
