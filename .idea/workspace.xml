@@ -6,7 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="8563273f-b94d-4691-9ec1-cace6571287c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/innerProy/src/activation/Screen/Lobby/LobbyScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/activation/Screen/Lobby/LobbyScreen.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/game/cards/DeckManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/game/cards/DeckManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/game/core/GameConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/game/core/GameConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/game/core/GameStartResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/game/core/GameStartResult.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/game/core/GameStartValidator.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/game/core/GameStartValidator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/innerProy/src/game/turns/RoundManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/innerProy/src/game/turns/RoundManager.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -246,7 +250,6 @@
         <line-breakpoint enabled="true" suspend="NONE" type="java-line">
           <url>file://$PROJECT_DIR$/innerProy/src/ui/BoardLayout.java</url>
           <line>145</line>
-          <placement>INTER_LINE</placement>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">

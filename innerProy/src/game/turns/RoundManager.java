@@ -3,79 +3,64 @@ package game.turns;
 import model.Player;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class RoundManager {
 
-    // IMPLEMENTACIONES:
-
-    /*
-    Llevar un contador de turnos y rondas completas.
-    Saltar jugadores eliminados o desconectados.
-    Evitar que un jugador actúe dos veces en el mismo turno.
-    Comprobar si la partida ha terminado antes de avanzar.
-    Registrar TURN_STARTED y TURN_ENDED en el historial.
-    Permitir pausar y reanudar las rondas.
-    Gestionar el orden de los jugadores.
-    Añadir eventos de inicio y fin de ronda.
-    Evitar avanzar cuando no hay jugadores activos.
-     */
-
     private final List<Player> players;
     private int currentPlayerIndex;
-    private boolean turnsStarted;
+    private boolean turnsActive;
 
     public RoundManager(List<Player> players) {
         if (players == null) {
-            throw new IllegalArgumentException("Players cannot be null");
+            throw new IllegalArgumentException(
+                    "The player list cannot be null"
+            );
         }
 
         this.players = new ArrayList<>(players);
         this.currentPlayerIndex = 0;
-        this.turnsStarted = false;
+        this.turnsActive = false;
     }
 
-    // MÉTODO PARA COMENTAR LOS TURNOS
     public void startTurns() {
-        if (players.isEmpty()) {
-            throw new IllegalStateException("There are no players");
-        }
-
         currentPlayerIndex = 0;
-        turnsStarted = true;
+        turnsActive = true;
     }
 
-    // MÉTODO PARA CONSEGUIR EL JUGADOR ACTUAL
-    public Player getCurrentPlayer (){
-        if (!turnsStarted || players.isEmpty()) {
+    public Player getCurrentPlayer() {
+        if (!turnsActive || players.isEmpty()) {
             return null;
         }
 
         return players.get(currentPlayerIndex);
     }
 
-    public boolean isPlayerTurn (Player player) {
-        return turnsStarted && player != null && getCurrentPlayer() == player;
+    public boolean isPlayerTurn(Player player) {
+        return turnsActive
+                && player != null
+                && getCurrentPlayer() == player;
     }
 
-    public void nextTurn () {
-        if (!turnsStarted || players.isEmpty()) {
+    public void nextTurn() {
+        if (!turnsActive || players.isEmpty()) {
             return;
         }
 
-        currentPlayerIndex++;
-
-        if (currentPlayerIndex >= players.size()) {
-            currentPlayerIndex = 0;
-        }
+        currentPlayerIndex =
+                (currentPlayerIndex + 1) % players.size();
     }
 
     public void stopTurns() {
-        turnsStarted = false;
+        turnsActive = false;
     }
 
-    public boolean areTurnsStarted() {
-        return turnsStarted;
+    public boolean areTurnsActive() {
+        return turnsActive;
     }
 
+    public List<Player> getPlayers() {
+        return Collections.unmodifiableList(players);
+    }
 }

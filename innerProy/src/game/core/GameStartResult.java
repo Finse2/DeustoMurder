@@ -1,17 +1,45 @@
+
 package game.core;
 
 public class GameStartResult {
 
-    // ESTA CLASE SE ENCARGA DE:
+    private final boolean successful;
+    private final String message;
 
-    /*
-    Representar si el inicio de la partida ha tenido éxito
-    Almacenar el resultado de inicialización
-    Guardar un mensaje explicativo
-    Comunicar errores de configuración o inicialización
-    Proporcionar un método para consultar si el inicio fue correcto
-    Proporcionar un método para obtener el mensaje
-    Permitir construir resultados de éxito y de error de manera uniforme
-     */
+    private GameStartResult(boolean successful, String message) {
+        this.successful = successful;
+        this.message = message;
+    }
 
+    public static GameStartResult success() {
+        return new GameStartResult(
+                true,
+                "The game was created successfully"
+        );
+    }
+
+    public static GameStartResult failure(String message) {
+        if (message == null || message.isBlank()) {
+            message = "The game couldn't be started";
+        }
+
+        return new GameStartResult(false, message);
+    }
+
+    public boolean isSuccessful() {
+        return successful;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    @Override
+    public String toString() {
+        return "GameStartResult{" +
+                "successful=" + successful +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }
+

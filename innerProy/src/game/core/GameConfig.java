@@ -1,18 +1,41 @@
+
 package game.core;
 
-public class GameConfig {
+import java.awt.Color;
+import java.util.Arrays;
+import java.util.List;
 
-    // ESTA CLASE SE ENCARGA DE:
+public final class GameConfig {
 
-    /*
-    Almacenar el número mínimo de jugadores
-    Almacenar el número máximo de jugadores
-    Definir las reglas configurables de la partida
-    Configurar el tiempo máximo por turno
-    Definir las opciones de movimiento y otras reglas variables
-    Validar que la configuración sea coherente
-    Proporcionar métodos para consultar los parámetros configurados
-    Evitar números mágicos y valores duplicados en distintas clases
-     */
+    public static final int CARDS_PER_PLAYER = 4;
 
+    public static final List<String> ACTOR_NAMES = Arrays.asList(
+            "Garaizar",
+            "Luka",
+            "David",
+            "Andrada",
+            "Antal",
+            "Bringas"
+    );
+
+    public static final List<Color> PLAYER_COLORS = Arrays.asList(
+            Color.PINK,
+            Color.MAGENTA,
+            Color.BLUE,
+            Color.RED,
+            Color.GREEN,
+            Color.YELLOW
+    );
+
+    public static final List<String> WEAPON_NAMES = Arrays.asList(
+            "Machete",
+            "Tiza",
+            "Teclado",
+            "Cable",
+            "Silla",
+            "Destornillador"
+    );
+
+    private GameConfig() {
+    }
 }
