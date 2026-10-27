@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import activation.Screen.ProfileButton;
 import activation.Screen.CluedoTableTheme;
+import javafx.scene.media.EqualizerBand;
 import model.Player;
 
 public class LobbyScreen extends JFrame {
@@ -97,15 +98,27 @@ public class LobbyScreen extends JFrame {
 
 
         //crear el panel de la derecha (info de la conexion)
-        JPanel eastPanel = new JPanel(new GridLayout(3,1,5,5));
+        JPanel eastPanel = new JPanel(new BorderLayout(5, 5));
+        eastPanel.setPreferredSize(new Dimension(300, 0));
         eastPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
-        JLabel eastHostName = new JLabel("Host Name");
-        JLabel ipAddress = new JLabel("IP Address");
-        JLabel portNumber = new JLabel("Port");
-        eastPanel.add(eastHostName);
-        eastPanel.add(ipAddress);
-        eastPanel.add(portNumber);
-
+        JPanel infoPanel = new JPanel(new GridLayout(3,1,5,5));
+        JLabel eastHostName = new JLabel("Host Name:");
+        eastPanel.setBorder(BorderFactory.createEmptyBorder());
+        JLabel ipAddress = new JLabel("IP Address:");
+        JLabel portNumber = new JLabel("Port:");
+        infoPanel.add(eastHostName);
+        infoPanel.add(ipAddress);
+        infoPanel.add(portNumber);
+        eastPanel.add(infoPanel, BorderLayout.CENTER);
+        JPanel vacio1 = new JPanel();
+        eastPanel.add(vacio1, BorderLayout.EAST);
+        JPanel vacio2 = new JPanel();
+        eastPanel.add(vacio2, BorderLayout.WEST);
+        JPanel infoNorth = new JPanel(new FlowLayout());
+        JLabel infoServer = new JLabel("Server Information:");
+        infoServer.setFont(new Font("Georgia", Font.BOLD, 18));
+        infoNorth.add(infoServer);
+        eastPanel.add(infoNorth, BorderLayout.NORTH);
         //añadir el panel derecho al principal
         lobbyPanel.add(eastPanel,BorderLayout.EAST);
 
@@ -122,34 +135,56 @@ public class LobbyScreen extends JFrame {
         JPanel centralPanel = new JPanel(new BorderLayout(5, 5));
         centralPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
         centralPanel.setOpaque(false);
+        centralPanel.setPreferredSize(new Dimension(230, 210));
 
         // crear la loading animation
-        JPanel loadingPanel = new JPanel(new GridBagLayout());
+        JPanel loadingPanel = new JPanel(new GridLayout(5,3,5,15));
         loadingPanel.setOpaque(false);
+        loadingPanel.setPreferredSize(new Dimension(230,210));
+        JLabel empty = new JLabel();
+        loadingPanel.add(empty);
 
        loadingSpinner = new LoadingSpinner();
         loadingPanel.add(loadingSpinner);
-
         JPanel spinnerContainer = new JPanel(new BorderLayout());
         spinnerContainer.setOpaque(false);
 
+        JLabel empty2 = new JLabel();
+        loadingPanel.add(empty2);
+
         //añadir la animacion al panel de carga
         spinnerContainer.add(loadingPanel, BorderLayout.CENTER);
+        JPanel spinnerwestPanel = new JPanel();
+        spinnerwestPanel.setPreferredSize(new Dimension(100, 210));
+        JLabel empty3 = new JLabel();
+        spinnerwestPanel.add(empty3);
+
+        JPanel spinnereastPanel = new JPanel();
+        spinnereastPanel.setPreferredSize(new Dimension(100, 210));
+        JLabel empty4 = new JLabel();
+        spinnereastPanel.add(empty4);
+
+        spinnerContainer.add(spinnerwestPanel, BorderLayout.WEST);
+        spinnerContainer.add(spinnereastPanel, BorderLayout.EAST);
 
         //añadir el panl de carga al panel central
         centralPanel.add(spinnerContainer, BorderLayout.CENTER);
 
-        // crear el panel de botonesw
+        // crear el panel de botones
         JPanel botonesPanel = new JPanel(new GridLayout(1, 2, 5, 5));
+        botonesPanel.setPreferredSize(new Dimension(230, 100));
 
         //crear el boton de salida(disponible para todos)
         JButton exitButton = new JButton("EXIT");
+        exitButton.setSize(new Dimension(200,100));
         exitButton.addActionListener(e -> dispose());
         botonesPanel.add(exitButton);
 
         //crear el boton de inicio de partida (solo visible para el host)
         JButton inicioButton = new JButton("INICIAR");
-        inicioButton.setVisible(isHost);
+        inicioButton.setSize(new Dimension(230,210));
+
+
         if (isHost){
             inicioButton.addActionListener(e -> {
                 try {
@@ -161,7 +196,7 @@ public class LobbyScreen extends JFrame {
                 }
             });
         }
-        botonesPanel.add(inicioButton);
+        loadingPanel.add(inicioButton);
 
         //añadir el panel de botones al panel central
         centralPanel.add(botonesPanel, BorderLayout.SOUTH);
