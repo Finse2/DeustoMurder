@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -45,8 +46,20 @@ public class LobbyScreen extends JFrame {
         northPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
         JLabel sessionId = new JLabel("Session ID");
         northPanel.add(sessionId);
-        JLabel sessionCode = new JLabel("Code: " + ServerCode.Encode(ServerIP, port, HostNAME));
+        String code = ServerCode.Encode(ServerIP,port,HostNAME);
+        JTextField sessionCode = new JTextField("Code: " + code);
+        sessionCode.setEditable(false);
         northPanel.add(sessionCode);
+        JButton copy = new JButton("Copy");
+        copy.addActionListener(e -> {
+            try {
+                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(code),null);
+                copy.setText("Copied");
+            } catch (IllegalStateException ex){
+                JOptionPane.showMessageDialog(this, "Clipboard is unavailable", "Copy Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        northPanel.add(copy);
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setOpaque(false);
 
