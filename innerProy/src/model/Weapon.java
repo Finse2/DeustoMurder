@@ -1,6 +1,6 @@
 package model;
 
-public class Weapon extends Card {
+final public class Weapon extends Card {
 
     final private String name;
 
@@ -8,7 +8,5 @@ public class Weapon extends Card {
         this.name = name;
     }
 
-    public String getName() {
-        return this.name;
-    }
+    public String getName() {return this.name;}
 }

@@ -1,3 +1,4 @@
+
 package ui.match;
 
 import model.Card;
@@ -7,9 +8,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.file.Path;
 
 /**
  * This class receives a card object and renders its image (BufferedImage) and its name (String). <br>
@@ -21,6 +24,7 @@ public class CardRenderer extends JPanel {
 
     private final Card card;
     private final BufferedImage image;
+    private final BufferedImage circleImage;
     final int height;
     final int width;
     final int rotationDegrees;
@@ -28,72 +32,27 @@ public class CardRenderer extends JPanel {
     boolean hover = false;
     boolean isSelected = false;
 
-    @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
-        Graphics2D g2 = (Graphics2D) g.create();
-
-        // smooth edges
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        g2.setRenderingHint(
-                RenderingHints.KEY_INTERPOLATION,
-                RenderingHints.VALUE_INTERPOLATION_BILINEAR
-        );
-
-        g2.rotate(
-                Math.toRadians(rotationDegrees),
-                100 + width / 2.0,
-                150 + height / 2.0
-        );
-
-        // rounded card shape
-        Shape cardShape = new RoundRectangle2D.Float(100, 150, width, height, 25, 25);
-
-        // clip image to rounded corners
-        g2.setClip(cardShape);
-
-        // draw cached image without reading the file again during repaint
-        g2.drawImage(image, 100, 150, width, height, null);
-
-        // semi-transparent text rectangle - background (we basically set a high opacity and dont give while giving the parameters of black)
-        g2.setColor(new Color(0, 0, 0, 150));
-        g2.fillRect(100, 395, width, 45);
-
-        // text styling (we set a text on top of the image with a very opaque black rectangle as a base)
-        g2.setFont(new Font("Serif", Font.BOLD | Font.ITALIC, 20));
-        g2.setColor(Color.WHITE);
-
-        // center the text horizontally
-        FontMetrics fm = g2.getFontMetrics();
-        int textX = 100 + (width - fm.stringWidth(card.getNameToRender())) / 2;
-
-        g2.drawString(card.getNameToRender(), textX, 424);
-
-        // restore clipping
-        g2.setClip(null);
-
-        // strong outer border
-        g2.setColor(isSelected ? Color.RED : hover ? Color.BLUE : new Color(70, 70, 70, 190));
-        g2.setStroke(new BasicStroke(5f));
-        g2.draw(cardShape);
-
-        g2.dispose();
-    }
+    private static final double LEFT = 100;
+    private static final double TOP = 150;
+    private static final double CORNER_RADIUS = 28;
 
     public CardRenderer(Card card, int height, int width, int rotationDegrees) throws IOException {
         this.card = card;
-        this.image = ImageIO.read(card.getAspectToRender().toFile());
-        if (image == null) {
-            throw new IOException("Unsupported card image: " + card.getAspectToRender());
-        }
+        this.image = card.getMainBackgroundImage() != null
+                ? card.getMainBackgroundImage()
+                : readImage(card.getAspectToRender());
+        this.circleImage = card.getFrontCircleImage() != null
+                ? card.getFrontCircleImage()
+                : card.getCircleImageToRender() == null
+                  ? null
+                  : readImage(card.getCircleImageToRender());
+
         this.height = height;
         this.width = width;
         this.rotationDegrees = rotationDegrees;
+        setOpaque(false);
 
         MouseAdapter adapter = new MouseAdapter() {
-
             @Override
             public void mouseMoved(MouseEvent e) {
                 updateHover(e);
@@ -110,40 +69,150 @@ public class CardRenderer extends JPanel {
                 repaint();
             }
 
-            //-----
             @Override
             public void mousePressed(MouseEvent e) {
                 updateHover(e);
-
                 if (hover) {
                     isSelected = !isSelected;
                     repaint();
                 }
             }
         };
+        addMouseListener(adapter);
+        addMouseMotionListener(adapter);
+    }
 
-        this.addMouseListener(adapter);
-        this.addMouseMotionListener(adapter);
+    private static BufferedImage readImage(Path path) throws IOException {
+        if (path == null) {
+            throw new IOException("Missing card image path");
+        }
+        BufferedImage result = ImageIO.read(path.toFile());
+        if (result == null) {
+            throw new IOException("Unsupported card image: " + path);
+        }
+        return result;
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g.create();
+        try {
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+            double centerX = LEFT + width / 2.0;
+            double centerY = TOP + height / 2.0;
+            g2.rotate(Math.toRadians(rotationDegrees), centerX, centerY);
+
+            Color base = card.getCardBackGroundColor() == null ? new Color(9, 39, 62) : card.getCardBackGroundColor();
+            double borderWidth = Math.max(6, Math.min(10, width * 0.04));
+
+            Shape outerShape = new RoundRectangle2D.Double(LEFT, TOP, width, height, CORNER_RADIUS, CORNER_RADIUS);
+            Shape innerShape = new RoundRectangle2D.Double(LEFT + borderWidth, TOP + borderWidth, width - borderWidth * 2, height - borderWidth * 2, CORNER_RADIUS - 5, CORNER_RADIUS - 5);
+
+            // Subtle shadow and a single solid, rounded border.
+            g2.setColor(new Color(0, 0, 0, 48));
+            g2.fill(new RoundRectangle2D.Double(LEFT + 2, TOP + 4, width, height, CORNER_RADIUS, CORNER_RADIUS));
+
+            g2.setColor(brightness(base, 0.72));
+            g2.fill(outerShape);
+            g2.setColor(base);
+            g2.fill(innerShape);
+
+            double imageX = LEFT + width * 0.075;
+            double imageY = TOP + height * 0.125;
+            double imageW = width * 0.85;
+            double imageH = height * 0.635;
+            Shape picture = new RoundRectangle2D.Double(imageX, imageY, imageW, imageH, 15, 15);
+
+            // Rounded image without additional decorative frames.
+            Shape oldClip = g2.getClip();
+            g2.clip(picture);
+            drawCover(g2, image, imageX, imageY, imageW, imageH);
+            g2.setClip(oldClip);
+
+            String category = card.getCardType();
+            int headingSize = Math.max(11, (int) Math.round(width * 0.073));
+            g2.setFont(new Font("Serif", Font.BOLD, headingSize));
+            FontMetrics headingMetrics = g2.getFontMetrics();
+            while (headingMetrics.stringWidth(category) > width * 0.75 && headingSize > 9) {g2.setFont(new Font("Serif", Font.BOLD, --headingSize));headingMetrics = g2.getFontMetrics();}
+            int headingX = (int) Math.round(centerX - headingMetrics.stringWidth(category) / 2.0);
+            int headingY = (int) Math.round(TOP + height * 0.085);
+            g2.setColor(new Color(0, 0, 0, 75));
+            g2.drawString(category, headingX, headingY + 1);
+            g2.setColor(new Color(238, 241, 243));
+            g2.drawString(category, headingX, headingY);
+
+            // Simple circular image without a double border.
+            double badgeY = TOP + height * 0.755;
+            double badgeRadius = width * 0.118;
+            Shape badge = new Ellipse2D.Double(centerX - badgeRadius, badgeY - badgeRadius, badgeRadius * 2, badgeRadius * 2);
+            g2.setColor(brightness(base, 0.82));
+            g2.fill(badge);
+            if (circleImage != null) {
+                g2.clip(badge);
+                drawContain(g2, circleImage, centerX - badgeRadius, badgeY - badgeRadius, badgeRadius * 2, badgeRadius * 2);
+                g2.setClip(oldClip);
+            }
+
+            String name = card.getNameToRender() == null ? "" : card.getNameToRender().toUpperCase();
+            int nameSize = Math.max(12, (int) Math.round(width * 0.123));
+            g2.setFont(new Font("Serif", Font.PLAIN, nameSize));
+            FontMetrics nameMetrics = g2.getFontMetrics();
+            while (nameMetrics.stringWidth(name) > width * 0.82 && nameSize > 10) {g2.setFont(new Font("Serif", Font.PLAIN, --nameSize));nameMetrics = g2.getFontMetrics();}
+            int nameX = (int) Math.round(centerX - nameMetrics.stringWidth(name) / 2.0);
+            int nameY = (int) Math.round(TOP + height * 0.94);
+            g2.setColor(new Color(0, 0, 0, 95));
+            g2.drawString(name, nameX, nameY + 1);
+            g2.setColor(new Color(242, 243, 244));
+            g2.drawString(name, nameX, nameY);
+
+            // Only hover and selection add an accent; the normal border has none.
+            if (isSelected || hover) {g2.setColor(isSelected ? new Color(232, 92, 82) : new Color(123, 188, 219));g2.setStroke(new BasicStroke(2.5f));g2.draw(outerShape);}
+        } finally {
+            g2.dispose();
+        }
+    }
+
+    private static Color brightness(Color color, double scale) {
+        return new Color(Math.min(255, (int) Math.round(color.getRed() * scale)), Math.min(255, (int) Math.round(color.getGreen() * scale)), Math.min(255, (int) Math.round(color.getBlue() * scale)));
+    }
+
+    private static void drawCover(Graphics2D g2, BufferedImage source,
+                                  double x, double y, double w, double h) {
+        double imageRatio = (double) source.getWidth() / source.getHeight();
+        double rectRatio = w / h;
+        int srcX = 0, srcY = 0, srcW = source.getWidth(), srcH = source.getHeight();
+        if (imageRatio > rectRatio) {
+            srcW = (int) Math.round(srcH * rectRatio);
+            srcX = (source.getWidth() - srcW) / 2;
+        } else {
+            srcH = (int) Math.round(srcW / rectRatio);
+            srcY = (source.getHeight() - srcH) / 2;
+        }
+        g2.drawImage(source, (int) Math.round(x), (int) Math.round(y), (int) Math.round(x + w), (int) Math.round(y + h), srcX, srcY, srcX + srcW, srcY + srcH, null);
+    }
+
+    private static void drawContain(Graphics2D g2, BufferedImage source, double x, double y, double w, double h) {
+        double scale = Math.min(w / source.getWidth(), h / source.getHeight());
+        int destW = (int) Math.round(source.getWidth() * scale);
+        int destH = (int) Math.round(source.getHeight() * scale);
+        int destX = (int) Math.round(x + (w - destW) / 2);
+        int destY = (int) Math.round(y + (h - destH) / 2);
+        g2.drawImage(source, destX, destY, destW, destH, null);
     }
 
     private void updateHover(MouseEvent e) {
         double angle = Math.toRadians(rotationDegrees);
-
-        double cx = 100 + width / 2.0;
-        double cy = 150 + height / 2.0;
-
+        double cx = LEFT + width / 2.0;
+        double cy = TOP + height / 2.0;
         double dx = e.getX() - cx;
         double dy = e.getY() - cy;
-
         double x = cx + dx * Math.cos(angle) + dy * Math.sin(angle);
         double y = cy - dx * Math.sin(angle) + dy * Math.cos(angle);
-
-        Shape cardShape = new RoundRectangle2D.Float(
-                100, 150, width, height, 25, 25
-        );
-
+        Shape cardShape = new RoundRectangle2D.Double(LEFT, TOP, width, height, CORNER_RADIUS, CORNER_RADIUS);
         boolean inside = cardShape.contains(x, y);
-
         if (hover != inside) {
             hover = inside;
             repaint();

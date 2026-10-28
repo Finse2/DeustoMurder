@@ -11,9 +11,7 @@ import java.util.Set;
  * A room card that also stores the cells
  * occupied by that room on the board.
  */
-public class Room extends Card {
-
-    private static final long serialVersionUID = 1L;
+final public class Room extends Card{
 
     private final String name;
     private final Set<Cell> occupiedCells = new LinkedHashSet<>();
