@@ -12,8 +12,10 @@ import java.util.ArrayList;
 
 import activation.Screen.ProfileButton;
 import activation.Screen.CluedoTableTheme;
+import activation.Screen.ServerCode;
 import javafx.scene.media.EqualizerBand;
 import model.Player;
+import activation.Screen.connectionValues;
 
 public class LobbyScreen extends JFrame {
     private static final Path PROFILE_PATH = Path.of(System.getProperty("user.home"), ".deustoCluedo", "profile.png");
@@ -23,11 +25,14 @@ public class LobbyScreen extends JFrame {
     private LobbyRoster roster;
     private JPanel playerListPanel;
     private JLabel playerCountLabel;
+    private String ServerIP = connectionValues.getIpAddress();
+    private int port = connectionValues.getPort();
+    private String HostNAME = connectionValues.getHostName();
 
-    public LobbyScreen(LobbyRoster roster) {
+    public LobbyScreen(LobbyRoster roster) throws Exception {
         this(roster, false,null);
     }
-    public LobbyScreen(LobbyRoster roster,boolean isHost,Runnable onStartGame){
+    public LobbyScreen(LobbyRoster roster,boolean isHost,Runnable onStartGame) throws Exception {
         this.roster = java.util.Objects.requireNonNull(roster, "roster required");
         setTitle("Lobby");
         setSize(1200, 900);
@@ -41,7 +46,7 @@ public class LobbyScreen extends JFrame {
         northPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
         JLabel sessionId = new JLabel("Session ID");
         northPanel.add(sessionId);
-        JLabel sessionCode = new JLabel("Code");
+        JLabel sessionCode = new JLabel("Code: " + ServerCode.Encode(ServerIP, port, HostNAME));
         northPanel.add(sessionCode);
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setOpaque(false);
@@ -102,10 +107,10 @@ public class LobbyScreen extends JFrame {
         eastPanel.setPreferredSize(new Dimension(300, 0));
         eastPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
         JPanel infoPanel = new JPanel(new GridLayout(3,1,5,5));
-        JLabel eastHostName = new JLabel("Host Name:");
+        JLabel eastHostName = new JLabel("Host Name: " + HostNAME);
         eastPanel.setBorder(BorderFactory.createEmptyBorder());
-        JLabel ipAddress = new JLabel("IP Address:");
-        JLabel portNumber = new JLabel("Port:");
+        JLabel ipAddress = new JLabel("IP Address: " + ServerIP );
+        JLabel portNumber = new JLabel("Port: " + port );
         infoPanel.add(eastHostName);
         infoPanel.add(ipAddress);
         infoPanel.add(portNumber);
