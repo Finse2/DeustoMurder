@@ -1,8 +1,7 @@
 package app;
 
 import activation.Screen.MainScreen;
-import ui.match.InGameScreen;
-import activation.Screen.MainScreen;
+import ui.match.inGameScreen.InGameScreen;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -27,8 +26,8 @@ public final class Main {
     }
 
     private static void openLocalGame() {
-        InGameScreen gameScreen = new InGameScreen();
-        gameScreen.setVisible(true);
+        //InGameScreen gameScreen = new InGameScreen();
+        //gameScreen.setVisible(true);
     }
 
     private static void showJoinNotImplemented() {
