@@ -16,11 +16,7 @@ public class DetectiveCard extends JPanel {
 
     private static final Color INK = new Color(25, 25, 25); // Textos y encabezados
 
-    public DetectiveCard (
-            List <Actor> actors,
-            List <Weapon> weapons,
-            List <Room> rooms
-    ) {
+    public DetectiveCard (List <Actor> actors, List <Weapon> weapons, List <Room> rooms) {
 
         setLayout(new BorderLayout());
         setBackground(new Color (220,220,215));

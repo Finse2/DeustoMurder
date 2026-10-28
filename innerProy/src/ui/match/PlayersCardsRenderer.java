@@ -77,10 +77,7 @@ public class PlayersCardsRenderer extends JPanel {
             int naturalWidth = rendererWidth() + (n - 1) * cardWidth;
             int minimumWidth = rendererWidth() + (n - 1) * minStep;
 
-            width = Math.max(
-                    minimumWidth,
-                    Math.min(naturalWidth, maxHandWidth)
-            );
+            width = Math.max(minimumWidth, Math.min(naturalWidth, maxHandWidth));
         }
 
         return new Dimension(
@@ -138,23 +135,17 @@ public class PlayersCardsRenderer extends JPanel {
         double center = (totalCards - 1) / 2.0;
         double normalized = (index - center) / center;
 
-        return (int) Math.round(
-                normalized * maxRotationDegrees
-        );
+        return (int) Math.round(normalized * maxRotationDegrees);
     }
 
     private int computeVerticalOffset(int index, int totalCards) {
 
-        if (totalCards <= 1) {
-            return 0;
-        }
+        if (totalCards <= 1) {return 0;}
 
         double center = (totalCards - 1) / 2.0;
         double normalized = (index - center) / center;
 
-        return (int) Math.round(
-                ARC_DEPTH * normalized * normalized
-        );
+        return (int) Math.round(ARC_DEPTH * normalized * normalized);
     }
 
     private void refreshCards() {
@@ -187,19 +178,11 @@ public class PlayersCardsRenderer extends JPanel {
                         double dx = x - cx;
                         double dy = y - cy;
 
-                        double originalX = cx
-                                + dx * Math.cos(angle)
-                                + dy * Math.sin(angle);
+                        double originalX = cx + dx * Math.cos(angle) + dy * Math.sin(angle);
 
-                        double originalY = cy
-                                - dx * Math.sin(angle)
-                                + dy * Math.cos(angle);
+                        double originalY = cy - dx * Math.sin(angle) + dy * Math.cos(angle);
 
-                        Shape shape = new RoundRectangle2D.Float(
-                                100, 150,
-                                cardWidth, cardHeight,
-                                25, 25
-                        );
+                        Shape shape = new RoundRectangle2D.Float(100, 150, cardWidth, cardHeight, 25, 25);
 
                         return shape.contains(originalX, originalY);
                     }
@@ -234,11 +217,7 @@ public class PlayersCardsRenderer extends JPanel {
             order.add(i);
         }
 
-        order.sort(
-                Comparator.comparingDouble(
-                        i -> Math.abs(i - center)
-                )
-        );
+        order.sort(Comparator.comparingDouble(i -> Math.abs(i - center)));
 
         // Center cards appear in front of outer cards.
         for (int i = order.size() - 1; i >= 0; i--) {
@@ -259,13 +238,9 @@ public class PlayersCardsRenderer extends JPanel {
 
         if (n > 1) {
 
-            int naturalWidth = rendererWidth()
-                    + (n - 1) * cardWidth;
+            int naturalWidth = rendererWidth() + (n - 1) * cardWidth;
 
-            int availableWidth = Math.min(
-                    Math.min(getWidth(), maxHandWidth),
-                    naturalWidth
-            );
+            int availableWidth = Math.min(Math.min(getWidth(), maxHandWidth), naturalWidth);
 
             step = (availableWidth - rendererWidth()) / (n - 1);
 
@@ -282,12 +257,7 @@ public class PlayersCardsRenderer extends JPanel {
             int x = startX + i * step;
             int y = computeVerticalOffset(i, n);
 
-            renderers.get(i).setBounds(
-                    x,
-                    y,
-                    rendererWidth(),
-                    rendererHeight()
-            );
+            renderers.get(i).setBounds(x, y, rendererWidth(), rendererHeight());
         }
     }
 }

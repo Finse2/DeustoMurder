@@ -3,7 +3,7 @@ package model;
 
 import java.awt.*;
 
-public class Actor extends Card {
+final public class Actor extends Card {
 
     final private String name;
     final private Color color;

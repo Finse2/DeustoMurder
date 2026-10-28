@@ -13,12 +13,7 @@ import java.awt.RenderingHints;
 
 class TileAspect extends JPanel {
 
-    enum TileDirection {
-        NORTH,
-        SOUTH,
-        EAST,
-        WEST
-    }
+    enum TileDirection {NORTH, SOUTH, EAST, WEST}
 
     static final int SIZE = 30;
 

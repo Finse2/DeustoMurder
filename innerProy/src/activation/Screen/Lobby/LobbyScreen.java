@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import activation.Screen.ProfileButton;
 import activation.Screen.CluedoTableTheme;
 import activation.Screen.ServerCode;
-import javafx.scene.media.EqualizerBand;
 import model.Player;
 import activation.Screen.connectionValues;
 
