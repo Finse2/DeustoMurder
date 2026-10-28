@@ -233,6 +233,8 @@ public class MainScreen extends JFrame {
                     Thread.currentThread().interrupt();
                 } catch (ExecutionException e) {
                     JOptionPane.showMessageDialog(MainScreen.this, "Failed to host: " + e.getCause().getMessage(), "Server Error", JOptionPane.ERROR_MESSAGE);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
             }
 
@@ -388,6 +390,8 @@ public class MainScreen extends JFrame {
                             "Connection Error",
                             JOptionPane.ERROR_MESSAGE
                     );
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
             }
 
@@ -798,7 +802,7 @@ public class MainScreen extends JFrame {
         return result;
     }
 
-    private void openHostLobby() {
+    private void openHostLobby() throws Exception {
         LobbyScreen lobbyScreen = new LobbyScreen(hostRoster,true,() -> {
             if (hostClient == null || !hostClient.isConnected()) {
             throw new IllegalStateException("Host is Disconected");
@@ -822,7 +826,7 @@ public class MainScreen extends JFrame {
         MainScreen.this.setVisible(false);
     }
 
-    private void openJoinedLobby() {
+    private void openJoinedLobby() throws Exception {
 
         LobbyScreen lobbyScreen = new LobbyScreen(joinedRoster);
 
