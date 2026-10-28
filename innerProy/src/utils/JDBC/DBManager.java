@@ -57,9 +57,24 @@ public class DBManager implements AutoCloseable {
         }
 
     }
-    /**executes and returns a SQL query<br>
-     * if no "," is present at the end of the provided sql string, it will be added at the beginning of the function<br>
-     * @return null if there are no rows that where selected, ResultSet if there was a returnable result*/
+    /**
+     * Executes and returns an SQL query.
+     *
+     * <h4>Example - Usage</h4>
+     * <pre>{@code
+     * ResultSet rs = db.executeQuery("SELECT * FROM person");
+     *
+     * while (rs != null && rs.next()) {
+     *     String name = rs.getString("name");
+     *     int age = rs.getInt("age");
+     *
+     *     System.out.println(name + " - " + age);
+     * }
+     * }</pre>
+     *
+     * @return a ResultSet if the statement produces one, or null otherwise
+     * @throws SQLException if a database error occurs
+     */
     public ResultSet executeQuery(String sql) throws SQLException {
 
         try (Statement statement = connection.createStatement()) {
