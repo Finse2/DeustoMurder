@@ -34,6 +34,8 @@ public class MainScreen extends JFrame {
     private boolean joiningServer = false;
     private LobbyRoster hostRoster;
     private LobbyRoster joinedRoster;
+    private String HostUserName;
+    private String ClientUserName;
 
     public MainScreen() {
         setTitle("Deusto Cluedo");
@@ -135,7 +137,6 @@ public class MainScreen extends JFrame {
         setVisible(true);
     }
 
-
     private void HostGame() {
 
         if (hostingServer || (hostedLobby != null && hostedLobby.isRunning())) {
@@ -172,7 +173,7 @@ public class MainScreen extends JFrame {
                     public void onConnected(int playerID) {
                         roster.upsert(
                                 playerID,
-                                System.getProperty("user.name", "Host"),
+                                HostUserName,
                                 System.getenv().getOrDefault("COMPUTERNAME", "Host-PC")
                         );
                         accepted.complete(playerID);
@@ -194,9 +195,10 @@ public class MainScreen extends JFrame {
                 });
 
                 try {
+                    HostUserName = JOptionPane.showInputDialog("What is you're username");
                     String username = System.getProperty("user.name", "Host");
                     String computerName = System.getenv().getOrDefault("COMPUTERNAME", "Host-PC");
-                    client.connect(username, computerName);
+                    client.connect(HostUserName, computerName);
 
                     int playerID = accepted.get(5, TimeUnit.SECONDS);
 
@@ -225,6 +227,7 @@ public class MainScreen extends JFrame {
                     System.out.println("Host connected successfully.");
                     System.out.println("Player ID: " + session.playerId());
                     System.out.println("Connected players: " + hostedLobby.getClientCount());
+
 
                     System.out.println("Opening Lobby ...");
                     openHostLobby();
@@ -284,7 +287,7 @@ public class MainScreen extends JFrame {
                             public void onConnected(int playerID) {
                                 roster.upsert(
                                         playerID,
-                                        System.getProperty("user.name", "Player"),
+                                        ClientUserName,
                                         System.getenv().getOrDefault("COMPUTERNAME", "Unknown-PC")
                                 );
                                 accepted.complete(playerID);
@@ -305,9 +308,7 @@ public class MainScreen extends JFrame {
                             @Override
                             public void onDisconnected() {
                                 accepted.completeExceptionally(
-                                        new IOException(
-                                                "Disconnected before joining."
-                                        )
+                                        new IOException("Disconnected before joining.")
                                 );
                             }
 
@@ -319,15 +320,12 @@ public class MainScreen extends JFrame {
                 );
 
                 try {
-                    String username =
-                            System.getProperty("user.name", "Player");
+                    ClientUserName = JOptionPane.showInputDialog("What is you're username");
 
-                    String computerName =
-                            System.getenv().getOrDefault(
-                                    "COMPUTERNAME", "Unknown-PC"
-                            );
+                    String computerName = System.getenv().getOrDefault("COMPUTERNAME", "Unknown-PC");
 
-                    client.connect(username, computerName);
+
+                    client.connect(ClientUserName, computerName);
 
                     // Wait for the server to assign our player ID
                     int playerID = accepted.get(5, TimeUnit.SECONDS);
@@ -850,6 +848,7 @@ public class MainScreen extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(MainScreen::new);
     }
+
 }
 record ConnectionResult (
         connectionValues connection,
