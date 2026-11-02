@@ -11,11 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
-import activation.Screen.ProfileButton;
-import activation.Screen.CluedoTableTheme;
-import activation.Screen.ServerCode;
+import activation.Screen.*;
 import model.Player;
-import activation.Screen.connectionValues;
 
 public class LobbyScreen extends JFrame {
     private static final Path PROFILE_PATH = Path.of(System.getProperty("user.home"), ".deustoCluedo", "profile.png");
