@@ -5,7 +5,9 @@ import game.cards.DeckManager;
 import game.dice.Dice;
 import game.dice.GameRandomizer;
 import game.history.GameEvent;
+import game.history.GameEventProcessorThread;
 import game.history.GameHistory;
+import game.history.GameHistoryWriterThread;
 import game.statistics.StatisticsManager;
 import game.turns.MoveValidator;
 import game.turns.RoundManager;
@@ -63,11 +65,15 @@ public class Game {
 
     private final Dice dice;
 
+    private GameHistoryWriterThread historyWriter;
+
     // HISTORIAL Y ESTADÍSTICAS
 
     private final GameHistory gameHistory;
 
     private final StatisticsManager statisticsManager;
+
+    private GameEventProcessorThread eventProcessor;
 
     // ESTADO GENERAL
 
@@ -272,6 +278,12 @@ public class Game {
                         destinationX + ", " + destinationY + ")"
         );
 
+        if (eventProcessor != null) {
+            eventProcessor.addEvent(new GameEvent(GameEvent.Type.PLAYER_MOVED,
+                    player.getPlayerID(), player.getName(), "Player moved to (" + destinationX + ", " + destinationY + ")"));
+        }
+
+
         return true;
     }
 
@@ -461,5 +473,26 @@ public class Game {
 
     public StatisticsManager getStatisticsManager() {
         return statisticsManager;
+    }
+
+    public void startHistoryWriter() {
+        historyWriter = new GameHistoryWriterThread(gameHistory, java.nio.file.Path.of("data/history/game-history.csv"));
+    }
+
+    public void startEventProcessor() {
+
+        eventProcessor = new GameEventProcessorThread();
+
+        eventProcessor.start();
+    }
+
+    public void stopEventProcessor() {
+
+        if (eventProcessor != null) {
+
+            eventProcessor.stopProcessor();
+
+            eventProcessor = null;
+        }
     }
 }
