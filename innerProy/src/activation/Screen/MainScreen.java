@@ -22,7 +22,11 @@ import java.nio.Buffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
-
+/**
+ * The MainScreen class represents the main user interface of the application.
+ * It extends JFrame and provides functionality for hosting and joining games,
+ * managing user profiles, and displaying various settings and statistics.
+ */
 public class MainScreen extends JFrame {
     private static final Path PROFILE_PATH = Path.of(System.getProperty("user.home"), ".deustoCluedo", "profile.png");
     private static final Path DEFAULT_PROFILE_PATH = Path.of("innerProy", "ressources", "DefaultProfile.jpg");
@@ -36,7 +40,11 @@ public class MainScreen extends JFrame {
     private LobbyRoster joinedRoster;
     private String HostUserName;
     private String ClientUserName;
-
+/**
+     * Constructor for the MainScreen class.
+     * Initializes the main user interface, including the title, size, background image,
+     * and various panels for hosting/joining games, settings, and profile management.
+     */
     public MainScreen() {
         setTitle("Deusto Cluedo");
         setSize(900, 600);
@@ -136,7 +144,11 @@ public class MainScreen extends JFrame {
 
         setVisible(true);
     }
-
+/**
+     * Hosts a game by establishing a server and connecting the host client.
+     * This method checks if the user is already hosting a game, opens a connection dialog,
+     * and starts a background task to host the game and connect the host client.
+     */
     private void HostGame() {
 
         if (hostingServer || (hostedLobby != null && hostedLobby.isRunning())) {
@@ -210,7 +222,11 @@ public class MainScreen extends JFrame {
                     throw e;
                 }
             }
-
+            /**
+             * This method is called when the background task is completed.
+             * It retrieves the hosted session, updates the UI, and opens the host lobby.
+             * If an exception occurs during hosting, it displays an error message.
+             */
             @Override
             protected void done() {
 
@@ -245,6 +261,11 @@ public class MainScreen extends JFrame {
     }
 
 
+    /**
+     * Joins a game by connecting the client to an existing server.
+     * This method checks if the user is already joining or connected to a game,
+     * opens a connection dialog, and starts a background task to join the game.
+     */
     private void JoinGame() {
         if (joiningServer || (joinedClient != null && joinedClient.isConnected())) {
 
@@ -395,12 +416,19 @@ public class MainScreen extends JFrame {
 
         }.execute();
     }
-
+/**
+     * Exits the application by disposing of the main window.
+     */
     private void Exit() {
         dispose();
     }
 
-
+/**
+     * Opens a dialog for the user to input connection parameters, either through a server code or manual entry.
+     * The method validates the input and returns a connectionValues object containing the host name, IP address, and port.
+     *
+     * @return A connectionValues object with the specified connection parameters, or null if the dialog was canceled.
+     */
     private connectionValues ClientConnection() {
 
         connectionValues connect = new connectionValues();
@@ -546,7 +574,12 @@ public class MainScreen extends JFrame {
         return result[0];
     }
 
-
+/**
+     * Opens a dialog for the user to input connection parameters, either through a server code or manual entry.
+     * The method validates the input and returns a connectionValues object containing the host name, IP address, and port.
+     *
+     * @return A connectionValues object with the specified connection parameters, or null if the dialog was canceled.
+     */
     private ConnectionResult openConnection() {
 
         connectionValues connect = new connectionValues();
@@ -644,7 +677,10 @@ public class MainScreen extends JFrame {
         return result[0];
     }
 
-
+/**
+     * Opens a settings dialog that allows the user to adjust various application settings.
+     * The settings are displayed in a table format, and the user can modify values as needed.
+     */
     private void openSettings() {
         JFrame settingsFrame = new JFrame("Settings");
         String[] colums = {"Settings", "Value"};
@@ -678,6 +714,10 @@ public class MainScreen extends JFrame {
         settingsFrame.setVisible(true);
     }
 
+/**
+     * Opens a profile statistics dialog that displays the user's game statistics and allows them to change their profile picture.
+     * The statistics are displayed in a table format, and the user can modify their profile picture as needed.
+     */
     private void openProfileStats() {
 
         JFrame statFrame = new JFrame("Profile Statistics");
@@ -716,7 +756,12 @@ public class MainScreen extends JFrame {
 
 
     }
-
+/**
+     * Creates a custom-styled JButton for use in dialogs.
+     *
+     * @param text The text to display on the button.
+     * @return A JButton with the specified text and custom styling.
+     */
     private JButton createDialogButton(String text) {
         JButton button = new JButton(text);
         button.setBackground(new Color(75, 38, 42));
@@ -728,7 +773,12 @@ public class MainScreen extends JFrame {
         button.setOpaque(true);
         return button;
     }
-
+/**
+     * Loads the user's profile picture from the specified path.
+     * If the profile picture is not found, it loads a default profile picture.
+     *
+     * @return A BufferedImage representing the user's profile picture or the default picture.
+     */
     private BufferedImage loadProfilePicture() {
         BufferedImage saved = readImage(PROFILE_PATH);
         if (saved != null) {
@@ -736,7 +786,12 @@ public class MainScreen extends JFrame {
         }
         return readImage(DEFAULT_PROFILE_PATH);
     }
-
+/**
+     * Reads an image from the specified path.
+     *
+     * @param path The path to the image file.
+     * @return A BufferedImage representing the image, or null if the file is not found or cannot be read.
+     */
     private BufferedImage readImage(Path path) {
         if (!Files.isRegularFile(path)) {
             return null;
@@ -748,7 +803,11 @@ public class MainScreen extends JFrame {
             return null;
         }
     }
-
+/**
+     * Opens a file chooser dialog to allow the user to select a new profile picture.
+     * The selected image is resized if necessary and saved to the specified profile path.
+     * If an error occurs during the process, an error message is displayed.
+     */
     private void changeProfilePicture() {
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Choose Profile Picture");
@@ -781,7 +840,14 @@ public class MainScreen extends JFrame {
                     "Image Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
+/**
+     * Resizes the given image if its width or height exceeds the specified maximum side length.
+     * The aspect ratio of the image is preserved during resizing.
+     *
+     * @param source  The original BufferedImage to be resized.
+     * @param maxSide The maximum allowed length for the width or height of the image.
+     * @return A new BufferedImage that is resized if necessary, or the original image if no resizing is needed.
+     */
     private BufferedImage resizeIfNecessary(BufferedImage source, int maxSide) {
         int originalWidth = source.getWidth();
         int originalHeight = source.getHeight();
@@ -799,7 +865,12 @@ public class MainScreen extends JFrame {
         g2.dispose();
         return result;
     }
-
+/**
+     * Opens the host lobby screen, allowing the host to manage the game and start it.
+     * This method creates a new LobbyScreen instance and sets up a window listener to handle cleanup when the lobby is closed.
+     *
+     * @throws Exception If an error occurs while opening the lobby.
+     */
     private void openHostLobby() throws Exception {
         LobbyScreen lobbyScreen = new LobbyScreen(hostRoster,true,() -> {
             if (hostClient == null || !hostClient.isConnected()) {
@@ -823,7 +894,12 @@ public class MainScreen extends JFrame {
         });
         MainScreen.this.setVisible(false);
     }
-
+/**
+     * Opens the joined lobby screen, allowing the client to view the game lobby and wait for the host to start the game.
+     * This method creates a new LobbyScreen instance and sets up a window listener to handle cleanup when the lobby is closed.
+     *
+     * @throws Exception If an error occurs while opening the lobby.
+     */
     private void openJoinedLobby() throws Exception {
 
         LobbyScreen lobbyScreen = new LobbyScreen(joinedRoster);
@@ -850,11 +926,22 @@ public class MainScreen extends JFrame {
     }
 
 }
+/**
+ * A record to encapsulate the result of a connection attempt, including the connection values and the generated server code.
+ *
+ * @param connection The connection values containing host name, IP address, and port.
+ * @param code       The generated server code for the connection.
+ */
 record ConnectionResult (
         connectionValues connection,
         String code
 ){}
-
+/**
+ * A record to represent a setting option and its corresponding value.
+ *
+ * @param option The name of the setting option.
+ * @param value  The value associated with the setting option.
+ */
 record Settings(String option, Object value) {
     public static Object[][] toArray(Settings[] settings) {
         Object[][] result = new Object[settings.length][2];
@@ -865,5 +952,11 @@ record Settings(String option, Object value) {
         return result;
     }
 }
-
+/**
+ * A record to encapsulate the details of a hosted session, including the lobby control, client, and player ID.
+ *
+ * @param lobby    The LobbyControl instance managing the hosted game.
+ * @param client   The Client instance representing the host's connection.
+ * @param playerId The unique identifier for the host player.
+ */
 record HostedSession(LobbyControl lobby, Client client, int playerId){};

@@ -3,7 +3,12 @@ package activation.Screen;
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
-
+/**
+ * The CluedoTableTheme class provides a custom theme for JTable components in the Cluedo game.
+ * It defines colors, fonts, and styles for table rows, headers, and scroll panes to create a visually appealing interface.
+ * The class includes methods to apply the theme to a JTable and customize its appearance.
+ * THIS CLASS HAS BEEN CREATED WITH THE HELP OF CHAT-GPT.
+ */
 public class CluedoTableTheme {
 
     // Theme colors
@@ -24,7 +29,13 @@ public class CluedoTableTheme {
 
     private static final Color SELECTED =
             new Color(95, 45, 50);
-
+/**
+     * Styles a JTable with the Cluedo theme.
+     * This method customizes the appearance of the table, including row colors, header styles, and scroll pane settings.
+     *
+     * @param table The JTable to be styled.
+     * @return A JScrollPane containing the styled JTable.
+     */
     public static JScrollPane style(JTable table) {
 
         // General table appearance
@@ -40,7 +51,7 @@ public class CluedoTableTheme {
         table.setSelectionForeground(Color.WHITE);
         table.setFillsViewportHeight(true);
 
-        // Custom cell renderer
+    // Custom cell renderer for alternating row colors and gold labels
         table.setDefaultRenderer(
                 Object.class,
                 new DefaultTableCellRenderer() {
@@ -175,6 +186,13 @@ public class CluedoTableTheme {
 
         return scrollPane;
     }
+    /**
+     * Styles a JTable with the Cluedo theme, specifically for connection-related tables.
+     * This method customizes the appearance of the table, including row colors, header styles, and scroll pane settings.
+     *
+     * @param table The JTable to be styled.
+     * @return A JScrollPane containing the styled JTable.
+     */
     public static JScrollPane styleConnection(JTable table){
         JScrollPane scrollPane = style(table);
         table.setRowHeight(50);
