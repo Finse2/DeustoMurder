@@ -6,7 +6,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-
+/**
+ * This class handles the communication between the server and a connected client.
+ * It manages the input and output streams for the socket connection, processes incoming packets,
+ * and sends packets to the client. It also handles disconnection of the client.
+ */
 final class ServersClientHandler implements Runnable {
 
     private final Socket socket;    //connects to the Client
@@ -27,13 +31,23 @@ final class ServersClientHandler implements Runnable {
 
     /**boolean stated weather the selected player is active*/
     private boolean disconnected;
-
+/**
+     * Constructor for the ServersClientHandler class.
+     *
+     * @param socket The socket connection to the client.
+     * @param server The GameServer instance managing this client.
+     * @param playerID The unique player ID assigned to this client.
+     */
     ServersClientHandler(Socket socket, GameServer server, int playerID) {
         this.socket = socket;
         this.server = server;
         this.playerID = playerID;
     }
-
+/**
+     * The main loop for handling incoming packets from the client.
+     * It reads packets from the input stream and passes them to the server for processing.
+     * If an error occurs or the connection is lost, it disconnects the client.
+     */
     @Override
     public void run() {
         try {
@@ -92,24 +106,23 @@ final class ServersClientHandler implements Runnable {
         }
     }
 
-    //getters
-
+// Getters and Setters for playerID.
     int getPlayerID() {
         return playerID;
     }
-
+// Getter for the user name.
     String getUserName() {
         return userName;
     }
-
+// Getter for the computer name.
     String getComputerName() {
         return computerName;
     }
-
+// Setter for the user name.
     void setUserName(String userName) {
         this.userName = userName;
     }
-
+// Setter for the computer name.
     void setComputerName(String computerName) {
         this.computerName = computerName;
     }

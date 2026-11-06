@@ -18,7 +18,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
-
+/**
+ * This class represents a game server that listens for incoming client connections and handles communication between clients.
+ * It manages the connected clients, assigns player IDs, and processes packets sent by clients.
+ */
 public final class GameServer {
 
     private final int port;
@@ -28,7 +31,12 @@ public final class GameServer {
 
     private volatile boolean running;
     private volatile ServerSocket serverSocket;
-
+/**
+     * Constructor for the GameServer class.
+     *
+     * @param port The port number on which the server will listen for incoming client connections.
+     * @throws IllegalArgumentException if the port number is not between 1 and 65535.
+     */
     public GameServer(int port) {
         if (port < 1 || port > 65535) {
             throw new IllegalArgumentException("Port must be between 1 and 65535");
@@ -38,7 +46,8 @@ public final class GameServer {
 
     /**initializes the backend server
      *
-     * @throws IllegalStateException if server is already running*/
+     * @throws IllegalStateException if server is already running
+     * */
     public void start() {
         if (running) {
             throw new IllegalStateException("Server is already running");
@@ -73,7 +82,10 @@ public final class GameServer {
             disconnectClients();
         }
     }
-
+/**
+     * Stops the server and disconnects all connected clients.
+     * This method is thread-safe and can be called from any thread.
+     */
     public void stop() {
         running = false;
         ServerSocket socket = serverSocket;
@@ -86,7 +98,12 @@ public final class GameServer {
         }
         disconnectClients();
     }
-
+/**
+     * Handles a packet received from a client.
+     *
+     * @param packet The packet received from the client.
+     * @param serversClientHandler The client handler that received the packet.
+     */
     void handlePacket(Packet packet, ServersClientHandler serversClientHandler) {
         if (packet == null || serversClientHandler == null) {
             return;
@@ -107,7 +124,12 @@ public final class GameServer {
                     System.err.println("Ignoring server-only packet from player " + serversClientHandler.getPlayerID());
         }
     }
-
+/**
+     * Handles a JOIN packet received from a client.
+     *
+     * @param packet The JOIN packet received from the client.
+     * @param serversClientHandler The client handler that received the packet.
+     */
     private void handleJoin(Packet packet, ServersClientHandler serversClientHandler) {
         if (!(packet instanceof JoinPacket joinPacket)) {
             return;
@@ -137,7 +159,12 @@ public final class GameServer {
         );
         System.out.println("Player joined: " + userName + " from " + computerName);
     }
-
+/**
+     * Handles a CARD_SHOW packet received from a client.
+     *
+     * @param packet The CARD_SHOW packet received from the client.
+     * @param serversClientHandler The client handler that received the packet.
+     */
     private void handleCardShow(Packet packet, ServersClientHandler serversClientHandler) {
         if (!(packet instanceof CardShowPacket cardShowPacket)) {
             return;
@@ -156,7 +183,12 @@ public final class GameServer {
                 target.getPlayerID()
         ));
     }
-
+    /**
+     * Handles a PLAYER_MOVE packet received from a client.
+     *
+     * @param packet The PLAYER_MOVE packet received from the client.
+     * @param serversClientHandler The client handler that received the packet.
+     */
     private void handlePlayerMove(Packet packet, ServersClientHandler serversClientHandler) {
         if (!(packet instanceof PlayerMovePacket movePacket)) {
             return;
@@ -170,13 +202,22 @@ public final class GameServer {
         );
         broadcastExcept(authoritativeMove, serversClientHandler);
     }
-
+/**
+     * Broadcasts a packet to all connected clients.
+     *
+     * @param packet The packet to broadcast.
+     */
     private void broadcast(Packet packet) {
         for (ServersClientHandler client : clients.values()) {
             client.sendPacket(packet);
         }
     }
-
+/**
+     * Broadcasts a packet to all connected clients except for the specified client.
+     *
+     * @param packet The packet to broadcast.
+     * @param excludedClient The client to exclude from the broadcast.
+     */
     private void broadcastExcept(Packet packet, ServersClientHandler excludedClient) {
         for (ServersClientHandler client : clients.values()) {
             if (client != excludedClient) {
@@ -184,29 +225,49 @@ public final class GameServer {
             }
         }
     }
-
+/**
+     * Disconnects all connected clients and shuts down the client executor service.
+     */
     private void disconnectClients() {
         for (ServersClientHandler client : clients.values()) {
             client.disconnect();
         }
         clientExecutor.shutdownNow();
     }
-
+/**
+     * Cleans a string value by trimming whitespace and providing a fallback if the value is null or blank.
+     *
+     * @param value The string value to clean.
+     * @param fallback The fallback value to use if the input value is null or blank.
+     * @return The cleaned string value or the fallback if the input was null or blank.
+     */
     private String cleanName(String value, String fallback) {
         if (value == null || value.isBlank()) {
             return fallback;
         }
         return value.trim();
     }
-
+/**
+     * Removes a client from the server's client list.
+     *
+     * @param serversClientHandler The client handler to remove.
+     */
     void removeClient(ServersClientHandler serversClientHandler) {
         clients.remove(serversClientHandler.getPlayerID(), serversClientHandler);
     }
-
+/**
+     * Gets the current number of connected clients.
+     *
+     * @return The number of connected clients.
+     */
     public int getClientCount() {
         return clients.size();
     }
-
+/**
+     * Checks if the server is currently running.
+     *
+     * @return true if the server is running, false otherwise.
+     */
     public boolean isRunning() {
         return running;
     }
