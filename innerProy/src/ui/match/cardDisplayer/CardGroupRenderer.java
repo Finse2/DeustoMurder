@@ -1,4 +1,5 @@
-package ui.match;
+
+package ui.match.cardDisplayer;
 
 import model.Card;
 
@@ -9,9 +10,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class CardGroupRenderer extends JPanel {
 
-    private static final int SIDE_PADDING = 15;
+/**
+ * recive un conjunto de cartas y decide que rotación dar a cada una, es el JPanel que acaba conteniendolas
+ */
+abstract class CardGroupRenderer extends JPanel {
+
+    private static final int SIDE_PADDING = 25;
     private static final int TOP_PADDING = 30;
     private static final int BOTTOM_PADDING = 30;
 
@@ -21,7 +26,7 @@ public abstract class CardGroupRenderer extends JPanel {
     private final List<Card> cards = new ArrayList<>();
     private final List<CardRenderer> renderers = new ArrayList<>();
 
-    protected CardGroupRenderer(List<Card> cards, int cardHeight, int cardWidth, int minStep) {
+    protected CardGroupRenderer(int cardHeight, int cardWidth, int minStep) {
         this.cardHeight = cardHeight;
         this.cardWidth = cardWidth;
         this.minStep = Math.max(1, Math.min(minStep, cardWidth));
@@ -33,6 +38,18 @@ public abstract class CardGroupRenderer extends JPanel {
 
     protected int verticalOffset(int index, int total) {
         return 0;
+    }
+
+    protected Point cardPosition(int index, int total, int step) {
+        return new Point(index * step, verticalOffset(index, total));
+    }
+
+    protected int getCardWidth() {
+        return cardWidth;
+    }
+
+    protected int getCardHeight() {
+        return cardHeight;
     }
 
     public void setCards(List<Card> cards) {
@@ -105,14 +122,24 @@ public abstract class CardGroupRenderer extends JPanel {
     public void doLayout() {
         int total = renderers.size();
         if (total == 0) return;
-        int step = total == 1 ? 0 : Math.max(1, Math.min(cardWidth, (getWidth() - SIDE_PADDING * 2 - cardWidth) / (total - 1)));
+
+        int step = total == 1 ? 0 :
+                Math.max(1, Math.min(cardWidth,
+                        (getWidth() - SIDE_PADDING * 2 - cardWidth) / (total - 1)));
+
         int visibleWidth = cardWidth + (total - 1) * step;
         int startX = (getWidth() - visibleWidth) / 2;
 
         for (int i = 0; i < total; i++) {
-            int x = startX + i * step;
-            int y = TOP_PADDING + verticalOffset(i, total);
-            renderers.get(i).setBounds(x - 100, y - 150, cardWidth + 200, cardHeight + 300);
+            Point position = cardPosition(i, total, step);
+
+            int x = startX + position.x;
+            int y = TOP_PADDING + position.y;
+
+            renderers.get(i).setBounds(
+                    x - 100, y - 150,
+                    cardWidth + 200, cardHeight + 300
+            );
         }
     }
 }

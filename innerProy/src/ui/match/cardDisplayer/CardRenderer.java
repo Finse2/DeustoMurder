@@ -1,5 +1,5 @@
 
-package ui.match;
+package ui.match.cardDisplayer;
 
 import model.Card;
 

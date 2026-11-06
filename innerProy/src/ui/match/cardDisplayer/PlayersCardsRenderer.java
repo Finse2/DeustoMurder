@@ -1,21 +1,19 @@
-
-package ui.match;
+package ui.match.cardDisplayer;
 
 import model.Card;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class PlayersCardsRenderer extends JPanel {
 
-    public record PlayersHandsRendererHeader(Class<? extends Card> cabecera, int maxRotationDegrees) {}
+
 
     private static final int GAP = 10;
 
-    private final List<CardGroupRenderer> groups = new ArrayList<>();
+    private final List<PlayersHandsRendererCategory> groups = new ArrayList<>();
     private final List<Card> cards = new ArrayList<>();
     private final PlayersHandsRendererHeader[] headers;
 
@@ -43,44 +41,25 @@ public class PlayersCardsRenderer extends JPanel {
         // Los subtipos deben aparecer antes que sus supertipos.
         for (int i = 0; i < this.headers.length; i++) {
             for (int j = i + 1; j < this.headers.length; j++) {
-                Class<? extends Card> a = this.headers[i].cabecera();
-                Class<? extends Card> b = this.headers[j].cabecera();
+                Class<? extends Card> a = this.headers[i].header();
+                Class<? extends Card> b = this.headers[j].header();
 
                 if (a.isAssignableFrom(b)) {
-                    System.err.println("Conflicto de tipos: " + a.getSimpleName()
-                            + " y " + b.getSimpleName());
+                    System.err.println("Conflicto de tipos: " + a.getSimpleName() + " y " + b.getSimpleName());
 
                     PlayersHandsRendererHeader temp = this.headers[i];
                     this.headers[i] = this.headers[j];
                     this.headers[j] = temp;
                 } else if (b.isAssignableFrom(a)) {
-                    System.err.println("Conflicto de tipos: " + a.getSimpleName()
-                            + " y " + b.getSimpleName());
+                    System.err.println("Conflicto de tipos: " + a.getSimpleName() + " y " + b.getSimpleName());
                 }
             }
         }
 
         for (PlayersHandsRendererHeader header : this.headers) {
-            int maxRotation = header.maxRotationDegrees();
-
-            CardGroupRenderer group = new CardGroupRenderer(
-                    List.of(), cardHeight, cardWidth, minStep) {
-
-                @Override
-                protected int rotation(int index, int total) {
-                    if (total <= 1) return 0;
-                    double center = (total - 1) / 2.0;
-                    return (int) Math.round((index - center) / center * maxRotation);
-                }
-
-                @Override
-                protected int verticalOffset(int index, int total) {
-                    if (total <= 1 || maxRotation == 0) return 0;
-                    double center = (total - 1) / 2.0;
-                    double distance = (index - center) / center;
-                    return (int) Math.round(15 * distance * distance);
-                }
-            };
+            PlayersHandsRendererCategory group = new PlayersHandsRendererCategory(
+                    header, List.of(), cardHeight, cardWidth, minStep
+            );
 
             groups.add(group);
             add(group);
@@ -101,7 +80,7 @@ public class PlayersCardsRenderer extends JPanel {
             if (!(object instanceof Card card)) continue;
 
             for (int i = 0; i < headers.length; i++) {
-                if (headers[i].cabecera().isInstance(card)) {
+                if (headers[i].header().isInstance(card)) {
                     classified.get(i).add(card);
                     cards.add(card);
                     break;
@@ -129,7 +108,7 @@ public class PlayersCardsRenderer extends JPanel {
 
     public void setMinStep(int minStep) {
         this.minStep = minStep;
-        for (CardGroupRenderer group : groups) {
+        for (PlayersHandsRendererCategory group : groups) {
             group.setMinStep(minStep);
         }
         revalidate();
@@ -155,7 +134,7 @@ public class PlayersCardsRenderer extends JPanel {
         int width = 0;
         int active = 0;
 
-        for (CardGroupRenderer group : groups) {
+        for (PlayersHandsRendererCategory group : groups) {
             if (!group.getCards().isEmpty()) {
                 width += group.getNaturalWidth();
                 active++;
@@ -172,7 +151,7 @@ public class PlayersCardsRenderer extends JPanel {
         int minTotal = 0;
         int naturalTotal = 0;
 
-        for (CardGroupRenderer group : groups) {
+        for (PlayersHandsRendererCategory group : groups) {
             if (!group.getCards().isEmpty()) {
                 active++;
                 minTotal += group.getMinimumWidth();
@@ -196,7 +175,7 @@ public class PlayersCardsRenderer extends JPanel {
         }
 
         for (int i = 0; i < groups.size(); i++) {
-            CardGroupRenderer group = groups.get(i);
+            PlayersHandsRendererCategory group = groups.get(i);
 
             if (group.getCards().isEmpty()) {
                 group.setBounds(0, 0, 0, 0);
