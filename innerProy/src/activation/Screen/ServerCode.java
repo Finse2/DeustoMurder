@@ -4,14 +4,25 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-
+/**
+ * The ServerCode class provides methods to encode and decode server information into a compact string format.
+ * It allows encoding of an IP address, port number, and hostname into a Base64 string, and decoding it back into its components.
+ * This class is useful for generating and interpreting the server code that can be shared with other clients to connect to a specific server.
+ */
 public class ServerCode {
     public record ServerInfo(
             String ip,
             int port,
             String hostname
     ){}
-
+/**
+     * The main method demonstrates the encoding and decoding of server information.
+     * It encodes a sample IP address, port number, and hostname into a server code,
+     * then decodes the server code back into its components and prints them to the console.
+     *
+     * @param args Command-line arguments (not used).
+     * @throws Exception If an error occurs during encoding or decoding.
+     */
     public static void main(String[] args) throws Exception {
         String code = ServerCode.Encode(
                 "192.168.1.32",
@@ -26,7 +37,15 @@ public class ServerCode {
         System.out.println(server.port);
         System.out.println(server.hostname);
     }
-
+/**
+     * Encodes the given IP address, port number, and hostname into a Base64 string format.
+     *
+     * @param ip       The IP address to encode.
+     * @param port     The port number to encode.
+     * @param hostname The hostname to encode.
+     * @return A Base64 encoded string representing the server information.
+     * @throws Exception If an error occurs during encoding or if the input values are invalid.
+     */
     public static String Encode(String ip, int port, String hostname)
             throws Exception {
 
@@ -52,7 +71,13 @@ public class ServerCode {
 
         return Base64.getUrlEncoder().withoutPadding().encodeToString(buffer.array());
     }
-
+/**
+     * Decodes a Base64 encoded server code into its components: IP address, port number, and hostname.
+     *
+     * @param code The Base64 encoded server code to decode.
+     * @return A ServerInfo record containing the decoded IP address, port number, and hostname.
+     * @throws Exception If an error occurs during decoding or if the input code is invalid.
+     */
     public static ServerInfo decode(String code) throws Exception {
 
         byte[] data = Base64.getUrlDecoder().decode(code);

@@ -5,11 +5,19 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
-
+/**
+ * The ProfileButton class is a custom JButton that displays a circular profile picture.
+ * It extends JButton and overrides the paintComponent method to draw the profile picture within a circular shape.
+ * The button also includes hover effects and focus indicators for better user interaction.
+ */
 public class ProfileButton extends JButton {
 
     private BufferedImage picture;
-
+/**
+     * Constructor for the ProfileButton class.
+     *
+     * @param picture The BufferedImage representing the profile picture to be displayed on the button.
+     */
     public ProfileButton(BufferedImage picture) {
         this.picture = picture;
 
@@ -21,12 +29,20 @@ public class ProfileButton extends JButton {
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         setToolTipText("My Profile");
     }
-
+/**
+     * Sets the profile picture to be displayed on the button.
+     *
+     * @param picture The BufferedImage representing the new profile picture.
+     */
     public void setPicture(BufferedImage picture) {
         this.picture = picture;
         repaint();
     }
-
+/**
+     * Gets the current profile picture displayed on the button.
+     *
+     * @return The BufferedImage representing the current profile picture.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

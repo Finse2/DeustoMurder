@@ -5,7 +5,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
+/**
+ * The InlaidMenuButton class represents a custom button component with a specific visual style.
+ * It extends JPanel and provides functionality for handling mouse events and keyboard activation.
+ * The button displays text and can be activated by clicking or pressing the Enter/Space keys.
+ * THIS CLASS HAS BEEN CREATED WITH THE HELP OF CHAT-GPT.
+ */
 public class InlaidMenuButton extends JPanel {
 
     private final String text;
