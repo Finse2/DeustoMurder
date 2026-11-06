@@ -27,47 +27,80 @@ public class GameState {
     de validación de acusaciones, la ejecución completa de los turnos o el registro de acontecimiento (GameHistory)
      */
 
+    public enum Status {
+            READY, RUNNING, FINISHED
+}
+
     private final List<Player> players;
-    private boolean started;
-    private boolean finished;
+    private Status status;
+    private Player winner;
 
     public GameState (List <Player> players) {
-        if (players == null) {
+        if (players == null || players.isEmpty()) {
             throw new IllegalArgumentException("Players cannot be null");
         }
 
         this.players = new ArrayList<>(players);
-        this.started = false;
-        this.finished = false;
+        this.status = Status.READY;
+        this.winner = null;
     }
+
+    // INICIAR LA PARTIDA
 
     public void start () {
         if (players.isEmpty()) {
             throw new IllegalStateException("There are no players");
         }
 
-        if (finished) {
-            throw new IllegalStateException("The game has finished");
-        }
-
-        started = true;
+        status = Status.RUNNING;
     }
+
+    // FINALIZAR LA PARTIDA
 
     public void finish() {
-        finished = true;
-        started = false;
+        if (status == Status.FINISHED) {
+            return;
+        }
+
+        status = Status.FINISHED;
     }
 
-    public boolean isStarted(){
-        return started;
+    // REGISTRAR GANADOR
+
+    public void setWinner (Player winner) {
+        if (status != Status.RUNNING) {
+            throw new IllegalStateException("The game is not running");
+        }
+
+        if (winner != null && !players.contains(winner)) {
+            throw new IllegalArgumentException("Winner must belong to the game");
+        }
+
+        this.winner = winner;
+
+        finish();
     }
 
-    public boolean isFinished(){
-        return finished;
+    // CONSULTAR ESTADO
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public boolean isStarted() {
+        return status == Status.RUNNING;
+    }
+
+    public boolean isFinished() {
+        return status == Status.FINISHED;
     }
 
     public boolean canContinue() {
-        return started && !finished;
+        return status == Status.RUNNING;
+    }
+
+    public Player getWinner() {
+        return winner;
     }
 
     public List<Player> getPlayers() {

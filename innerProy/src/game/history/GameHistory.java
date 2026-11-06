@@ -43,7 +43,7 @@ public class GameHistory {
     }
 
     public synchronized List <GameEvent> getAllEvents () {
-        return Collections.unmodifiableList(new ArrayList<>(events));
+        return List.copyOf(events);
     }
 
     public synchronized List <GameEvent> getEventsForPlayer(int playerId) {

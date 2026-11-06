@@ -40,20 +40,40 @@ public class MoveValidator {
             return false;
         }
 
+        // COMPROBAR TURNO
+
         if (!roundManager.isPlayerTurn(player)) {
             return false;
         }
+
+        // COMPROBAR PROPIETARIO
 
         if (piece.getOwner() != player) {
             return false;
         }
 
+        // COMPROBAR LÍMITES
+
+        if (destinationX < 0 ||
+                destinationX >= BoardLayout.GRID_COLUMNS ||
+                destinationY < 0 ||
+                destinationY >= BoardLayout.GRID_ROWS) {
+
+            return false;
+        }
+
+        // CALCULAR DISTANCIA
+
         int dx = Math.abs(destinationX - piece.getX());
         int dy = Math.abs(destinationY - piece.getY());
+
+        // PERMITIR MOVIMIENTOS DE UNA CASILLA
 
         if (dx + dy != 1) {
             return false;
         }
+
+        // COMPROBAR TABLERO
 
         return board.canMovePiece(piece, destinationX, destinationY);
     }

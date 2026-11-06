@@ -1,5 +1,8 @@
 package game.dice;
 
+import game.core.Game;
+import game.core.GameConfig;
+
 public class Dice {
 
     // IMPLEMENTACIONES:
@@ -13,23 +16,46 @@ public class Dice {
     Respetar el rango de valores permitido para cada dado
      */
 
-    static int min = 1;
-    static int max = 6;
-    private int roll_output;
+    private final GameRandomizer randomizer;
 
-    public int getRoll_output() {
-        return roll_output;
+    private int lastRoll;
+
+    private int firstDie;
+    private int secondDie;
+
+    public Dice () {
+        this(new GameRandomizer());
     }
 
-    public void setRoll_output(int roll_output) {
-        this.roll_output = roll_output;
+    public Dice (GameRandomizer randomizer) {
+
+        if (randomizer == null) {
+            throw new IllegalArgumentException("Randomizer cannot be null");
+        }
+
+        this.randomizer = randomizer;
     }
+
+    // LANZAR LOS DOS DADOS
 
     public int roll() {
-        int roll1 = (int) (Math.random() * (max - min + 1) + min);
-        int roll2 = (int) (Math.random() * (max - min + 1) + min);
-        int roll = roll1 + roll2;
-        setRoll_output(roll);
-        return roll;
+        firstDie = randomizer.nextInt(GameConfig.DICE_MIN, GameConfig.DICE_MAX);
+        secondDie =  randomizer.nextInt(GameConfig.DICE_MIN, GameConfig.DICE_MAX);
+
+        lastRoll = firstDie + secondDie;
+
+        return lastRoll;
+    }
+
+    public int getFirstDie () {
+        return firstDie;
+    }
+
+    public int getSecondDie () {
+        return secondDie;
+    }
+
+    public int getLastRoll () {
+        return lastRoll;
     }
 }
