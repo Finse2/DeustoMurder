@@ -8,9 +8,16 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-
+/**
+ * This class represents a client that connects to a game server.
+ * It manages the connection to the server, sending and receiving packets,
+ * and notifying listeners of incoming packets or errors.
+ */
 public final class GameClient {
-
+/**
+     * This interface defines the methods that a listener must implement to receive notifications
+     * about incoming packets, disconnections, and errors from the GameClient.
+     */
     public interface PacketListener {
         void onPacket(Packet packet);
 
@@ -34,6 +41,14 @@ public final class GameClient {
     private ObjectOutputStream output;
     private Thread receiveThread;
 
+/**
+     * Constructor for the GameClient class.
+     *
+     * @param host The hostname or IP address of the server to connect to.
+     * @param port The port number of the server to connect to.
+     * @param listener The listener that will receive notifications about incoming packets, disconnections, and errors.
+     * @throws IllegalArgumentException if the host is null or blank, or if the port is not between 1 and 65535.
+     */
     public GameClient(String host, int port, PacketListener listener) {
         if (host == null || host.isBlank()) {
             throw new IllegalArgumentException("Host cannot be blank");
@@ -45,7 +60,16 @@ public final class GameClient {
         this.port = port;
         this.listener = listener;
     }
-
+/**
+     * Connects to the server with the specified user name and computer name.
+     * This method establishes a socket connection to the server, initializes the input and output streams,
+     * starts a thread to listen for incoming packets, and sends a JoinPacket to the server.
+     *
+     * @param userName The name of the user who wants to join the game.
+     * @param computerName The name of the computer from which the user is joining.
+     * @throws IOException if an I/O error occurs when creating the socket or streams.
+     * @throws IllegalStateException if the client is already connected.
+     */
     public synchronized void connect(String userName, String computerName) throws IOException {
         if (connected) {
             throw new IllegalStateException("Client is already connected");
@@ -76,7 +100,12 @@ public final class GameClient {
             throw e;
         }
     }
-
+/**
+     * Sends a packet to the server.
+     *
+     * @param packet The packet to send.
+     * @throws IllegalStateException if the client is not connected.
+     */
     public synchronized void sendPacket(Packet packet) {
         if (!connected || output == null) {
             throw new IllegalStateException("Client is not connected");
@@ -91,7 +120,10 @@ public final class GameClient {
             disconnect();
         }
     }
-
+/**
+     * Disconnects from the server.
+     * This method closes the socket and input/output streams, and notifies the listener of the disconnection.
+     */
     public synchronized void disconnect() {
         if (!connected && socket == null) {
             return;
@@ -114,7 +146,10 @@ public final class GameClient {
             listener.onDisconnected();
         }
     }
-
+/**
+     * The receive loop that continuously listens for incoming packets from the server.
+     * When a packet is received, it is dispatched to the listener. If an error occurs, it is notified to the listener.
+     */
     private void receiveLoop() {
         try {
             while (connected) {
@@ -139,17 +174,29 @@ public final class GameClient {
             disconnect();
         }
     }
-
+/**
+     * Notifies the listener of an error.
+     *
+     * @param exception The exception that occurred.
+     */
     private void notifyError(Exception exception) {
         if (listener != null) {
             listener.onError(exception);
         }
     }
-
+/**
+     * Checks if the client is currently connected to the server.
+     *
+     * @return true if the client is connected, false otherwise.
+     */
     public boolean isConnected() {
         return connected;
     }
-
+/**
+     * Gets the player ID assigned to this client by the server.
+     *
+     * @return The player ID, or -1 if the client is not connected or has not received a player ID.
+     */
     public int getPlayerID() {
         return playerID;
     }

@@ -4,12 +4,23 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
-
+/**
+ * This class serves as the main entry point for testing the networking functionality of the application.
+ * It allows users to start a server or a client, and provides an interactive command-line interface for testing.
+ * The class handles user input, manages server and client instances, and provides feedback on network events.
+ * THIS TESTING CLASS IS MADE WITH CHAT-GPT, IT'S ONLY PURPOSE IS TO TEST THE NETWORKING FUNCTIONALITY, IT IS NOT PART OF THE FINAL GAME.
+ */
 final class NetworkTestMain {
 
-    private NetworkTestMain() {
-    }
-
+    private NetworkTestMain() {}
+    /**
+     * The main method that starts the application.
+     * It processes command-line arguments to determine whether to start a server or a client,
+     * or to run in interactive mode if no arguments are provided.
+     *
+     * @param args Command-line arguments specifying the mode and parameters for the server or client.
+     * @throws Exception If an error occurs during execution.
+     */
     public static void main(String[] args) throws Exception {
         if (args.length == 0) {
             runInteractiveSetup();
@@ -30,7 +41,12 @@ final class NetworkTestMain {
             }
         }
     }
-
+/**
+     * Runs the interactive setup for starting a server or client.
+     * It prompts the user for input to choose the mode and relevant parameters.
+     *
+     * @throws Exception If an error occurs during execution.
+     */
     private static void runInteractiveSetup() throws Exception {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -68,7 +84,15 @@ final class NetworkTestMain {
         System.out.println("Invalid choice.");
         printUsage();
     }
-
+/**
+     * Reads a port number from the user input.
+     * If the user provides no input, the default port 23456 is used.
+     * The method validates the input to ensure it is a valid port number.
+     *
+     * @param reader BufferedReader for reading user input.
+     * @return The port number to use for the server or client.
+     * @throws IOException If an I/O error occurs while reading input.
+     */
     private static int readPort(BufferedReader reader) throws IOException {
         while (true) {
             System.out.print("Port [23456]: ");
@@ -84,7 +108,12 @@ final class NetworkTestMain {
             }
         }
     }
-
+/**
+     * Starts the server with the specified command-line arguments.
+     * It initializes the server on the given port and sets up a shutdown hook to stop the server gracefully.
+     *
+     * @param args Command-line arguments specifying the port for the server.
+     */
     private static void runServer(String[] args) {
         int port = args.length >= 2 ? parsePort(args[1]) : 23456;
         Server server = new Server(port);
@@ -93,7 +122,13 @@ final class NetworkTestMain {
         System.out.println("Starting test server. Press Ctrl+C to stop.");
         server.start();
     }
-
+/**
+     * Starts the client with the specified command-line arguments.
+     * It connects to the server using the provided host, port, username, and computer name.
+     *
+     * @param args Command-line arguments specifying the server host, port, username, and computer name.
+     * @throws IOException If an I/O error occurs during connection or communication with the server.
+     */
     private static void runClient(String[] args) throws IOException {
         if (args.length < 5) {
             printUsage();
@@ -116,7 +151,13 @@ final class NetworkTestMain {
             client.disconnect();
         }
     }
-
+/**
+     * Runs the command loop for the client, allowing the user to input commands to interact with the server.
+     * It processes commands such as starting the game, moving players, showing cards, and ending the game.
+     *
+     * @param client The Client instance to send commands to.
+     * @throws IOException If an I/O error occurs while reading user input or communicating with the server.
+     */
     private static void runClientCommands(Client client) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -153,7 +194,13 @@ final class NetworkTestMain {
             }
         }
     }
-
+/**
+     * Sends a player move command to the server.
+     * It parses the command arguments to extract the x, y coordinates and distance, and sends the move packet.
+     *
+     * @param client  The Client instance to send the move command to.
+     * @param command The command arguments containing the move parameters.
+     */
     private static void sendMove(Client client, String[] command) {
         if (command.length != 4) {
             throw new IllegalArgumentException("Usage: move <x> <y> <distance>");
@@ -164,7 +211,13 @@ final class NetworkTestMain {
         int distance = Integer.parseInt(command[3]);
         client.movePlayer(x, y, distance);
     }
-
+/**
+     * Sends a card show command to the server.
+     * It parses the command arguments to extract the target player ID and sends the card show packet.
+     *
+     * @param client  The Client instance to send the card show command to.
+     * @param command The command arguments containing the target player ID.
+     */
     private static void sendCardShow(Client client, String[] command) {
         if (command.length != 2) {
             throw new IllegalArgumentException("Usage: show <target-player-id>");
@@ -173,7 +226,13 @@ final class NetworkTestMain {
         int targetID = Integer.parseInt(command[1]);
         client.showCard(null, targetID);
     }
-
+/**
+     * Waits for the client to receive a player ID from the server after sending a join request.
+     * It checks periodically for up to 5 seconds and throws an exception if the player ID is not received in time.
+     *
+     * @param client The Client instance to wait for the player ID.
+     * @throws IOException If the player ID is not received within the timeout period or if interrupted.
+     */
     private static void waitForPlayerID(Client client) throws IOException {
         long deadline = System.currentTimeMillis() + 5000;
         while (client.getPlayerID() < 0 && client.isConnected()
@@ -185,12 +244,19 @@ final class NetworkTestMain {
                 throw new IOException("Interrupted while waiting for join acknowledgment", e);
             }
         }
-
+// If the player ID is still not received after the timeout, throw an exception.
         if (client.getPlayerID() < 0) {
             throw new IOException("The server did not send JOIN_ACCEPTED within 5 seconds");
         }
     }
-
+/**
+     * Parses a string value into an integer port number and validates it.
+     * The port number must be between 1 and 65535.
+     *
+     * @param value The string representation of the port number.
+     * @return The parsed port number as an integer.
+     * @throws IllegalArgumentException If the port number is not valid.
+     */
     private static int parsePort(String value) {
         int port = Integer.parseInt(value);
         if (port < 1 || port > 65535) {
@@ -198,7 +264,10 @@ final class NetworkTestMain {
         }
         return port;
     }
-
+/**
+     * Prints the usage instructions for the networking test tool.
+     * It provides information on how to start a server or client and the required command-line arguments.
+     */
     private static void printUsage() {
         System.out.println("""
                 Networking test tool
@@ -210,7 +279,10 @@ final class NetworkTestMain {
                   java Networking.NetworkTestMain client <server-ip> <port> <username> <computer-name>
                 """);
     }
-
+/**
+     * Prints the available client commands for interacting with the server.
+     * It provides a list of commands that can be used to test various networking functionalities.
+     */
     private static void printClientCommands() {
         System.out.println("""
                 Client commands:
@@ -222,7 +294,10 @@ final class NetworkTestMain {
                   quit                     Disconnect and exit
                 """);
     }
-
+/**
+     * A simple implementation of the Client.Listener interface that prints network events to the console.
+     * It provides feedback on connection status, player actions, and errors during client-server communication.
+     */
     private static final class ConsoleClientListener implements Client.Listener {
         @Override
         public void onConnected(int playerID) {
