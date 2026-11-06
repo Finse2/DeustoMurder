@@ -5,15 +5,14 @@ import model.Actor;
 import model.Player;
 import model.Room;
 import model.Weapon;
+import static game.core.GameConfig.MIN_PLAYERS;
+import static game.core.GameConfig.MAX_PLAYERS;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class GameStartValidator {
-
-    private static final int MIN_PLAYERS = 2;
-    private static final int MAX_PLAYERS = 6;
 
     public String validate(
             List<Player> players,
