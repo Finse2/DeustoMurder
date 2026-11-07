@@ -4,6 +4,7 @@ import Networking.Client;
 import activation.Screen.Lobby.LobbyControl;
 import activation.Screen.Lobby.LobbyRoster;
 import activation.Screen.Lobby.LobbyScreen;
+import activation.Screen.AnimatedBackGround.AnimatedBackGround;
 
 import javax.swing.SwingWorker;
 import java.awt.event.WindowAdapter;
@@ -40,6 +41,17 @@ public class MainScreen extends JFrame {
     private LobbyRoster joinedRoster;
     private String HostUserName;
     private String ClientUserName;
+    private AnimatedBackGround animatedBackGround;
+    private boolean animationFinished = false;
+    private boolean connectionFinished = false;
+    private JPanel[] menuPanels;
+
+    private Runnable pendingLobbyAction;
+
+    private static final Path NORMAL_BACKGROUND = Path.of("innerProy", "ressources", "MenuFrames1");
+    private static final Path JOIN_BACKGROUND = Path.of("innerProy", "ressources", "MenuFrames2");
+
+    private static final int FPS = 24;
 /**
      * Constructor for the MainScreen class.
      * Initializes the main user interface, including the title, size, background image,
@@ -50,8 +62,10 @@ public class MainScreen extends JFrame {
         setSize(900, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        BackGround backGround = new BackGround("innerProy/ressources/mainMenuBackground.png");
-        setContentPane(backGround);
+
+        animatedBackGround = new AnimatedBackGround();
+        setContentPane(animatedBackGround);
+        animatedBackGround.playLoop(NORMAL_BACKGROUND,FPS);
 
 
         // NORTH MAIN TITLE
@@ -142,6 +156,14 @@ public class MainScreen extends JFrame {
         southPanel.setOpaque(false);
         add(southPanel, BorderLayout.SOUTH);
 
+        menuPanels = new JPanel[] {
+                northPanel,
+                westPanel,
+                eastPanel,
+                centerPanel,
+                southPanel
+        };
+
         setVisible(true);
     }
 /**
@@ -150,6 +172,14 @@ public class MainScreen extends JFrame {
      * and starts a background task to host the game and connect the host client.
      */
     private void HostGame() {
+
+        if (isConnectionBusy()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "A connection is already active or in progress."
+            );
+            return;
+        }
 
         if (hostingServer || (hostedLobby != null && hostedLobby.isRunning())) {
 
@@ -166,8 +196,21 @@ public class MainScreen extends JFrame {
             return;
         }
 
+        String username = JOptionPane.showInputDialog(
+                this,
+                "What is your username?"
+        );
+
+        if (username == null || username.isBlank()) {
+            return;
+        }
+
+        HostUserName = username.trim();
+
         int port = connectionValues.getPort();
         hostingServer = true;
+
+        startTransition();
 
         LobbyRoster roster = new LobbyRoster();
 
@@ -207,8 +250,6 @@ public class MainScreen extends JFrame {
                 });
 
                 try {
-                    HostUserName = JOptionPane.showInputDialog("What is you're username");
-                    String username = System.getProperty("user.name", "Host");
                     String computerName = System.getenv().getOrDefault("COMPUTERNAME", "Host-PC");
                     client.connect(HostUserName, computerName);
 
@@ -230,8 +271,6 @@ public class MainScreen extends JFrame {
             @Override
             protected void done() {
 
-                hostingServer = false;
-
                 try {
                     HostedSession session = get();
 
@@ -244,16 +283,57 @@ public class MainScreen extends JFrame {
                     System.out.println("Player ID: " + session.playerId());
                     System.out.println("Connected players: " + hostedLobby.getClientCount());
 
+                    System.out.println("Host connected. Waiting for animation...");
 
-                    System.out.println("Opening Lobby ...");
-                    openHostLobby();
+                    connectionReady(() -> {
+
+                        if (hostClient == null || !hostClient.isConnected()) {
+                            transitionFailed(
+                                    "The host connection was lost before opening the lobby."
+                            );
+                            return;
+                        }
+
+                        try {
+                            openHostLobby();
+                            hostingServer = false;
+
+                        } catch (Exception ex) {
+                            hostingServer = false;
+
+                            if (hostClient != null) {
+                                hostClient.disconnect();
+                                hostClient = null;
+                            }
+
+                            if (hostedLobby != null) {
+                                hostedLobby.close();
+                                hostedLobby = null;
+                            }
+
+                            resetTransition();
+
+                            JOptionPane.showMessageDialog(
+                                    MainScreen.this,
+                                    ex.getMessage(),
+                                    "Lobby Error",
+                                    JOptionPane.ERROR_MESSAGE
+                            );
+                        }
+                    });
+
 
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
+                    transitionFailed("Hosting interrupted.");
+
                 } catch (ExecutionException e) {
-                    JOptionPane.showMessageDialog(MainScreen.this, "Failed to host: " + e.getCause().getMessage(), "Server Error", JOptionPane.ERROR_MESSAGE);
+                    transitionFailed(
+                            "Failed to host: " + e.getCause().getMessage()
+                    );
+
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    transitionFailed(e.getMessage());
                 }
             }
 
@@ -267,6 +347,13 @@ public class MainScreen extends JFrame {
      * opens a connection dialog, and starts a background task to join the game.
      */
     private void JoinGame() {
+        if (isConnectionBusy()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "A connection is already active or in progress."
+            );
+            return;
+        }
         if (joiningServer || (joinedClient != null && joinedClient.isConnected())) {
 
             JOptionPane.showMessageDialog(
@@ -282,6 +369,15 @@ public class MainScreen extends JFrame {
         if (connection == null) {
             return;
         }
+
+        String username = JOptionPane.showInputDialog(this,"What is your username");
+
+        if (username == null || username.isBlank()) {
+            return;
+        }
+
+        ClientUserName = username.trim();
+        startTransition();
 
         String ipAddress = connectionValues.getIpAddress();
         int port = connectionValues.getPort();
@@ -341,7 +437,6 @@ public class MainScreen extends JFrame {
                 );
 
                 try {
-                    ClientUserName = JOptionPane.showInputDialog("What is you're username");
 
                     String computerName = System.getenv().getOrDefault("COMPUTERNAME", "Unknown-PC");
 
@@ -371,7 +466,6 @@ public class MainScreen extends JFrame {
             @Override
             protected void done() {
 
-                joiningServer = false;
                 setCursor(Cursor.getDefaultCursor());
 
                 try {
@@ -386,31 +480,39 @@ public class MainScreen extends JFrame {
                     joinedClient = client;
                     joinedRoster = roster;
 
-                    System.out.println("Opening client lobby...");
-                    openJoinedLobby();
+                    connectionReady(() -> {
+
+                        if (joinedClient == null || !joinedClient.isConnected()) {
+                            transitionFailed(
+                                    "The connection was lost before entering the lobby."
+                            );
+                            return;
+                        }
+
+                        try {
+                            openJoinedLobby();
+                            joiningServer = false;
+                        } catch (Exception ex) {
+                            transitionFailed(
+                                    "Unable to open the lobby: " + ex.getMessage()
+                            );
+                        }
+                    });
 
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
+                    transitionFailed("Joining interrupted.");
 
                 } catch (ExecutionException e) {
-                    Throwable cause = e.getCause();
-
-                    JOptionPane.showMessageDialog(
-                            MainScreen.this,
-                            "Failed to join: " + cause.getMessage(),
-                            "Connection Error",
-                            JOptionPane.ERROR_MESSAGE
+                    transitionFailed(
+                            "Failed to join: " + e.getCause().getMessage()
                     );
 
                 } catch (IOException e) {
-                    JOptionPane.showMessageDialog(
-                            MainScreen.this,
-                            e.getMessage(),
-                            "Connection Error",
-                            JOptionPane.ERROR_MESSAGE
-                    );
+                    transitionFailed(e.getMessage());
+
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    transitionFailed(e.getMessage());
                 }
             }
 
@@ -420,6 +522,7 @@ public class MainScreen extends JFrame {
      * Exits the application by disposing of the main window.
      */
     private void Exit() {
+        animatedBackGround.disposePlayback();
         dispose();
     }
 
@@ -889,6 +992,7 @@ public class MainScreen extends JFrame {
                     hostedLobby.close();
                     hostedLobby = null;
                 }
+                resetTransition();
                 MainScreen.this.setVisible(true);
             }
         });
@@ -914,12 +1018,110 @@ public class MainScreen extends JFrame {
                     joinedClient = null;
                 }
 
+                resetTransition();
                 MainScreen.this.setVisible(true);
             }
         });
 
         MainScreen.this.setVisible(false);
     }
+
+    private void startTransition() {
+
+        animationFinished = false;
+        connectionFinished = false;
+        pendingLobbyAction = null;
+
+        setMenuVisible(false);
+
+        animatedBackGround.playOnce(
+                JOIN_BACKGROUND,
+                FPS,
+                () -> {
+                    animationFinished = true;
+                    checkTransition();
+                }
+        );
+    }
+    private void connectionReady(Runnable openLobby){
+        connectionFinished = true;
+        pendingLobbyAction = openLobby;
+
+        checkTransition();
+    }
+
+    private void checkTransition(){
+        if (!animationFinished || !connectionFinished) {
+            return;
+        }
+        if (pendingLobbyAction == null) {
+            return;
+        }
+        Runnable action = pendingLobbyAction;
+        pendingLobbyAction = null;
+        action.run();
+    }
+
+    private void resetTransition() {
+
+        animationFinished = false;
+        connectionFinished = false;
+        pendingLobbyAction = null;
+
+        animatedBackGround.playLoop(NORMAL_BACKGROUND, FPS);
+
+        setMenuVisible(true);
+    }
+
+
+    private void transitionFailed(String message) {
+
+        joiningServer = false;
+        hostingServer = false;
+
+        if (joinedClient != null) {
+            joinedClient.disconnect();
+            joinedClient = null;
+        }
+
+        if (hostClient != null) {
+            hostClient.disconnect();
+            hostClient = null;
+        }
+
+        if (hostedLobby != null) {
+            hostedLobby.close();
+            hostedLobby = null;
+        }
+
+        setCursor(Cursor.getDefaultCursor());
+        resetTransition();
+
+        JOptionPane.showMessageDialog(
+                this,
+                message,
+                "Connection Error",
+                JOptionPane.ERROR_MESSAGE
+        );
+    }
+
+    private boolean isConnectionBusy() {
+        return hostingServer
+                || joiningServer
+                || (hostedLobby != null && hostedLobby.isRunning())
+                || (hostClient != null && hostClient.isConnected())
+                || (joinedClient != null && joinedClient.isConnected());
+    }
+    private void setMenuVisible(boolean visible) {
+
+        for (JPanel panel : menuPanels) {
+            panel.setVisible(visible);
+        }
+
+        animatedBackGround.revalidate();
+        animatedBackGround.repaint();
+    }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(MainScreen::new);
