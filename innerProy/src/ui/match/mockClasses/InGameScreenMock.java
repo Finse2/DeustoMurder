@@ -27,9 +27,7 @@ public class InGameScreenMock {
                 new PlayersHandsRendererHeader(Room.class)
         };
 
-        PlayersCardsRenderer hand = new PlayersCardsRenderer(
-                headers, CardRendererMock.createHand()
-        );
+        PlayersCardsRenderer hand = new PlayersCardsRenderer(headers, CardRendererMock.createHand());
 
         new InGameScreen(board, actors, hand).setVisible(true);
     }

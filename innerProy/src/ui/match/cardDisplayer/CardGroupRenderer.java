@@ -27,6 +27,7 @@ abstract class CardGroupRenderer extends JPanel {
     private int minStep;
     private final List<Card> cards = new ArrayList<>();
     private final List<CardRenderer> renderers = new ArrayList<>();
+    private CardRenderer selectedCard = null;
 
     protected CardGroupRenderer(int cardHeight, int cardWidth, int minStep) {
         this.cardHeight = cardHeight;
@@ -55,6 +56,8 @@ abstract class CardGroupRenderer extends JPanel {
     }
 
     public void setCards(List<Card> cards) {
+        Card previouslySelected = getSelectedCard();
+        selectedCard = null;
         this.cards.clear();
         this.cards.addAll(cards);
         removeAll();
@@ -76,10 +79,18 @@ abstract class CardGroupRenderer extends JPanel {
                         return new RoundRectangle2D.Double(100, 150, cardWidth, cardHeight, 25, 25).contains(rx, ry);
                     }
                 };
+                renderer.setGroup(this);
                 renderers.add(renderer);
                 add(renderer);
             } catch (IOException e) {
                 throw new IllegalStateException("Cannot render card " + cards.get(i).getNameToRender(), e);
+            }
+        }
+
+        for (CardRenderer renderer : renderers) {
+            if (renderer.getCard() == previouslySelected) {
+                renderer.setSelected(true);
+                break;
             }
         }
 
@@ -100,6 +111,27 @@ abstract class CardGroupRenderer extends JPanel {
 
     public List<Card> getCards() {
         return new ArrayList<>(cards);
+    }
+
+    public Card getSelectedCard() {
+        return selectedCard == null ? null : selectedCard.getCard();
+    }
+
+    public void selectCard(CardRenderer clicked) {
+        setCardSelected(clicked, selectedCard != clicked);
+    }
+
+    void setCardSelected(CardRenderer renderer, boolean selected) {
+        if (!renderers.contains(renderer)) return;
+
+        if (selected) {
+            if (selectedCard != null && selectedCard != renderer) selectedCard.applySelected(false);
+            selectedCard = renderer;
+            renderer.applySelected(true);
+        } else if (selectedCard == renderer) {
+            selectedCard = null;
+            renderer.applySelected(false);
+        }
     }
 
     public int getNaturalWidth() {

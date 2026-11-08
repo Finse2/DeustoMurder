@@ -33,12 +33,16 @@ public final class InGameScreen extends JFrame {
         root.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         GameBlock header = new GameBlock("HEADER - Jugadores · Turno · Configuración", new Color(10, 35, 55));
-        GameBlock history = new GameBlock("Historial", new Color(25, 55, 75));
-        GameBlock chat = new GameBlock("Chat", new Color(25, 55, 75));
+        GameHistoryPanel history = new GameHistoryPanel();
+        ChatPanel chat = new ChatPanel();
 
         JPanel handPanel = new JPanel(new BorderLayout());
         handPanel.setBackground(new Color(25, 55, 75));
         handPanel.add(hand, BorderLayout.CENTER);
+
+        JPanel bottom = new JPanel(new BorderLayout(10, 0));
+        bottom.setBackground(Color.BLACK);
+        GameActionsPanel actions = new GameActionsPanel();
 
         JPanel players = createPlayersPanel();
         JPanel middle = new JPanel(new BorderLayout(10, 0));
@@ -51,6 +55,7 @@ public final class InGameScreen extends JFrame {
         handPanel.setPreferredSize(new Dimension(0, 230));
         players.setPreferredSize(new Dimension(240, 0));
         right.setPreferredSize(new Dimension(345, 0));
+        actions.setPreferredSize(new Dimension(345, 0));
 
         right.add(history);
         right.add(chat);
@@ -61,7 +66,9 @@ public final class InGameScreen extends JFrame {
 
         root.add(header, BorderLayout.NORTH);
         root.add(middle, BorderLayout.CENTER);
-        root.add(handPanel, BorderLayout.SOUTH);
+        bottom.add(handPanel, BorderLayout.CENTER);
+        bottom.add(actions, BorderLayout.EAST);
+        root.add(bottom, BorderLayout.SOUTH);
 
         setContentPane(root);
     }
