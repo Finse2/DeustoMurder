@@ -14,11 +14,12 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
 
+
 /**
- * This class receives a card object and renders its image (BufferedImage) and its name (String). <br>
- * The image is rendered as the background, on top of it a black rectangle (R = 0, G = 0, B = 0). <br>
- * With a very high opacity (A = 150) as the background. On top of it the cards image is written. <br>
- * The card is purposely rendered with a rounded and diluted edge but  that ussesFont.Bold border.<br>
+ * Esta clase recibe un objeto Card y renderiza su imagen (BufferedImage) y su nombre (String). <br>
+ * La imagen se renderiza como fondo, y sobre ella se superpone un rectángulo negro (R = 0, G = 0, B = 0). <br>
+ * Este rectángulo tiene una opacidad alta (A = 150) y sirve como capa oscura. Sobre él se dibuja la imagen de la carta. <br>
+ * La carta se renderiza intencionadamente con bordes redondeados, difuminados y un contorno grueso. <br>
  */
 public class CardRenderer extends JPanel {
 
