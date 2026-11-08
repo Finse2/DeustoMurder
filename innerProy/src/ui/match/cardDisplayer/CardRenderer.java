@@ -32,6 +32,7 @@ public class CardRenderer extends JPanel {
 
     boolean hover = false;
     boolean isSelected = false;
+    private CardGroupRenderer group;
 
     private static final double LEFT = 100;
     private static final double TOP = 150;
@@ -45,8 +46,8 @@ public class CardRenderer extends JPanel {
         this.circleImage = card.getFrontCircleImage() != null
                 ? card.getFrontCircleImage()
                 : card.getCircleImageToRender() == null
-                  ? null
-                  : readImage(card.getCircleImageToRender());
+                ? null
+                : readImage(card.getCircleImageToRender());
 
         this.height = height;
         this.width = width;
@@ -74,13 +75,36 @@ public class CardRenderer extends JPanel {
             public void mousePressed(MouseEvent e) {
                 updateHover(e);
                 if (hover) {
-                    isSelected = !isSelected;
-                    repaint();
+                    if (group != null) group.selectCard(CardRenderer.this);
+                    else setSelected(!isSelected);
                 }
             }
         };
         addMouseListener(adapter);
         addMouseMotionListener(adapter);
+    }
+
+    public Card getCard() {
+        return card;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    void setGroup(CardGroupRenderer group) {
+        this.group = group;
+    }
+
+    public void setSelected(boolean selected) {
+        if (group != null) group.setCardSelected(this, selected);
+        else applySelected(selected);
+    }
+
+    void applySelected(boolean selected) {
+        if (isSelected == selected) return;
+        isSelected = selected;
+        repaint();
     }
 
     private static BufferedImage readImage(Path path) throws IOException {

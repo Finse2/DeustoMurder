@@ -1,5 +1,6 @@
 package ui.match.cardDisplayer;
 
+import model.Actor;
 import model.Card;
 
 import javax.swing.*;
@@ -61,7 +62,7 @@ public class PlayersCardsRenderer extends JPanel {
 
         for (PlayersHandsRendererHeader header : this.headers) {
             PlayersHandsRendererCategory group = new PlayersHandsRendererCategory(
-                    header, List.of(), cardHeight, cardWidth, minStep
+                    header, List.of(), cardHeight, cardWidth, stepFor(header)
             );
 
             groups.add(group);
@@ -112,10 +113,19 @@ public class PlayersCardsRenderer extends JPanel {
     public void setMinStep(int minStep) {
         this.minStep = minStep;
         for (PlayersHandsRendererCategory group : groups) {
-            group.setMinStep(minStep);
+            group.setMinStep(stepFor(group.getHeader()));
         }
         revalidate();
         repaint();
+    }
+
+    /**
+     * Los actores necesitan más separación para que sus caras y nombres se vean.
+     * Las demás categorías mantienen el paso configurado por defecto.
+     */
+    private int stepFor(PlayersHandsRendererHeader header) {
+        if (header.header() == Actor.class) return Math.max(minStep, cardWidth - 20);
+        return minStep;
     }
 
     public int getMinStep() {
