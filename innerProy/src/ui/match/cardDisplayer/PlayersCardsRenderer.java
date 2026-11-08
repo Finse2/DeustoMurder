@@ -7,9 +7,10 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Contenedor principal que clasifica las cartas por tipo y distribuye los grupos para formar la mano / conjunto de un jugador concreto
+ */
 public class PlayersCardsRenderer extends JPanel {
-
-
 
     private static final int GAP = 10;
 
@@ -182,10 +183,7 @@ public class PlayersCardsRenderer extends JPanel {
                 continue;
             }
 
-            int width = target >= minTotal
-                    ? group.getMinimumWidth() + extra *
-                    (group.getNaturalWidth() - group.getMinimumWidth()) / flexible
-                    : group.getMinimumWidth() * target / Math.max(1, minTotal);
+            int width = target >= minTotal ? group.getMinimumWidth() + extra * (group.getNaturalWidth() - group.getMinimumWidth()) / flexible : group.getMinimumWidth() * target / Math.max(1, minTotal);
 
             width = Math.min(remaining, width);
             if (i == last) width = remaining;

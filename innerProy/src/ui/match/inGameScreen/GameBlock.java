@@ -3,6 +3,9 @@ package ui.match.inGameScreen;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * clase usada para renderizar JLabels place-holders de los objetos gráficos de la InGameScreen que aún faltan
+ */
 public class GameBlock extends JPanel {
 
     public GameBlock(String title, Color color) {

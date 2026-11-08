@@ -1,11 +1,16 @@
+
 package ui.match.mockClasses;
 
 import game.core.GameSetup;
 import model.Actor;
 import model.Player;
+import model.Room;
+import model.Weapon;
 import model.board.BoardFactory;
 import model.board.RawPiece;
 import ui.match.BoardLayout;
+import ui.match.cardDisplayer.PlayersCardsRenderer;
+import ui.match.cardDisplayer.PlayersHandsRendererHeader;
 import ui.match.inGameScreen.InGameScreen;
 
 import javax.swing.*;
@@ -15,7 +20,18 @@ import java.util.List;
 public class InGameScreenMock {
 
     public InGameScreenMock(BoardLayout board, List<Actor> actors) {
-        new InGameScreen(board, actors).setVisible(true);
+
+        PlayersHandsRendererHeader[] headers = {
+                new PlayersHandsRendererHeader(Actor.class, null),
+                new PlayersHandsRendererHeader(Weapon.class),
+                new PlayersHandsRendererHeader(Room.class)
+        };
+
+        PlayersCardsRenderer hand = new PlayersCardsRenderer(
+                headers, CardRendererMock.createHand()
+        );
+
+        new InGameScreen(board, actors, hand).setVisible(true);
     }
 
     public static void main(String[] args) {
@@ -33,7 +49,13 @@ public class InGameScreenMock {
                 pieces[i] = new RawPiece(player.getPiece(), positions[i][0], positions[i][1]);
             }
 
-            BoardLayout board = new BoardLayout(BoardLayout.GRID_ROWS, BoardLayout.GRID_COLUMNS, BoardFactory.createRawRooms(), pieces);
+            BoardLayout board = new BoardLayout(
+                    BoardLayout.GRID_ROWS,
+                    BoardLayout.GRID_COLUMNS,
+                    BoardFactory.createRawRooms(),
+                    pieces
+            );
+
             new InGameScreenMock(board, actors);
         });
     }

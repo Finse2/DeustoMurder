@@ -5,6 +5,10 @@ import model.Card;
 import java.awt.Point;
 import java.util.List;
 
+
+/**
+ * Extiende CardGroupRenderer y determina cómo colocar las cartas de una categoría, rectas o en abanico.
+ */
 public class PlayersHandsRendererCategory extends CardGroupRenderer {
 
     private final PlayersHandsRendererHeader header;

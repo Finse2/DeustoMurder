@@ -3,6 +3,8 @@ package ui.match.cardDisplayer;
 import model.Card;
 
 /**
+ Short explanation: it specifies what type of card is part of a certain group and its max rotation <br>
+ <br>
 Record containing two primary parameters, a child Class reference that must extend Card. <br>
 An Integer that specifies weather the system should:<br>
  <br>
