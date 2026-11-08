@@ -12,7 +12,9 @@ import java.util.List;
 
 
 /**
- * Contenedor abstracto que organiza varias cartas, calcula sus posiciones y aplica sus rotaciones.
+ * Contenedor abstracto que contiene y organiza un conjunto de cartas.<br>
+ * Gestiona sus renderizados, posiciones y superposición.<br>
+ * El cálculo de como se debe efectuar esa rotación es delegado a sus subclases<br>
  */
 abstract class CardGroupRenderer extends JPanel {
 

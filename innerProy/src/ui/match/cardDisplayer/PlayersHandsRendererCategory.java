@@ -7,7 +7,15 @@ import java.util.List;
 
 
 /**
- * Extiende CardGroupRenderer y determina cómo colocar las cartas de una categoría, rectas o en abanico.
+ * Extiende CardGroupRenderer para representar cartas de una categoría.<br>
+ * Calcula sus rotaciones y posiciones, permitiendo distribuirlas<br>
+ * horizontalmente o en abanico, con rotación manual o automática.<br>
+ *<br>
+ * si el parámetro Integer PlayersHandsRendererHeader.maxRotationDegrees == null,<br>
+ *  -->entonces lo hace de manera automáticamente<br>
+ *  <br>
+ * si no es null<br>
+ *  -->emplea el valor especificado<br>
  */
 public class PlayersHandsRendererCategory extends CardGroupRenderer {
 

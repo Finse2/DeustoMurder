@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Contenedor principal que clasifica las cartas por tipo y distribuye los grupos para formar la mano / conjunto de un jugador concreto
+ * JPanel que representa la mano completa de un jugador.<br>
+ * Clasifica las cartas según sus categorías y crea grupos<br>
+ * para cada grupo, gestionando su distribución y espacio disponible.<br>
  */
 public class PlayersCardsRenderer extends JPanel {
 
