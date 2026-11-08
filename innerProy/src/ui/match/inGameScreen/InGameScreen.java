@@ -1,3 +1,4 @@
+
 package ui.match.inGameScreen;
 
 import model.Actor;
@@ -7,12 +8,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+
+/**
+ * Clase contenedora principal, donde se añaden los diferentes elementos gráficos visibles para el usuario durante la partida
+ * En el centro muestra un BoardLayout, alrededor del cual pone los demás elementos en posiciones predefinidas
+ */
 public final class InGameScreen extends JFrame {
 
     private final BoardLayout board;
     private final List<Actor> actors;
 
-    public InGameScreen(BoardLayout board, List<Actor> actors) {
+    public InGameScreen(BoardLayout board, List<Actor> actors, JComponent hand) {
         this.board = board;
         this.actors = actors;
 
@@ -29,7 +35,10 @@ public final class InGameScreen extends JFrame {
         GameBlock header = new GameBlock("HEADER - Jugadores · Turno · Configuración", new Color(10, 35, 55));
         GameBlock history = new GameBlock("Historial", new Color(25, 55, 75));
         GameBlock chat = new GameBlock("Chat", new Color(25, 55, 75));
-        GameBlock hand = new GameBlock("PlayersCardsRenderer - Sugerir · Descartar", new Color(25, 55, 75));
+
+        JPanel handPanel = new JPanel(new BorderLayout());
+        handPanel.setBackground(new Color(25, 55, 75));
+        handPanel.add(hand, BorderLayout.CENTER);
 
         JPanel players = createPlayersPanel();
         JPanel middle = new JPanel(new BorderLayout(10, 0));
@@ -39,7 +48,7 @@ public final class InGameScreen extends JFrame {
         right.setBackground(Color.BLACK);
 
         header.setPreferredSize(new Dimension(0, 125));
-        hand.setPreferredSize(new Dimension(0, 145));
+        handPanel.setPreferredSize(new Dimension(0, 230));
         players.setPreferredSize(new Dimension(240, 0));
         right.setPreferredSize(new Dimension(345, 0));
 
@@ -52,7 +61,7 @@ public final class InGameScreen extends JFrame {
 
         root.add(header, BorderLayout.NORTH);
         root.add(middle, BorderLayout.CENTER);
-        root.add(hand, BorderLayout.SOUTH);
+        root.add(handPanel, BorderLayout.SOUTH);
 
         setContentPane(root);
     }

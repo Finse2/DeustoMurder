@@ -12,7 +12,7 @@ import java.util.List;
 
 
 /**
- * recive un conjunto de cartas y decide que rotación dar a cada una, es el JPanel que acaba conteniendolas
+ * Contenedor abstracto que organiza varias cartas, calcula sus posiciones y aplica sus rotaciones.
  */
 abstract class CardGroupRenderer extends JPanel {
 
@@ -123,9 +123,7 @@ abstract class CardGroupRenderer extends JPanel {
         int total = renderers.size();
         if (total == 0) return;
 
-        int step = total == 1 ? 0 :
-                Math.max(1, Math.min(cardWidth,
-                        (getWidth() - SIDE_PADDING * 2 - cardWidth) / (total - 1)));
+        int step = total == 1 ? 0 : Math.max(1, Math.min(cardWidth, (getWidth() - SIDE_PADDING * 2 - cardWidth) / (total - 1)));
 
         int visibleWidth = cardWidth + (total - 1) * step;
         int startX = (getWidth() - visibleWidth) / 2;
@@ -136,10 +134,7 @@ abstract class CardGroupRenderer extends JPanel {
             int x = startX + position.x;
             int y = TOP_PADDING + position.y;
 
-            renderers.get(i).setBounds(
-                    x - 100, y - 150,
-                    cardWidth + 200, cardHeight + 300
-            );
+            renderers.get(i).setBounds(x - 100, y - 150, cardWidth + 200, cardHeight + 300);
         }
     }
 }
