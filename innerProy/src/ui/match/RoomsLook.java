@@ -1,4 +1,3 @@
-
 package ui.match;
 
 import model.Room;
@@ -22,9 +21,6 @@ import java.nio.file.Path;
 import java.text.Normalizer;
 import java.util.Locale;
 
-/**
- * Dibuja una habitación del tablero con su imagen y conserva su forma y sus bordes.
- */
 class RoomsLook extends JComponent {
 
     private final Room room;
@@ -33,14 +29,13 @@ class RoomsLook extends JComponent {
     private final int minRow;
     private final int maxColumn;
     private final int maxRow;
-    private int tileSize = 1;
+
+    private int tileWidth = 1;
+    private int tileHeight = 1;
     private Area localRoomShape = new Area();
 
     RoomsLook(Room room) {
-        if (room == null) {
-            throw new IllegalArgumentException("Room cannot be null");
-        }
-
+        if (room == null) throw new IllegalArgumentException("Room cannot be null");
         if (room.getOccupiedCells().isEmpty()) {
             throw new IllegalArgumentException("Room '" + room.getName() + "' does not occupy any grid cells");
         }
@@ -67,7 +62,6 @@ class RoomsLook extends JComponent {
         setOpaque(false);
     }
 
-    /** Relaciona el nombre de una habitación con la ruta declarada en AllPaths. */
     private static String getImagePath(String roomName) {
         String normalized = Normalizer.normalize(roomName, Normalizer.Form.NFD)
                 .replaceAll("\\p{M}+", "")
@@ -89,16 +83,16 @@ class RoomsLook extends JComponent {
         };
     }
 
-    /** Carga una imagen desde el classpath o desde la carpeta del proyecto. */
     private static BufferedImage loadImage(String relativePath) {
         if (relativePath == null) return null;
 
         String filename = Path.of(relativePath).getFileName().toString();
+
         for (String resource : new String[]{"/RomsLook/" + filename, "/" + relativePath}) {
             try (InputStream input = RoomsLook.class.getResourceAsStream(resource)) {
                 if (input != null) return readImage(input, resource);
             } catch (IOException e) {
-                throw new IllegalStateException("Error al cargar " + resource, e);
+                throw new IllegalStateException("Error loading " + resource, e);
             }
         }
 
@@ -111,31 +105,32 @@ class RoomsLook extends JComponent {
                 try (InputStream input = Files.newInputStream(file)) {
                     return readImage(input, file.toString());
                 } catch (IOException e) {
-                    throw new IllegalStateException("Error al cargar " + file, e);
+                    throw new IllegalStateException("Error loading " + file, e);
                 }
             }
         }
 
-        throw new IllegalStateException("Imagen del tablero no encontrada: " + relativePath);
+        throw new IllegalStateException("Board image not found: " + relativePath);
     }
 
     private static BufferedImage readImage(InputStream input, String source) throws IOException {
         BufferedImage result = ImageIO.read(input);
-        if (result == null) throw new IOException("Imagen no válida: " + source);
+        if (result == null) throw new IOException("Invalid image: " + source);
         return result;
     }
 
-    void placeOnGrid(int gridStartX, int gridStartY, int tileSize) {
-        this.tileSize = tileSize;
+    void placeOnGrid(int gridStartX, int gridStartY, int tileWidth, int tileHeight) {
+        this.tileWidth = tileWidth;
+        this.tileHeight = tileHeight;
 
         int widthInTiles = maxColumn - minColumn + 1;
         int heightInTiles = maxRow - minRow + 1;
 
         setBounds(
-                gridStartX + minColumn * tileSize,
-                gridStartY + minRow * tileSize,
-                widthInTiles * tileSize,
-                heightInTiles * tileSize
+                gridStartX + minColumn * tileWidth,
+                gridStartY + minRow * tileHeight,
+                widthInTiles * tileWidth,
+                heightInTiles * tileHeight
         );
 
         rebuildShape();
@@ -149,10 +144,10 @@ class RoomsLook extends JComponent {
             int localRow = cell.row() - minRow;
 
             shape.add(new Area(new Rectangle2D.Double(
-                    localColumn * tileSize,
-                    localRow * tileSize,
-                    tileSize,
-                    tileSize
+                    localColumn * tileWidth,
+                    localRow * tileHeight,
+                    tileWidth,
+                    tileHeight
             )));
         }
 
@@ -162,11 +157,12 @@ class RoomsLook extends JComponent {
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
-        Graphics2D g2 = (Graphics2D) graphics.create();
 
+        Graphics2D g2 = (Graphics2D) graphics.create();
         try {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
             Shape previousClip = g2.getClip();
             g2.clip(localRoomShape);
 
@@ -178,7 +174,8 @@ class RoomsLook extends JComponent {
             }
 
             g2.setClip(previousClip);
-            float wallThickness = Math.max(2.0f, tileSize / 10.0f);
+
+            float wallThickness = Math.max(2.0f, Math.min(tileWidth, tileHeight) / 10.0f);
             g2.setStroke(new BasicStroke(wallThickness, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER));
             g2.setColor(Color.BLACK);
             g2.draw(localRoomShape);
@@ -187,7 +184,6 @@ class RoomsLook extends JComponent {
         }
     }
 
-    /** Ajusta la imagen a la habitación sin deformarla, recortando los bordes sobrantes. */
     private void drawCover(Graphics2D g2, BufferedImage source) {
         int width = getWidth();
         int height = getHeight();
@@ -195,6 +191,7 @@ class RoomsLook extends JComponent {
 
         double sourceRatio = (double) source.getWidth() / source.getHeight();
         double targetRatio = (double) width / height;
+
         int sx = 0;
         int sy = 0;
         int sw = source.getWidth();
