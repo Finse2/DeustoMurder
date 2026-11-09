@@ -3,6 +3,7 @@ package Networking;
 import Networking.client.GameClient;
 import Networking.common.Packet;
 import Networking.packets.CardShowPacket;
+import Networking.packets.ChatMessagePacket;
 import Networking.packets.GameOverPacket;
 import Networking.packets.GameStartPacket;
 import Networking.packets.JoinAcceptedPacket;
@@ -11,6 +12,9 @@ import Networking.packets.PlayerMovePacket;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BiConsumer;
 
 public final class Client {
 
@@ -37,6 +41,8 @@ public final class Client {
 
         default void onGameOver(String winner) {}
 
+        default void onChatMessage(int playerID, String senderName, String text) {}
+
         default void onDisconnected() {}
 
         default void onError(Exception exception) {
@@ -48,6 +54,7 @@ public final class Client {
      * its package private so it cant be accessed externally*/
     private final GameClient client;
     private final Listener listener;
+    private final List<BiConsumer<String, String>> chatListeners = new CopyOnWriteArrayList<>();
 
     public Client(String host, int port) {
         this(host, port, null);
@@ -98,6 +105,21 @@ public final class Client {
         client.sendPacket(new GameOverPacket(true, winner));
     }
 
+    public void sendChatMessage(String message) {
+        if (message == null || message.isBlank() || message.strip().length() > 500) {
+            throw new IllegalArgumentException("Message must contain 1 to 500 characters");
+        }
+        client.sendPacket(new ChatMessagePacket(-1, null, message.strip()));
+    }
+
+    public void addChatListener(BiConsumer<String, String> listener) {
+        chatListeners.add(java.util.Objects.requireNonNull(listener));
+    }
+
+    public void removeChatListener(BiConsumer<String, String> listener) {
+        chatListeners.remove(listener);
+    }
+
     public void disconnect() {
         client.disconnect();
     }
@@ -111,6 +133,15 @@ public final class Client {
     }
 
     private void dispatch(Packet packet) {
+        if (packet instanceof ChatMessagePacket chatPacket) {
+            if (listener != null) {
+                listener.onChatMessage(chatPacket.getSenderID(), chatPacket.getSenderName(), chatPacket.getMessage());
+            }
+            for (BiConsumer<String, String> chatListener : chatListeners) {
+                chatListener.accept(chatPacket.getSenderName(), chatPacket.getMessage());
+            }
+            return;
+        }
         if (listener == null) {
             return;
         }

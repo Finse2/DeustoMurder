@@ -1,6 +1,7 @@
 
 package ui.match.mockClasses;
 
+import ui.chat.Chat;
 import game.core.GameSetup;
 import model.Actor;
 import model.Player;
@@ -29,7 +30,9 @@ public class InGameScreenMock {
 
         PlayersCardsRenderer hand = new PlayersCardsRenderer(headers, CardRendererMock.createHand());
 
-        new InGameScreen(board, actors, hand).setVisible(true);
+        // El chat empieza vacío; los mensajes aparecen cuando alguien escribe.
+        Chat chat = new Chat(actors.stream().map(Actor::getName).toList(), actors.getFirst().getName());
+        new InGameScreen(board, actors, hand, chat).setVisible(true);
     }
 
     public static void main(String[] args) {
