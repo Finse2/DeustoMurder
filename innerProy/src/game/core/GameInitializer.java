@@ -12,142 +12,103 @@ import ui.match.BoardLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+// ESTA CLASE SE ENCARGA DE:
+
+/*
+Coordinar el proceso de inicialización
+Solicitar la validación de los requisitos iniciales
+Preparar las habitaciones, los personajes y las armas mediante GameSetup
+Inicializar a los jugadores y sus posiciones
+Generar o recuperar la solución secreta
+Crear y barajar la baraja mediante DeckManager
+Repartir las cartas a los jugadores
+Guardar las cartas sobrantes
+Inicializar el estado de la partida
+Establecer el primer jugador y preparar el primer turno
+Registrar el evento de inicio
+Devolver un resultado que indique si la inicialización ha sido correcta
+ */
+
+
 public class GameInitializer {
-
-    // ESTA CLASE SE ENCARGA DE:
-
-    /*
-    Coordinar el proceso de inicialización
-    Solicitar la validación de los requisitos iniciales
-    Preparar las habitaciones, los personajes y las armas mediante GameSetup
-    Inicializar a los jugadores y sus posiciones
-    Generar o recuperar la solución secreta
-    Crear y barajar la baraja mediante DeckManager
-    Repartir las cartas a los jugadores
-    Guardar las cartas sobrantes
-    Inicializar el estado de la partida
-    Establecer el primer jugador y preparar el primer turno
-    Registrar el evento de inicio
-    Devolver un resultado que indique si la inicialización ha sido correcta
-     */
 
     private final GameStartValidator startValidator;
     private final GameRandomizer randomizer;
 
     public GameInitializer() {
-        this.startValidator = new GameStartValidator();
-        this.randomizer = new GameRandomizer();
+        startValidator = new GameStartValidator();
+        randomizer = new GameRandomizer();
     }
-
-    // INICIALIZAR UNA PARTIDA
 
     public GameStartResult initialize(Game game) {
         if (game == null) {
             return GameStartResult.failure("Game cannot be null");
         }
 
-        // OBTENER LOS JUGADORES
-
         List<Player> players = game.getPlayers();
-
-        // CREAR LOS ELEMENTOS DEL JUEGO
-
-        List <Room> rooms = GameSetup.createRooms();
-        List <Actor> actors = GameSetup.createActors();
-        List <Weapon> weapons = GameSetup.createWeapons();
-
-        // VALIDAR LA PARTIDA
+        List<Room> rooms = GameSetup.createRooms();
+        List<Actor> actors = GameSetup.createActors();
+        List<Weapon> weapons = GameSetup.createWeapons();
 
         String error = startValidator.validate(
-                players,
-                rooms,
-                actors,
-                weapons,
-                game.isInitialized()
+                players, rooms, actors, weapons, game.isInitialized()
         );
-
         if (error != null) {
             return GameStartResult.failure(error);
         }
 
         try {
-            List<Card> solution = new ArrayList<>();
+            // LA SOLUCIÓN SE APARTA DE LA BARAJA, PERO NO DE LOS CATÁLOGOS.
+            List<Card> solution = List.of(
+                    randomizer.selectRandom(rooms),
+                    randomizer.selectRandom(actors),
+                    randomizer.selectRandom(weapons)
+            );
 
-            Room solutionRoom = randomizer.selectRandom(rooms);
-            Actor solutionActor = randomizer.selectRandom(actors);
-            Weapon solutionWeapon = randomizer.selectRandom(weapons);
-
-            solution.add(solutionRoom);
-            solution.add(solutionActor);
-            solution.add(solutionWeapon);
-
-            rooms.remove(solutionRoom);
-            actors.remove(solutionActor);
-            weapons.remove(solutionWeapon);
-            
-            // CONSTRUIR LA BARAJA
-            
             List<Card> cards = new ArrayList<>();
-            
             cards.addAll(rooms);
             cards.addAll(actors);
             cards.addAll(weapons);
-            
+            cards.removeAll(solution);
+
             DeckManager deckManager = new DeckManager(cards);
-            
-            // BARAJAR
-            
-            randomizer.shuffle(cards);
-            
-            // REPARTIR LAS CARTAS
-            
+            deckManager.shuffleDeck();
+
+            // SNAPSHOT DEL ORDEN BARAJADO, ANTES DEL REPARTO.
+            List<Card> shuffledDeck = deckManager.getDeck();
             deckManager.dealCards(players);
-            
-            // GUARDAR LAS CARTAS SOBRANTES
-            
             List<Card> clues = deckManager.getRemainingCards();
-            
-            // CREAR EL ESTADO DE LA PARTIDA
-            
+
             GameState gameState = new GameState(players);
-            
-            // CREAR EL CONTROL DE TURNOS 
-
             RoundManager roundManager = new RoundManager(players);
-            
-            // CREAR LOS VALIDADORES
-
             AccusationValidator accusationValidator = new AccusationValidator();
-            
-            BoardLayout board = game.getBoard();
 
-            MoveValidator moveValidator = null;
-            
-            if (board != null) {
-                moveValidator = new MoveValidator(board, roundManager);
-            }
-            
-            // INICIAR EL ESTADO 
-            
+            BoardLayout board = game.getBoard();
+            MoveValidator moveValidator = board == null
+                    ? null
+                    : new MoveValidator(board, roundManager);
+
             gameState.start();
             roundManager.startTurns();
-            
-            // GUARDAR LOS DATOS DE GAME 
-            
+
             game.configure(
-                    rooms,actors,weapons,solution, cards, clues, gameState, roundManager, moveValidator, accusationValidator 
+                    rooms, actors, weapons, solution, shuffledDeck, clues,
+                    gameState, roundManager, moveValidator, accusationValidator
             );
-            
-            // REGISTRAR EL EVENETO 
-            
-            game.getGameHistory().record(GameEvent.Type.GAME_STARTED, null, null, "The game has started");
-            
+
+            game.getGameHistory().record(
+                    GameEvent.Type.GAME_STARTED,
+                    null,
+                    null,
+                    "The game has started"
+            );
+
             return GameStartResult.success();
         } catch (RuntimeException exception) {
-            return GameStartResult.failure("Game initialization failed: " + exception.getMessage());
+            return GameStartResult.failure(
+                    "Game initialization failed: " + exception.getMessage()
+            );
         }
-
-
     }
-
 }
+
