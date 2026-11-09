@@ -84,10 +84,12 @@ Los personajes actuales son:
 
 ## Tecnologías empleadas
 
+* Programación Orientada a Objetos
 * Java
 * Java Swing
+* Threads
+* JDBC
 * Java Collections
-* Programación Orientada a Objetos
 * Git
 * GitHub
 
@@ -96,23 +98,191 @@ Más adelante se añadirá red para permitir que varios jugadores participen des
 ## Estructura del proyecto
 
 ```text
-DeustoMurder/
+DeustoMurder-David/
 │
 ├── innerProy/
-│   └── src/
-│       ├── activation/
-│       │   └── Main.java
-│       │
-│       ├── model/
-│       │   ├── Card.java
-│       │   ├── Actor.java
-│       │   ├── Weapon.java
-│       │   ├── Room.java
-│       │   └── Player.java
-│       │
-│       └── ui/
+│   │
+│   ├── src/
+│   │   │
+│   │   ├── activation/
+│   │   │   └── Screen/
+│   │   │       ├── AnimatedBackGround/
+│   │   │       │   ├── AnimatedBackGround.java
+│   │   │       │   └── MP4_Image_Extractor.py
+│   │   │       │
+│   │   │       ├── BackGround.java
+│   │   │       ├── CluedoTableTheme.java
+│   │   │       ├── InlaidMenuButton.java
+│   │   │       ├── MainScreen.java
+│   │   │       ├── ProfileButton.java
+│   │   │       ├── ServerCode.java
+│   │   │       ├── connectionValues.java
+│   │   │       │
+│   │   │       └── lobby/
+│   │   │           ├── LoadingSpinner.java
+│   │   │           ├── LobbyControl.java
+│   │   │           ├── LobbyRoster.java
+│   │   │           └── LobbyScreen.java
+│   │   │
+│   │   ├── app/
+│   │   │   └── Main.java
+│   │   │
+│   │   ├── game/
+│   │   │   │
+│   │   │   ├── accusations/
+│   │   │   │   └── AccusationValidator.java
+│   │   │   │
+│   │   │   ├── cards/
+│   │   │   │   └── DeckManager.java
+│   │   │   │
+│   │   │   ├── core/
+│   │   │   │   ├── Game.java
+│   │   │   │   ├── GameConfig.java
+│   │   │   │   ├── GameInitializer.java
+│   │   │   │   ├── GameSetup.java
+│   │   │   │   ├── GameStartResult.java
+│   │   │   │   ├── GameStartValidator.java
+│   │   │   │   └── GameState.java
+│   │   │   │
+│   │   │   ├── dice/
+│   │   │   │   ├── Dice.java
+│   │   │   │   └── GameRandomizer.java
+│   │   │   │
+│   │   │   ├── history/
+│   │   │   │   ├── GameEvent.java
+│   │   │   │   ├── GameEventProcessorThread.java
+│   │   │   │   ├── GameHistory.java
+│   │   │   │   ├── GameHistoryWriterThread.java
+│   │   │   │   └── HistoryMock.java
+│   │   │   │
+│   │   │   ├── statistics/
+│   │   │   │   ├── PlayerStatistics.java
+│   │   │   │   └── StatisticsManager.java
+│   │   │   │
+│   │   │   ├── testing/
+│   │   │   │   ├── DeckManagerTest.java
+│   │   │   │   └── GameStartTest.java
+│   │   │   │
+│   │   │   └── turns/
+│   │   │       ├── MoveValidator.java
+│   │   │       ├── RoundManager.java
+│   │   │       └── TurnTimerThread.java
+│   │   │
+│   │   ├── model/
+│   │   │   ├── Actor.java
+│   │   │   ├── Card.java
+│   │   │   ├── Piece.java
+│   │   │   ├── Player.java
+│   │   │   ├── PlayerActivity.java
+│   │   │   ├── Room.java
+│   │   │   ├── Weapon.java
+│   │   │   │
+│   │   │   └── board/
+│   │   │       ├── BoardFactory.java
+│   │   │       ├── RawPiece.java
+│   │   │       ├── RawRoom.java
+│   │   │       └── Tile.java
+│   │   │
+│   │   ├── ui/
+│   │   │   ├── DetectiveButton.java
+│   │   │   ├── SoundEffect.java
+│   │   │   │
+│   │   │   ├── chat/
+│   │   │   │   ├── Chat.java
+│   │   │   │   ├── ChatHistory.java
+│   │   │   │   └── ChatRenderer.java
+│   │   │   │
+│   │   │   └── match/
+│   │   │       ├── ActorsLook.java
+│   │   │       ├── BoardLayout.java
+│   │   │       ├── CardRenderer.java
+│   │   │       ├── DetectiveCard.java
+│   │   │       ├── PlayersCardsRenderer.java
+│   │   │       ├── RoomsLook.java
+│   │   │       ├── TileAspect.java
+│   │   │       │
+│   │   │       ├── cardDisplayer/
+│   │   │       │   ├── CardGroupRenderer.java
+│   │   │       │   ├── CardRenderer.java
+│   │   │       │   ├── PlayersCardsRenderer.java
+│   │   │       │   ├── PlayersHandsRendererCategory.java
+│   │   │       │   └── PlayersHandsRendererHeader.java
+│   │   │       │
+│   │   │       ├── inGameScreen/
+│   │   │       │   ├── GameActionsPanel.java
+│   │   │       │   ├── GameBlock.java
+│   │   │       │   ├── GameHistoryPanel.java
+│   │   │       │   ├── InGameScreen.java
+│   │   │       │   └── deusto_logo.png
+│   │   │       │
+│   │   │       └── mockClasses/
+│   │   │           ├── BDManagerMock.java
+│   │   │           ├── BoardLayoutMock.java
+│   │   │           ├── CardRendererMock.java
+│   │   │           └── InGameScreenMock.java
+│   │   │
+│   │   └── utils/
+│   │       ├── AllPaths.java
+│   │       │
+│   │       └── JDBC/
+│   │           ├── DBManager.java
+│   │           └── JDBCDependencyHandler.java
+│   │
+│   ├── networking/
+│   │   ├── src/
+│   │   │   ├── Networking/
+│   │   │   │   ├── Client.java
+│   │   │   │   ├── NetworkTestMain.java
+│   │   │   │   ├── Server.java
+│   │   │   │   │
+│   │   │   │   ├── client/
+│   │   │   │   │   └── GameClient.java
+│   │   │   │   │
+│   │   │   │   ├── common/
+│   │   │   │   │   ├── Packet.java
+│   │   │   │   │   └── PacketType.java
+│   │   │   │   │
+│   │   │   │   ├── packets/
+│   │   │   │   │   ├── CardShowPacket.java
+│   │   │   │   │   ├── ChatMessagePacket.java
+│   │   │   │   │   ├── GameOverPacket.java
+│   │   │   │   │   ├── GameStartPacket.java
+│   │   │   │   │   ├── JoinAcceptedPacket.java
+│   │   │   │   │   ├── JoinPacket.java
+│   │   │   │   │   ├── PlayerJoinedPacket.java
+│   │   │   │   │   └── PlayerMovePacket.java
+│   │   │   │   │
+│   │   │   │   ├── server/
+│   │   │   │   │   ├── GameServer.java
+│   │   │   │   │   └── ServersClientHandler.java
+│   │   │   │   │
+│   │   │   │   └── package-info.java
+│   │   │   │
+│   │   │   └── module-info.java
+│   │   │
+│   │   └── networking.iml
+│   │
+│   ├── ressources/
+│   │   ├── AnimatedMenu1.mp4
+│   │   ├── AnimatedMenu2.mp4
+│   │   ├── DefaultProfile.jpg
+│   │   ├── LobbyClaustro.png
+│   │   ├── mainMenuBackground.png
+│   │   └── settings.png
+│   │
+│   └── innerProy.iml
 │
-└── README.md
+├── .gitignore
+├── CODE_OF_CONDUCT.md
+├── LICENSE
+├── README.md
+├── FUSION_INFO.txt
+├── my_changes.txt
+├── contribuciones_deustomurder_sin_xml_class.ps1
+├── qodana.yaml
+├── debug.log
+├── clear
+└── exit
 ```
 
 La estructura del proyecto irá creciendo a medida que se implementen la red, la lógica del tablero, la interfaz de usuario y los sistemas de gestión del juego.
