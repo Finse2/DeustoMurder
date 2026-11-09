@@ -1,11 +1,15 @@
 package ui.match.inGameScreen;
 
 import ui.chat.Chat;
+import game.history.GameHistory;
 import ui.chat.ChatRenderer;
 import model.Actor;
 import ui.match.BoardLayout;
 
 import javax.swing.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.net.URL;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -26,6 +30,8 @@ public final class InGameScreen extends JFrame {
     private final BoardLayout board;
     private final List<Actor> actors;
     private final ChatRenderer chatRenderer;
+    private final GameHistoryPanel historyPanel;
+    private final GameActionsPanel actionsPanel;
     private JScrollPane boardScrollPane;
     private JPanel boardCanvas;
     private double zoom = 1.0;
@@ -38,11 +44,19 @@ public final class InGameScreen extends JFrame {
     }
 
     public InGameScreen(BoardLayout board, List<Actor> actors, JComponent hand, Chat chat) {
+        this(board, actors, hand, chat, new GameHistory());
+    }
+
+    /** Vincula la pantalla al historial real de una partida cuando está disponible. */
+    public InGameScreen(BoardLayout board, List<Actor> actors, JComponent hand,
+                        Chat chat, GameHistory history) {
         this.board = board;
         this.actors = actors;
         Map<String, Color> playerColors = actors.stream()
                 .collect(Collectors.toMap(Actor::getName, Actor::getColor, (left, right) -> left));
         this.chatRenderer = new ChatRenderer(chat, playerColors);
+        this.historyPanel = new GameHistoryPanel(history, actors);
+        this.actionsPanel = new GameActionsPanel();
 
         setTitle("DeustoMurder");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -60,7 +74,7 @@ public final class InGameScreen extends JFrame {
         playersColumn.setBackground(Color.BLACK);
         playersColumn.setPreferredSize(new Dimension(240, 0));
 
-        JPanel playersHeader = new JPanel();
+        JPanel playersHeader = createDeustoLogoPanel();
         playersHeader.setBackground(headerColor);
         playersHeader.setPreferredSize(new Dimension(0, 125));
         playersColumn.add(playersHeader, BorderLayout.NORTH);
@@ -70,14 +84,21 @@ public final class InGameScreen extends JFrame {
         rightColumn.setBackground(Color.BLACK);
         rightColumn.setPreferredSize(new Dimension(345, 0));
 
-        JPanel rightHeader = new JPanel();
+        JPanel rightHeader = new JPanel(new BorderLayout());
         rightHeader.setBackground(headerColor);
         rightHeader.setPreferredSize(new Dimension(0, 125));
+        JPanel topButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 10));
+        topButtons.setOpaque(false);
+        JButton settingsButton = new HeaderButton("Configuración", 190, false);
+        JButton exitButton = new HeaderButton("Salir", 108, true);
+        topButtons.add(settingsButton);
+        topButtons.add(exitButton);
+        rightHeader.add(topButtons, BorderLayout.NORTH);
         rightColumn.add(rightHeader, BorderLayout.NORTH);
 
         JPanel rightContent = new JPanel(new GridLayout(2, 1, 0, 10));
         rightContent.setBackground(Color.BLACK);
-        rightContent.add(new GameHistoryPanel());
+        rightContent.add(historyPanel);
         rightContent.add(chatRenderer);
         rightColumn.add(rightContent, BorderLayout.CENTER);
 
@@ -92,19 +113,116 @@ public final class InGameScreen extends JFrame {
         handPanel.add(hand, BorderLayout.CENTER);
         handPanel.setPreferredSize(new Dimension(0, 230));
 
-        GameActionsPanel actions = new GameActionsPanel();
-        actions.setPreferredSize(new Dimension(345, 0));
+        actionsPanel.setPreferredSize(new Dimension(345, 0));
 
         JPanel bottom = new JPanel(new BorderLayout(10, 0));
         bottom.setBackground(Color.BLACK);
         bottom.add(handPanel, BorderLayout.CENTER);
-        bottom.add(actions, BorderLayout.EAST);
+        bottom.add(actionsPanel, BorderLayout.EAST);
 
         root.add(middle, BorderLayout.CENTER);
         root.add(bottom, BorderLayout.SOUTH);
         setContentPane(root);
 
         SwingUtilities.invokeLater(this::fitBoardToViewport);
+    }
+
+    /** Logo de Deusto en la esquina superior izquierda, adaptado al tamaño del panel. */
+    private JPanel createDeustoLogoPanel() {
+        Image logo = loadDeustoLogo();
+        return new JPanel() {
+            @Override
+            protected void paintComponent(Graphics graphics) {
+                super.paintComponent(graphics);
+                if (logo == null) return;
+
+                int imageWidth = logo.getWidth(null);
+                int imageHeight = logo.getHeight(null);
+                if (imageWidth <= 0 || imageHeight <= 0) return;
+
+                int availableWidth = Math.max(1, getWidth() - 20);
+                int availableHeight = Math.max(1, getHeight() - 20);
+                double scale = Math.min(availableWidth / (double) imageWidth,
+                        availableHeight / (double) imageHeight);
+                int width = (int) Math.round(imageWidth * scale);
+                int height = (int) Math.round(imageHeight * scale);
+                Graphics2D g = (Graphics2D) graphics.create();
+                g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                        RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                g.drawImage(logo, 10, (getHeight() - height) / 2, width, height, this);
+                g.dispose();
+            }
+        };
+    }
+
+    private static Image loadDeustoLogo() {
+        String resource = "/ui/match/inGameScreen/deusto_logo.png";
+        URL url = InGameScreen.class.getResource(resource);
+        if (url != null) return new ImageIcon(url).getImage();
+
+        // También funciona cuando IntelliJ no copia los PNG del directorio src.
+        for (Path path : List.of(
+                Path.of("src/ui/match/inGameScreen/deusto_logo.png"),
+                Path.of("innerProy/src/ui/match/inGameScreen/deusto_logo.png"),
+                Path.of("DeustoMurder/innerProy/src/ui/match/inGameScreen/deusto_logo.png"))) {
+            if (Files.isRegularFile(path)) return new ImageIcon(path.toString()).getImage();
+        }
+        return null;
+    }
+
+    /** Botones de cabecera: esquinas redondeadas y contorno contrastado. */
+    private static final class HeaderButton extends JButton {
+        private static final Color NORMAL = new Color(6, 25, 39);
+        private static final Color HOVER = new Color(16, 45, 62);
+        private static final Color OUTLINE = new Color(112, 146, 163);
+        private final boolean exit;
+        private boolean hovered;
+
+        private HeaderButton(String label, int width, boolean exit) {
+            super(label);
+            this.exit = exit;
+            setPreferredSize(new Dimension(width, 50));
+            setFont(new Font("Georgia", Font.BOLD, 18));
+            setForeground(new Color(243, 246, 247));
+            setHorizontalAlignment(SwingConstants.CENTER);
+            setVerticalAlignment(SwingConstants.CENTER);
+            setFocusPainted(false);
+            setContentAreaFilled(false);
+            setBorderPainted(false);
+            setOpaque(false);
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            addMouseListener(new MouseAdapter() {
+                @Override public void mouseEntered(MouseEvent event) { hovered = true; repaint(); }
+                @Override public void mouseExited(MouseEvent event) { hovered = false; repaint(); }
+            });
+        }
+
+        @Override
+        protected void paintComponent(Graphics graphics) {
+            Graphics2D g = (Graphics2D) graphics.create();
+            g.setColor(hovered ? HOVER : NORMAL);
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+            g.fillRoundRect(2, 2, getWidth() - 5, getHeight() - 5, 16, 16);
+            g.setColor(OUTLINE);
+            g.setStroke(new BasicStroke(2f));
+            g.drawRoundRect(2, 2, getWidth() - 5, getHeight() - 5, 16, 16);
+            g.dispose();
+
+            // Swing centra el texto; la X se dibuja aparte, sin desplazar «Salir».
+            super.paintComponent(graphics);
+            if (exit) {
+                Graphics2D icon = (Graphics2D) graphics.create();
+                icon.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                        RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                icon.setColor(getForeground());
+                icon.setFont(new Font("SansSerif", Font.BOLD, 23));
+                FontMetrics metrics = icon.getFontMetrics();
+                int baseline = (getHeight() - metrics.getHeight()) / 2 + metrics.getAscent();
+                icon.drawString("X", 13, baseline);
+                icon.dispose();
+            }
+        }
     }
 
     private JScrollPane createBoardScrollPane() {
@@ -285,6 +403,14 @@ public final class InGameScreen extends JFrame {
         }
 
         return panel;
+    }
+
+    public GameHistoryPanel getHistoryPanel() {
+        return historyPanel;
+    }
+
+    public GameActionsPanel getActionsPanel() {
+        return actionsPanel;
     }
 
     public Chat getChat() {
