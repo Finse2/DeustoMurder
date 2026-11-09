@@ -10,9 +10,14 @@ import javax.swing.JPanel;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.Point;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,9 +27,11 @@ public final class BoardLayout extends JPanel {
 
     public static final int GRID_COLUMNS = 23;
     public static final int GRID_ROWS = 22;
+    public static final int FRAME_MARGIN = 30;
 
     private final int rows;
     private final int columns;
+    private int fixedTileSize = 0;
     private final Tile[][] tiles;
     private final List<Room> rooms = new ArrayList<>();
     private final List<Piece> pieces = new ArrayList<>();
@@ -58,7 +65,7 @@ public final class BoardLayout extends JPanel {
         this.tiles = new Tile[rows][columns];
 
         setLayout(null);
-        setBackground(Color.WHITE);
+        setBackground(new Color(25, 29, 32));
         setPreferredSize(new Dimension(900, 900));
     }
 
@@ -376,26 +383,33 @@ public final class BoardLayout extends JPanel {
         }
     }
 
+    /** Allows the board to scale uniformly inside a scroll pane. */
+    public void setTileSize(int tileSize) {
+        if (tileSize <= 0) throw new IllegalArgumentException("Tile size must be positive");
+        if (fixedTileSize == tileSize) return;
+        fixedTileSize = tileSize;
+        setPreferredSize(new Dimension(columns * tileSize + FRAME_MARGIN * 2,
+                rows * tileSize + FRAME_MARGIN * 2));
+        revalidate();
+        repaint();
+    }
+
+    private int calculateTileSize() {
+        if (fixedTileSize > 0) return fixedTileSize;
+        int width = Math.max(0, getWidth() - FRAME_MARGIN * 2);
+        int height = Math.max(0, getHeight() - FRAME_MARGIN * 2);
+        return Math.min(width / columns, height / rows);
+    }
+
     @Override
     public void doLayout() {
         super.doLayout();
 
-        int availableWidth = getWidth();
-        int availableHeight = getHeight();
-        int margin = Math.max(24, Math.min(availableWidth, availableHeight) / 28);
-        int tileSize = Math.min(
-                (availableWidth - margin * 2) / columns,
-                (availableHeight - margin * 2) / rows
-        );
+        int tileSize = calculateTileSize();
+        if (tileSize <= 0) return;
 
-        if (tileSize <= 0) {
-            return;
-        }
-
-        int gridWidth = tileSize * columns;
-        int gridHeight = tileSize * rows;
-        int startX = (availableWidth - gridWidth) / 2;
-        int startY = (availableHeight - gridHeight) / 2;
+        int startX = (getWidth() - columns * tileSize) / 2;
+        int startY = (getHeight() - rows * tileSize) / 2;
 
         for (PlacedTile tile : visibleTiles) {
             tile.look().setBounds(
@@ -404,11 +418,11 @@ public final class BoardLayout extends JPanel {
                     tileSize,
                     tileSize
             );
-            tile.look().setGridLineThickness(Math.max(1, tileSize / 24));
+            tile.look().setGridLineThickness(Math.max(1, tileSize / 25));
         }
 
         for (RoomsLook roomLook : roomLooks) {
-            roomLook.placeOnGrid(startX, startY, tileSize);
+            roomLook.placeOnGrid(startX, startY, tileSize, tileSize);
         }
 
         repaint();
@@ -418,30 +432,84 @@ public final class BoardLayout extends JPanel {
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
 
-        int availableWidth = getWidth();
-        int availableHeight = getHeight();
-        int margin = Math.max(24, Math.min(availableWidth, availableHeight) / 28);
-        int tileSize = Math.min(
-                (availableWidth - margin * 2) / columns,
-                (availableHeight - margin * 2) / rows
-        );
+        int tileSize = calculateTileSize();
+        if (tileSize <= 0) return;
 
-        if (tileSize <= 0) {
-            return;
-        }
+        int boardWidth = columns * tileSize;
+        int boardHeight = rows * tileSize;
+        int startX = (getWidth() - boardWidth) / 2;
+        int startY = (getHeight() - boardHeight) / 2;
 
-        int gridWidth = tileSize * columns;
-        int gridHeight = tileSize * rows;
-        int startX = (availableWidth - gridWidth) / 2;
-        int startY = (availableHeight - gridHeight) / 2;
         Graphics2D g2 = (Graphics2D) graphics.create();
 
         try {
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            g2.clipRect(0, 0, getWidth(), getHeight());
+
+            paintAntiqueWoodTable(g2, startX, startY, boardWidth, boardHeight, tileSize);
+
             g2.setColor(Color.BLACK);
             g2.setStroke(new BasicStroke(Math.max(2.0f, tileSize / 10.0f)));
-            g2.drawRect(startX, startY, gridWidth, gridHeight);
+            g2.drawRect(startX, startY, boardWidth, boardHeight);
         } finally {
             g2.dispose();
         }
+    }
+
+    private void paintAntiqueWoodTable(Graphics2D g2, int boardX, int boardY, int boardWidth, int boardHeight, int tileSize) {
+        int paddingX = FRAME_MARGIN - 5;
+        int paddingTop = FRAME_MARGIN - 5;
+        int paddingBottom = FRAME_MARGIN - 5;
+
+        int tableX = boardX - paddingX;
+        int tableY = boardY - paddingTop;
+        int tableWidth = boardWidth + paddingX * 2;
+        int tableHeight = boardHeight + paddingTop + paddingBottom;
+        int arc = Math.max(28, tileSize + 10);
+
+        RoundRectangle2D tableShape = new RoundRectangle2D.Double(tableX, tableY, tableWidth, tableHeight, arc, arc);
+        RoundRectangle2D innerTopShape = new RoundRectangle2D.Double(tableX + 10, tableY + 10, tableWidth - 20, tableHeight - 20, arc - 8, arc - 8);
+
+        g2.setColor(new Color(0, 0, 0, 55));
+        g2.fill(new RoundRectangle2D.Double(tableX + 4, tableY + 4, tableWidth, tableHeight, arc, arc));
+
+        Paint oldPaint = g2.getPaint();
+        g2.setPaint(new GradientPaint(tableX, tableY, new Color(78, 46, 24), tableX, tableY + tableHeight, new Color(42, 23, 11)));
+        g2.fill(tableShape);
+
+        g2.setPaint(new GradientPaint(tableX, tableY, new Color(120, 74, 40), tableX, tableY + tableHeight, new Color(82, 48, 25)));
+        g2.fill(innerTopShape);
+
+        Shape previousClip = g2.getClip();
+        g2.clip(innerTopShape);
+        int plankCount = 8;
+        double plankWidth = (double) tableWidth / plankCount;
+        for (int i = 0; i < plankCount; i++) {
+            int x = (int) Math.round(tableX + i * plankWidth);
+            int width = (int) Math.ceil(plankWidth);
+            Color plankColor = i % 2 == 0 ? new Color(134, 84, 47, 145) : new Color(105, 63, 35, 135);
+            g2.setColor(plankColor);
+            g2.fillRect(x, tableY, width, tableHeight);
+
+            g2.setColor(new Color(255, 235, 205, 28));
+            g2.drawLine(x + width / 3, tableY + 8, x + width / 3, tableY + tableHeight - 8);
+            g2.setColor(new Color(60, 30, 14, 35));
+            g2.drawLine(x + (width * 2) / 3, tableY + 10, x + (width * 2) / 3, tableY + tableHeight - 10);
+        }
+        g2.setClip(previousClip);
+
+        g2.setColor(new Color(255, 235, 205, 30));
+        g2.fillRoundRect(tableX + 14, tableY + 14, tableWidth - 28, Math.max(24, tableHeight / 6), arc - 10, arc - 10);
+
+        g2.setColor(new Color(58, 31, 15));
+        g2.setStroke(new BasicStroke(Math.min(6f, Math.max(3f, tileSize / 7f))));
+        g2.draw(tableShape);
+
+        g2.setColor(new Color(170, 120, 72, 130));
+        g2.setStroke(new BasicStroke(Math.max(2f, tileSize / 12f)));
+        g2.draw(innerTopShape);
+
+        g2.setPaint(oldPaint);
     }
 }
