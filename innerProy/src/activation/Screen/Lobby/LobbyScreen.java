@@ -25,37 +25,40 @@ public class LobbyScreen extends JFrame {
     private String ServerIP = connectionValues.getIpAddress();
     private int port = connectionValues.getPort();
     private String HostNAME = connectionValues.getHostName();
+    private BackGround lobbyBackGround;
+
 
     public LobbyScreen(LobbyRoster roster) throws Exception {
         this(roster, false,null);
+
     }
     public LobbyScreen(LobbyRoster roster,boolean isHost,Runnable onStartGame) throws Exception {
         this.roster = java.util.Objects.requireNonNull(roster, "roster required");
         setTitle("Lobby");
         setSize(1200, 900);
 
+
+
         //crear el panel principal
+        lobbyBackGround = new BackGround("innerProy/ressources/LobbyClaustro.png");
+        lobbyBackGround.setLayout(new BorderLayout());
         JPanel lobbyPanel = new JPanel(new BorderLayout());
         lobbyPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
+        lobbyPanel.setOpaque(false);
 
         //Crear el panel del norte
         JPanel northPanel = new JPanel(new GridLayout(1, 3, 5, 5));
         northPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
         JLabel sessionId = new JLabel("Session ID");
         northPanel.add(sessionId);
+        northPanel.setOpaque(false);
         String code = ServerCode.Encode(ServerIP,port,HostNAME);
         JTextField sessionCode = new JTextField("Code: " + code);
         sessionCode.setEditable(false);
         northPanel.add(sessionCode);
-        JButton copy = new JButton("Copy");
-        copy.addActionListener(e -> {
-            try {
-                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(code),null);
-                copy.setText("Copied");
-            } catch (IllegalStateException ex){
-                JOptionPane.showMessageDialog(this, "Clipboard is unavailable", "Copy Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
+
+        InlaidMenuButton copy = new InlaidMenuButton("Copy", this::copy);
+
         northPanel.add(copy);
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setOpaque(false);
@@ -85,11 +88,12 @@ public class LobbyScreen extends JFrame {
         westPanel.setBorder(
                 BorderFactory.createLineBorder(Color.BLACK, 4)
         );
-
+        westPanel.setOpaque(false);
         playerCountLabel = new JLabel("Connected Players (0)");
         playerCountLabel.setFont(
                 new Font("Georgia", Font.BOLD, 18)
         );
+        playerCountLabel.setForeground(new Color(235, 215, 100));
         playerCountLabel.setBorder(
                 BorderFactory.createEmptyBorder(12, 12, 12, 12)
         );
@@ -101,7 +105,7 @@ public class LobbyScreen extends JFrame {
         playerListPanel.setLayout(
                 new BoxLayout(playerListPanel, BoxLayout.Y_AXIS)
         );
-
+        playerListPanel.setOpaque(false);
         JScrollPane playerScroll = new JScrollPane(playerListPanel);
         playerScroll.setBorder(null);
         playerScroll.getVerticalScrollBar().setUnitIncrement(16);
@@ -115,22 +119,34 @@ public class LobbyScreen extends JFrame {
         JPanel eastPanel = new JPanel(new BorderLayout(5, 5));
         eastPanel.setPreferredSize(new Dimension(300, 0));
         eastPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
+        eastPanel.setOpaque(false);
         JPanel infoPanel = new JPanel(new GridLayout(3,1,5,5));
+        infoPanel.setOpaque(false);
         JLabel eastHostName = new JLabel("Host Name: " + HostNAME);
+        eastHostName.setFont(new Font("Georgia", Font.BOLD, 14));
+        eastHostName.setForeground(new Color(235, 215, 100));
         eastPanel.setBorder(BorderFactory.createEmptyBorder());
         JLabel ipAddress = new JLabel("IP Address: " + ServerIP );
+        ipAddress.setFont(new Font("Georgia", Font.BOLD, 14));
+        ipAddress.setForeground(new Color(235, 215, 100));
         JLabel portNumber = new JLabel("Port: " + port );
+        portNumber.setFont(new Font("Georgia", Font.BOLD, 14));
+        portNumber.setForeground(new Color(235, 215, 100));
         infoPanel.add(eastHostName);
         infoPanel.add(ipAddress);
         infoPanel.add(portNumber);
         eastPanel.add(infoPanel, BorderLayout.CENTER);
         JPanel vacio1 = new JPanel();
+        vacio1.setOpaque(false);
         eastPanel.add(vacio1, BorderLayout.EAST);
         JPanel vacio2 = new JPanel();
+        vacio2.setOpaque(false);
         eastPanel.add(vacio2, BorderLayout.WEST);
         JPanel infoNorth = new JPanel(new FlowLayout());
         JLabel infoServer = new JLabel("Server Information:");
         infoServer.setFont(new Font("Georgia", Font.BOLD, 18));
+        infoServer.setForeground(new Color(235, 215, 100));
+        infoServer.setOpaque(false);
         infoNorth.add(infoServer);
         eastPanel.add(infoNorth, BorderLayout.NORTH);
         //añadir el panel derecho al principal
@@ -139,8 +155,10 @@ public class LobbyScreen extends JFrame {
         //crear el panel del sur
         JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         southPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
+        southPanel.setOpaque(false);
         JLabel southVersion = new JLabel("Game Version: 1.0");
         southVersion.setFont(new Font("Arial", Font.BOLD, 20));
+        southVersion.setForeground(new Color(235, 215, 100));
         southPanel.add(southVersion);
         //añadir el panel del sur al panel principal
         lobbyPanel.add(southPanel,BorderLayout.SOUTH);
@@ -169,12 +187,14 @@ public class LobbyScreen extends JFrame {
         //añadir la animacion al panel de carga
         spinnerContainer.add(loadingPanel, BorderLayout.CENTER);
         JPanel spinnerwestPanel = new JPanel();
+        spinnerwestPanel.setOpaque(false);
         spinnerwestPanel.setPreferredSize(new Dimension(100, 210));
         JLabel empty3 = new JLabel();
         spinnerwestPanel.add(empty3);
 
         JPanel spinnereastPanel = new JPanel();
         spinnereastPanel.setPreferredSize(new Dimension(100, 210));
+        spinnereastPanel.setOpaque(false);
         JLabel empty4 = new JLabel();
         spinnereastPanel.add(empty4);
 
@@ -187,28 +207,22 @@ public class LobbyScreen extends JFrame {
         // crear el panel de botones
         JPanel botonesPanel = new JPanel(new GridLayout(1, 2, 5, 5));
         botonesPanel.setPreferredSize(new Dimension(230, 100));
+        botonesPanel.setOpaque(false);
 
         //crear el boton de salida(disponible para todos)
-        JButton exitButton = new JButton("EXIT");
+        InlaidMenuButton exitButton = new InlaidMenuButton("Salir", this::Exit);
         exitButton.setSize(new Dimension(200,100));
-        exitButton.addActionListener(e -> dispose());
+
         botonesPanel.add(exitButton);
 
         //crear el boton de inicio de partida (solo visible para el host)
-        JButton inicioButton = new JButton("INICIAR");
+        InlaidMenuButton inicioButton= new InlaidMenuButton("Iniciar juego", this::INICIAR);
         inicioButton.setSize(new Dimension(230,210));
+        inicioButton.setOpaque(false);
 
 
         if (isHost){
-            inicioButton.addActionListener(e -> {
-                try {
-                    onStartGame.run();
-                    inicioButton.setEnabled(false);
-                    inicioButton.setText("Initializing...");
-            } catch (RuntimeException ex){
-                JOptionPane.showMessageDialog(this,"Unable to start game: " + ex.getMessage(), "Start Game Error", JOptionPane.ERROR_MESSAGE);
-                }
-            });
+                    inicioButton.setEnabled(true);
         }
         loadingPanel.add(inicioButton);
 
@@ -220,12 +234,21 @@ public class LobbyScreen extends JFrame {
 
         loadingSpinner.start();
 
-        setContentPane(lobbyPanel);
+        lobbyBackGround.add(lobbyPanel, BorderLayout.CENTER);
+        setContentPane(lobbyBackGround);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         roster.setOnChanged(this::refreshPlayers);
         setVisible(true);
 
+    }
+
+    private void INICIAR() {
+
+    }
+
+    private void Exit() {
+        dispose();
     }
 
     @Override
@@ -431,6 +454,16 @@ public class LobbyScreen extends JFrame {
                     "Could not update profile picture: " + ex.getMessage(),
                     "Image Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void copy() {
+            try {
+                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(ServerCode.Encode(this.ServerIP,this.port,this.HostNAME)),null);
+            } catch (IllegalStateException ex) {
+                JOptionPane.showMessageDialog(this, "Clipboard is unavailable", "Copy Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
     }
 
     private BufferedImage resizeIfNecessary(BufferedImage source, int maxSide) {
