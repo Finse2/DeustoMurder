@@ -3,6 +3,7 @@ package Networking.server;
 import Networking.common.Packet;
 import Networking.common.PacketType;
 import Networking.packets.CardShowPacket;
+import Networking.packets.ChatMessagePacket;
 import Networking.packets.GameOverPacket;
 import Networking.packets.JoinAcceptedPacket;
 import Networking.packets.JoinPacket;
@@ -120,6 +121,7 @@ public final class GameServer {
             case GAME_OVER -> broadcast(packet);
             case PLAYER_MOVE -> handlePlayerMove(packet, serversClientHandler);
             case GAME_START -> broadcast(packet);
+            case CHAT_MESSAGE -> handleChatMessage(packet, serversClientHandler);
             case JOIN_ACCEPTED, PLAYER_JOINED ->
                     System.err.println("Ignoring server-only packet from player " + serversClientHandler.getPlayerID());
         }
@@ -165,6 +167,22 @@ public final class GameServer {
      * @param packet The CARD_SHOW packet received from the client.
      * @param serversClientHandler The client handler that received the packet.
      */
+    /** Retransmite mensajes a todos los clientes excepto al emisor (que ya los muestra localmente). */
+    private void handleChatMessage(Packet packet, ServersClientHandler sender) {
+        if (!(packet instanceof ChatMessagePacket chatPacket) || sender.getUserName() == null) {
+            return;
+        }
+        String message = chatPacket.getMessage();
+        if (message == null || message.isBlank() || message.strip().length() > 500) {
+            return;
+        }
+        // El nombre y el ID se obtienen de la conexión, nunca del paquete del cliente.
+        ChatMessagePacket authoritative = new ChatMessagePacket(
+                sender.getPlayerID(), sender.getUserName(), message.strip()
+        );
+        broadcastExcept(authoritative, sender);
+    }
+
     private void handleCardShow(Packet packet, ServersClientHandler serversClientHandler) {
         if (!(packet instanceof CardShowPacket cardShowPacket)) {
             return;

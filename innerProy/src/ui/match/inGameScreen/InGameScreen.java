@@ -1,5 +1,7 @@
 package ui.match.inGameScreen;
 
+import ui.chat.Chat;
+import ui.chat.ChatRenderer;
 import model.Actor;
 import ui.match.BoardLayout;
 
@@ -12,6 +14,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Contenedor principal de la partida. El tablero se muestra dentro de un
@@ -21,14 +25,24 @@ public final class InGameScreen extends JFrame {
 
     private final BoardLayout board;
     private final List<Actor> actors;
+    private final ChatRenderer chatRenderer;
     private JScrollPane boardScrollPane;
     private JPanel boardCanvas;
     private double zoom = 1.0;
     private int baseTileSize = 25;
 
     public InGameScreen(BoardLayout board, List<Actor> actors, JComponent hand) {
+        this(board, actors, hand, new Chat(
+                actors.stream().map(Actor::getName).toList(),
+                actors.isEmpty() ? "Jugador" : actors.getFirst().getName()));
+    }
+
+    public InGameScreen(BoardLayout board, List<Actor> actors, JComponent hand, Chat chat) {
         this.board = board;
         this.actors = actors;
+        Map<String, Color> playerColors = actors.stream()
+                .collect(Collectors.toMap(Actor::getName, Actor::getColor, (left, right) -> left));
+        this.chatRenderer = new ChatRenderer(chat, playerColors);
 
         setTitle("DeustoMurder");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -64,7 +78,7 @@ public final class InGameScreen extends JFrame {
         JPanel rightContent = new JPanel(new GridLayout(2, 1, 0, 10));
         rightContent.setBackground(Color.BLACK);
         rightContent.add(new GameHistoryPanel());
-        rightContent.add(new ChatPanel());
+        rightContent.add(chatRenderer);
         rightColumn.add(rightContent, BorderLayout.CENTER);
 
         JPanel middle = new JPanel(new BorderLayout(10, 0));
@@ -271,6 +285,14 @@ public final class InGameScreen extends JFrame {
         }
 
         return panel;
+    }
+
+    public Chat getChat() {
+        return chatRenderer.getChat();
+    }
+
+    public ChatRenderer getChatRenderer() {
+        return chatRenderer;
     }
 
     public BoardLayout getBoard() {

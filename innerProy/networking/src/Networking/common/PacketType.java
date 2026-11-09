@@ -10,5 +10,6 @@ public enum PacketType {
     GAME_START,
     PLAYER_MOVE,
     CARD_SHOW,
-    GAME_OVER
+    GAME_OVER,
+    CHAT_MESSAGE
 }
