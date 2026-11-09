@@ -1,6 +1,8 @@
+
 package model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Player {
@@ -35,7 +37,14 @@ public class Player {
     }
 
     public void addCard(Card card) {
+        if (card == null) {
+            throw new IllegalArgumentException("Card cannot be null");
+        }
         player_cards.add(card);
+    }
+
+    public List<Card> getCards() {
+        return Collections.unmodifiableList(player_cards);
     }
 
     public void moveUP() {
