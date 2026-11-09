@@ -8,7 +8,7 @@ public class LoadingSpinner extends JPanel {
     private int rotation = 0;
 
     private final int lines = 12;
-    private final Color spinnerColor = new Color(215, 180, 125);
+    private final Color spinnerColor = new Color(255, 255, 255);
 
     public LoadingSpinner() {
         setOpaque(false);

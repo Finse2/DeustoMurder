@@ -43,21 +43,20 @@ public class LobbyScreen extends JFrame {
         lobbyBackGround = new BackGround("innerProy/ressources/LobbyClaustro.png");
         lobbyBackGround.setLayout(new BorderLayout());
         JPanel lobbyPanel = new JPanel(new BorderLayout());
-        lobbyPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
         lobbyPanel.setOpaque(false);
 
         //Crear el panel del norte
         JPanel northPanel = new JPanel(new GridLayout(1, 3, 5, 5));
-        northPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
-        JLabel sessionId = new JLabel("Session ID");
-        northPanel.add(sessionId);
         northPanel.setOpaque(false);
         String code = ServerCode.Encode(ServerIP,port,HostNAME);
-        JTextField sessionCode = new JTextField("Code: " + code);
-        sessionCode.setEditable(false);
-        northPanel.add(sessionCode);
 
-        InlaidMenuButton copy = new InlaidMenuButton("Copy", this::copy);
+        InlaidMenuButton infoServer= new InlaidMenuButton("Server Information:", this::infoServer);
+        infoServer.setFont(new Font("Georgia", Font.BOLD, 18));
+        infoServer.setForeground(new Color(235, 215, 100));
+        infoServer.setOpaque(false);
+        northPanel.add(infoServer);
+
+        InlaidMenuButton copy = new InlaidMenuButton("Copy code : " + code, this::copy);
 
         northPanel.add(copy);
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -85,9 +84,7 @@ public class LobbyScreen extends JFrame {
         // PLAYER LIST
         JPanel westPanel = new JPanel(new BorderLayout(5, 5));
         westPanel.setPreferredSize(new Dimension(300, 0));
-        westPanel.setBorder(
-                BorderFactory.createLineBorder(Color.BLACK, 4)
-        );
+
         westPanel.setOpaque(false);
         playerCountLabel = new JLabel("Connected Players (0)");
         playerCountLabel.setFont(
@@ -108,53 +105,25 @@ public class LobbyScreen extends JFrame {
         playerListPanel.setOpaque(false);
         JScrollPane playerScroll = new JScrollPane(playerListPanel);
         playerScroll.setBorder(null);
+        playerScroll.setOpaque(false);
         playerScroll.getVerticalScrollBar().setUnitIncrement(16);
 
         westPanel.add(playerScroll, BorderLayout.CENTER);
 
         lobbyPanel.add(westPanel, BorderLayout.WEST);
 
+        //
 
-        //crear el panel de la derecha (info de la conexion)
-        JPanel eastPanel = new JPanel(new BorderLayout(5, 5));
+
+        JPanel eastPanel = new JPanel(new BorderLayout(5,5));
         eastPanel.setPreferredSize(new Dimension(300, 0));
-        eastPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
         eastPanel.setOpaque(false);
-        JPanel infoPanel = new JPanel(new GridLayout(3,1,5,5));
-        infoPanel.setOpaque(false);
-        JLabel eastHostName = new JLabel("Host Name: " + HostNAME);
-        eastHostName.setFont(new Font("Georgia", Font.BOLD, 14));
-        eastHostName.setForeground(new Color(235, 215, 100));
-        eastPanel.setBorder(BorderFactory.createEmptyBorder());
-        JLabel ipAddress = new JLabel("IP Address: " + ServerIP );
-        ipAddress.setFont(new Font("Georgia", Font.BOLD, 14));
-        ipAddress.setForeground(new Color(235, 215, 100));
-        JLabel portNumber = new JLabel("Port: " + port );
-        portNumber.setFont(new Font("Georgia", Font.BOLD, 14));
-        portNumber.setForeground(new Color(235, 215, 100));
-        infoPanel.add(eastHostName);
-        infoPanel.add(ipAddress);
-        infoPanel.add(portNumber);
-        eastPanel.add(infoPanel, BorderLayout.CENTER);
-        JPanel vacio1 = new JPanel();
-        vacio1.setOpaque(false);
-        eastPanel.add(vacio1, BorderLayout.EAST);
-        JPanel vacio2 = new JPanel();
-        vacio2.setOpaque(false);
-        eastPanel.add(vacio2, BorderLayout.WEST);
-        JPanel infoNorth = new JPanel(new FlowLayout());
-        JLabel infoServer = new JLabel("Server Information:");
-        infoServer.setFont(new Font("Georgia", Font.BOLD, 18));
-        infoServer.setForeground(new Color(235, 215, 100));
-        infoServer.setOpaque(false);
-        infoNorth.add(infoServer);
-        eastPanel.add(infoNorth, BorderLayout.NORTH);
-        //añadir el panel derecho al principal
-        lobbyPanel.add(eastPanel,BorderLayout.EAST);
+
+        lobbyPanel.add(eastPanel, BorderLayout.EAST);
+
 
         //crear el panel del sur
         JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        southPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
         southPanel.setOpaque(false);
         JLabel southVersion = new JLabel("Game Version: 1.0");
         southVersion.setFont(new Font("Arial", Font.BOLD, 20));
@@ -165,9 +134,16 @@ public class LobbyScreen extends JFrame {
 
         // crear el panel central
         JPanel centralPanel = new JPanel(new BorderLayout(5, 5));
-        centralPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
         centralPanel.setOpaque(false);
         centralPanel.setPreferredSize(new Dimension(230, 210));
+
+        JLabel vacio1 = new JLabel(" ");
+        vacio1.setOpaque(false);
+        centralPanel.add(vacio1, BorderLayout.EAST);
+
+        JLabel vacio2 = new JLabel(" ");
+        vacio2.setOpaque(false);
+        centralPanel.add(vacio2, BorderLayout.WEST);
 
         // crear la loading animation
         JPanel loadingPanel = new JPanel(new GridLayout(5,3,5,15));
@@ -242,6 +218,40 @@ public class LobbyScreen extends JFrame {
         setVisible(true);
 
     }
+
+    private void infoServer() {
+
+        JFrame infoServer = new JFrame("Server Informatios");
+
+            String[] colums = {"Information", "Value"};
+
+            Object[][] data = {
+                    {"Host Name:", HostNAME},
+                    {"IP Address:", ServerIP},
+                    {"Port:", port},
+                    {"Session ID ", "1"}
+            };
+            JTable statsTable = new JTable(data, colums) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false; // Make all cells non-editable
+                }
+            };
+
+            JScrollPane scrollPane = CluedoTableTheme.style(statsTable);
+            infoServer.getContentPane().setBackground(new Color(20, 22, 27));
+            infoServer.add(scrollPane);
+
+
+            infoServer.setSize(450, 300);
+            infoServer.setLocationRelativeTo(this);
+            infoServer.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            infoServer.setVisible(true);
+
+
+
+    }
+
 
     private void INICIAR() {
 
@@ -459,6 +469,7 @@ public class LobbyScreen extends JFrame {
     private void copy() {
             try {
                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(ServerCode.Encode(this.ServerIP,this.port,this.HostNAME)),null);
+                JOptionPane.showConfirmDialog(this, "Copied Code");
             } catch (IllegalStateException ex) {
                 JOptionPane.showMessageDialog(this, "Clipboard is unavailable", "Copy Error", JOptionPane.ERROR_MESSAGE);
             } catch (Exception e) {
