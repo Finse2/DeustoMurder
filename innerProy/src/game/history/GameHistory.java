@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -27,6 +28,19 @@ public class GameHistory {
      */
 
     private final List<GameEvent> events = new ArrayList<>();
+    private final List<Runnable> changeListeners = new CopyOnWriteArrayList<>();
+
+    public void addChangeListener(Runnable listener) {
+        changeListeners.add(Objects.requireNonNull(listener));
+    }
+
+    public void removeChangeListener(Runnable listener) {
+        changeListeners.remove(listener);
+    }
+
+    private void notifyChange() {
+        for (Runnable listener : changeListeners) listener.run();
+    }
 
     public synchronized void addEvent (String playerName, String eventType, String description) {
         GameEvent.Type type = GameEvent.Type.valueOf(eventType.toUpperCase());
@@ -36,6 +50,7 @@ public class GameHistory {
 
     public synchronized void record (GameEvent event) {
         events.add(Objects.requireNonNull(event));
+        notifyChange();
     }
 
     public void record (GameEvent.Type type, Integer playerId, String playerName, String description) {
@@ -67,6 +82,7 @@ public class GameHistory {
 
     public synchronized void clear () {
         events.clear();
+        notifyChange();
     }
 
     public synchronized void exportCSV (Path destination) throws IOException {
