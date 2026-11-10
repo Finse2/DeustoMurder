@@ -7,11 +7,6 @@ public class AchievementManager {
 
    // private final AchievementRepository achievementRepository;
     private Map<AchievementType, Achievement> achievements;
-    private Map<String, PlayersAchievements> playersAchievements;
-
-    // Inicializa el repositorio y carga el catálogo
-    public AchievementManager(AchievementRepository repository) {
-    }
 
     // Carga los logros y sus etapas desde los CSV
     public void loadAchievements() {
@@ -27,21 +22,10 @@ public class AchievementManager {
         return null;
     }
 
-    // Devuelve los logros de una categoría
-    public List<Achievement> getAchievementsByCategory(
-            AchievementCategory category
-    ) {
-        return null;
-    }
 
     // Carga el progreso de un jugador
     public void loadPlayer(String playerId) {
 
-    }
-
-    // Devuelve los logros y el progreso de un jugador
-    public PlayersAchievements getPlayerAchievements(String playerId) {
-        return null;
     }
 
     // Guarda el progreso de un jugador
@@ -49,10 +33,6 @@ public class AchievementManager {
 
     }
 
-    // Recibe una notificación de un manager externo
-    public void addAchievement(AchievementEvent event) {
-
-    }
 
     // Actualiza el progreso de un logro
     public void updateProgress(
