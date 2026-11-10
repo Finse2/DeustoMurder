@@ -40,8 +40,13 @@ public class GameEvent {
     private final String description;
 
     public GameEvent (Type type, Integer playerId, String playerName, String description) {
-        this.timestamp = Instant.now();
-        this.type = Objects.requireNonNull(type);
+        this(Instant.now(), type, playerId, playerName, description);
+    }
+
+    // Constructor adicional para conservar la fecha original de eventos importados.
+    public GameEvent (Instant timestamp, Type type, Integer playerId, String playerName, String description) {
+        this.timestamp = Objects.requireNonNull(timestamp, "timestamp");
+        this.type = Objects.requireNonNull(type, "type");
         this.playerId = playerId;
         this.playerName = playerName == null ? "" : playerName;
         this.description = description == null ? "" : description;

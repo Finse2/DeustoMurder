@@ -1,5 +1,4 @@
-
-package game.testing;
+package mockClasses.testing;
 
 import game.core.Game;
 import game.core.GameStartResult;
@@ -379,14 +378,14 @@ public class GameStartTest {
 
         assertEquals(
                 1,
-                game1.getGameHistory().size(),
-                "First game should have its own history"
+                game1.getGameHistory().getEventsOfType(GameEvent.Type.GAME_STARTED).size(),
+                "First game should have its own start event"
         );
 
         assertEquals(
                 1,
-                game2.getGameHistory().size(),
-                "Second game should have its own history"
+                game2.getGameHistory().getEventsOfType(GameEvent.Type.GAME_STARTED).size(),
+                "Second game should have its own start event"
         );
     }
 

@@ -18,24 +18,23 @@ public class GameHistoryWriterThread extends Thread {
     @Override
 
     public void run() {
-        while (running && !Thread.currentThread().isInterrupted()) {
-            try {
-                Thread.sleep(2000);
-
-                if (!running) {
+        try {
+            while (running) {
+                try {
+                    Thread.sleep(2000);
+                    if (running) history.exportCSV(destination);
+                } catch (InterruptedException interrupted) {
                     break;
+                } catch (IOException error) {
+                    System.err.println("Error saving history: " + error.getMessage());
                 }
-
-                synchronized (history) {
-                    history.exportCSV(destination);
-                }
-
-                System.out.println("Game history saved succesfully");
-
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            } catch (IOException e) {
-                System.err.println("Error saving history: " + e.getMessage());
+            }
+        } finally {
+            // Guardar también al cerrar; no perder los últimos eventos del turno.
+            try {
+                history.exportCSV(destination);
+            } catch (IOException error) {
+                System.err.println("Error saving final history: " + error.getMessage());
             }
         }
     }

@@ -1,5 +1,5 @@
 
-package game.testing;
+package mockClasses.testing;
 
 import game.cards.DeckManager;
 import model.*;
