@@ -73,13 +73,15 @@ public final class InGameScreen extends JFrame {
     private JScrollPane boardScrollPane;           // BOARD (scroll + zoom)
     private JPanel boardCanvas;                    // BOARD (inside viewport)
 
-    private static final int GAP = 10;
+    private static final int GAP = 15;
     private static final int LEFT_COLUMN_WIDTH = 240;
     private static final int RIGHT_COLUMN_WIDTH = 345;
     private static final int HEADER_HEIGHT = 125;
     private static final int HAND_HEIGHT = 230;
     private static final Color SCREEN_BACKGROUND = Color.BLACK;
-    private static final Color HEADER_BACKGROUND = new Color(10, 35, 55);
+    private static final Color HEADER_BACKGROUND = new Color(16, 30, 38);
+    private static final Color SECTION_BACKGROUND = new Color(25, 52, 67);
+    private static final Color SECTION_BORDER = new Color(58, 36, 24);
 
     private double zoom = 1.0;
     private int baseTileSize = 25;
@@ -129,7 +131,7 @@ public final class InGameScreen extends JFrame {
      */
     private void defineScreenPanels(JComponent hand) {
         // Entire window.
-        rootPanel = new JPanel(new BorderLayout(GAP, GAP));
+        rootPanel = new WoodTablePanel(new BorderLayout(GAP, GAP));
         rootPanel.setName("area.root");
         rootPanel.setBackground(SCREEN_BACKGROUND);
         rootPanel.setBorder(BorderFactory.createEmptyBorder(GAP, GAP, GAP, GAP));
@@ -137,12 +139,12 @@ public final class InGameScreen extends JFrame {
         // Main horizontal row (players | board | sidebar).
         gameRowPanel = new JPanel(new BorderLayout(GAP, 0));
         gameRowPanel.setName("area.mainRow");
-        gameRowPanel.setBackground(SCREEN_BACKGROUND);
+        gameRowPanel.setOpaque(false);
 
         // LEFT: logo above the player list.
         playersColumnPanel = new JPanel(new BorderLayout(0, GAP));
         playersColumnPanel.setName("area.leftColumn");
-        playersColumnPanel.setBackground(SCREEN_BACKGROUND);
+        playersColumnPanel.setOpaque(false);
         playersColumnPanel.setPreferredSize(new Dimension(LEFT_COLUMN_WIDTH, 0));
 
         logoPanel = createDeustoLogoPanel();
@@ -161,7 +163,7 @@ public final class InGameScreen extends JFrame {
         // RIGHT: top controls, with the history and chat below.
         rightColumnPanel = new JPanel(new BorderLayout(0, GAP));
         rightColumnPanel.setName("area.rightColumn");
-        rightColumnPanel.setBackground(SCREEN_BACKGROUND);
+        rightColumnPanel.setOpaque(false);
         rightColumnPanel.setPreferredSize(new Dimension(RIGHT_COLUMN_WIDTH, 0));
 
         controlsPanel = createHeaderControlsPanel();
@@ -171,23 +173,30 @@ public final class InGameScreen extends JFrame {
 
         historyChatPanel = new JPanel(new GridLayout(2, 1, 0, GAP));
         historyChatPanel.setName("area.historyAndChat");
-        historyChatPanel.setBackground(SCREEN_BACKGROUND);
+        historyChatPanel.setOpaque(false);
         historyPanel.setName("area.history");
         chatRenderer.setName("area.chat");
 
         // BOTTOM: the player's cards on the left and game actions on the right.
         footerPanel = new JPanel(new BorderLayout(GAP, 0));
         footerPanel.setName("area.footer");
-        footerPanel.setBackground(SCREEN_BACKGROUND);
+        footerPanel.setOpaque(false);
 
         handPanel = new JPanel(new BorderLayout());
         handPanel.setName("area.hand");
-        handPanel.setBackground(new Color(25, 55, 75));
+        handPanel.setOpaque(false);
         handPanel.setPreferredSize(new Dimension(0, HAND_HEIGHT));
         handPanel.add(hand, BorderLayout.CENTER);
 
         actionsPanel.setName("area.actions");
         actionsPanel.setPreferredSize(new Dimension(RIGHT_COLUMN_WIDTH, 0));
+
+        styleSectionPanel(logoPanel);
+        styleSectionPanel(playersPanel);
+        styleSectionPanel(controlsPanel);
+        styleSectionPanel(historyPanel);
+        styleSectionPanel(chatRenderer);
+        styleSectionPanel(actionsPanel);
     }
 
     /**
@@ -366,8 +375,8 @@ public final class InGameScreen extends JFrame {
 
     private JScrollPane createBoardScrollPane() {
         // La mesa y el tablero forman un único componente dentro del viewport.
-        boardCanvas = new JPanel(new GridBagLayout());
-        boardCanvas.setBackground(new Color(17, 27, 32));
+        boardCanvas = new WoodTablePanel(new GridBagLayout());
+        boardCanvas.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         boardCanvas.add(board);
 
         boardScrollPane = new JScrollPane(
@@ -375,8 +384,8 @@ public final class InGameScreen extends JFrame {
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
         );
-        boardScrollPane.setBorder(null);
-        boardScrollPane.getViewport().setBackground(boardCanvas.getBackground());
+        boardScrollPane.setBorder(BorderFactory.createLineBorder(new Color(45, 24, 16), 6));
+        boardScrollPane.getViewport().setBackground(new Color(32, 17, 11));
         boardScrollPane.setWheelScrollingEnabled(false);
         boardScrollPane.getVerticalScrollBar().setUnitIncrement(30);
         boardScrollPane.getHorizontalScrollBar().setUnitIncrement(30);
@@ -525,10 +534,9 @@ public final class InGameScreen extends JFrame {
     }
 
     private JPanel createPlayersPanel() {
-        JPanel panelJugadores = new JPanel();
+        panelJugadores = new JPanel();
         panelJugadores.setLayout(new BoxLayout(panelJugadores, BoxLayout.Y_AXIS));
-        panelJugadores.setBackground(new Color(25, 55, 75));
-
+        panelJugadores.setBackground(SECTION_BACKGROUND);
 
         playerCountLabel = new JLabel("Connected Players (0)");
         playerCountLabel.setFont(
@@ -543,9 +551,19 @@ public final class InGameScreen extends JFrame {
         JLabel title = new JLabel("Jugadores:");
         title.setFont(new Font("Arial", Font.BOLD, 20));
         title.setForeground(Color.WHITE);
+        title.setBorder(BorderFactory.createEmptyBorder(0, 12, 8, 12));
         panelJugadores.add(title);
 
         return panelJugadores;
+    }
+
+    private void styleSectionPanel(JComponent component) {
+        component.setOpaque(true);
+        component.setBackground(SECTION_BACKGROUND);
+        component.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(SECTION_BORDER, 3),
+                BorderFactory.createEmptyBorder(3, 3, 3, 3)
+        ));
     }
 
     public GameHistoryPanel getHistoryPanel() {
@@ -710,7 +728,7 @@ public final class InGameScreen extends JFrame {
             playerPanel.setBorder(
                     BorderFactory.createCompoundBorder(
                             BorderFactory.createLineBorder(
-                                    new Color(85, 65, 55)
+                                    new Color(74, 49, 35)
                             ),
                             BorderFactory.createEmptyBorder(
                                     10, 12, 10, 12
@@ -728,7 +746,12 @@ public final class InGameScreen extends JFrame {
 
             JLabel name = new JLabel(player.name());
             name.setFont(new Font("Georgia", Font.BOLD, 15));
+            name.setForeground(new Color(235, 229, 212));
+            infoPanel.add(name);
 
+            playerPanel.setOpaque(true);
+            playerPanel.setBackground(new Color(30, 55, 70));
+            playerPanel.add(infoPanel, BorderLayout.CENTER);
 
             panelJugadores.add(playerPanel);
             panelJugadores.add(Box.createVerticalStrut(6));
