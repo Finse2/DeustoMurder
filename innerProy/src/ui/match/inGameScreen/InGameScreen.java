@@ -1,6 +1,8 @@
 package ui.match.inGameScreen;
 
 import activation.Screen.CluedoTableTheme;
+import activation.Screen.Lobby.LobbyRoster;
+import model.Player;
 import model.Room;
 import model.Weapon;
 import ui.chat.Chat;
@@ -9,6 +11,7 @@ import ui.chat.ChatRenderer;
 import model.Actor;
 import ui.match.AccusationCard;
 import ui.match.BoardLayout;
+import activation.Screen.Lobby.LobbyRoster;
 
 import activation.Screen.AnimatedBackGround.AnimatedBackGround;
 import activation.Screen.ProfileButton;
@@ -59,6 +62,7 @@ public final class InGameScreen extends JFrame {
     private JPanel historyChatPanel;
     private JPanel footerPanel;
     private JPanel handPanel;
+    private JPanel panelJugadores;
 
     // Visible content of the named regions.
     private final BoardLayout board;
@@ -80,6 +84,8 @@ public final class InGameScreen extends JFrame {
     private double zoom = 1.0;
     private int baseTileSize = 25;
 
+    private LobbyRoster roster;
+    private JLabel playerCountLabel;
     public InGameScreen(BoardLayout board, List<Actor> actors, JComponent hand) {
         this(board, actors, hand, new Chat(
                 actors.stream().map(Actor::getName).toList(),
@@ -519,23 +525,27 @@ public final class InGameScreen extends JFrame {
     }
 
     private JPanel createPlayersPanel() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBackground(new Color(25, 55, 75));
+        JPanel panelJugadores = new JPanel();
+        panelJugadores.setLayout(new BoxLayout(panelJugadores, BoxLayout.Y_AXIS));
+        panelJugadores.setBackground(new Color(25, 55, 75));
 
-        JLabel title = new JLabel("Jugadores");
+
+        playerCountLabel = new JLabel("Connected Players (0)");
+        playerCountLabel.setFont(
+                new Font("Georgia", Font.BOLD, 18)
+        );
+        playerCountLabel.setForeground(new Color(235, 215, 100));
+        playerCountLabel.setBorder(
+                BorderFactory.createEmptyBorder(12, 12, 12, 12)
+        );
+        panelJugadores.add(playerCountLabel);
+
+        JLabel title = new JLabel("Jugadores:");
         title.setFont(new Font("Arial", Font.BOLD, 20));
         title.setForeground(Color.WHITE);
-        panel.add(title);
+        panelJugadores.add(title);
 
-        for (Actor actor : actors) {
-            JLabel name = new JLabel(actor.getName());
-            name.setFont(new Font("Arial", Font.PLAIN, 20));
-            name.setForeground(actor.getColor());
-            panel.add(name);
-        }
-
-        return panel;
+        return panelJugadores;
     }
 
     public GameHistoryPanel getHistoryPanel() {
@@ -681,5 +691,50 @@ public final class InGameScreen extends JFrame {
                 }
         );
     }
+    private void refreshPlayers() {
 
+        panelJugadores.removeAll();
+
+        var connectedPlayers = roster.snapshot();
+
+        playerCountLabel.setText(
+                "Connected Players (" + connectedPlayers.size() + ")"
+        );
+
+        for (LobbyRoster.Entry player : connectedPlayers) {
+
+            JPanel playerPanel = new JPanel(
+                    new BorderLayout(10, 5)
+            );
+
+            playerPanel.setBorder(
+                    BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(
+                                    new Color(85, 65, 55)
+                            ),
+                            BorderFactory.createEmptyBorder(
+                                    10, 12, 10, 12
+                            )
+                    )
+            );
+
+            playerPanel.setMaximumSize(
+                    new Dimension(Integer.MAX_VALUE, 70)
+            );
+            playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            JPanel infoPanel = new JPanel(new GridLayout(2, 1));
+            infoPanel.setOpaque(false);
+
+            JLabel name = new JLabel(player.name());
+            name.setFont(new Font("Georgia", Font.BOLD, 15));
+
+
+            panelJugadores.add(playerPanel);
+            panelJugadores.add(Box.createVerticalStrut(6));
+        }
+
+        panelJugadores.revalidate();
+        panelJugadores.repaint();
+    }
 }
