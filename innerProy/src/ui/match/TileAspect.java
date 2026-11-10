@@ -61,6 +61,8 @@ class TileAspect extends JPanel {
         setBackground(color);
     }
 
+    //recursive functions meant to create several tiles ahead and add them to the same container as the parent
+
     void concatenate(JPanel root, TileDirection direction) {
         concatenate(root, direction, 1);
     }
