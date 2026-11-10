@@ -2,6 +2,7 @@
 package ui.match.inGameScreen;
 
 import game.core.GameSetup;
+import game.dice.Dice;
 import ui.DetectiveButton;
 import ui.match.DetectiveCard;
 import ui.match.AccusationCard;
@@ -10,6 +11,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Random;
+import java.util.function.BiConsumer;
 
 /**
  * Panel inferior derecho con los botones de las tarjetas del juego.
@@ -18,12 +21,22 @@ public final class GameActionsPanel extends JPanel {
 
     private JDialog detectiveDialog;
     private JDialog accusationDialog;
+    private JDialog diceDialog;
+    private DiceRollPanel diceRollPanel;
+    private final Dice diceModel;
+    private BiConsumer<Integer, Integer> onDiceRolled;
 
     private final DetectiveButton detectiveButton = new DetectiveButton();
     private final JButton accusationButton = new JButton("Accusation Card");
+    private final JButton diceButton = new JButton("Tirar dados");
 
     public GameActionsPanel() {
+        this(new Dice());
+    }
+
+    public GameActionsPanel(Dice dice) {
         super(new BorderLayout());
+        this.diceModel = java.util.Objects.requireNonNull(dice, "Dice model cannot be null");
 
         setBackground(new Color(25, 55, 75));
         setBorder(BorderFactory.createEmptyBorder(10, 12, 12, 12));
@@ -41,7 +54,7 @@ public final class GameActionsPanel extends JPanel {
 
         accusationButton.addActionListener(event -> showAccusationCard());
 
-        // Colocamos los dos botones uno encima del otro.
+        // Colocamos los botones uno debajo del otro.
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS));
         buttonsPanel.setBackground(new Color(25, 55, 75));
@@ -52,6 +65,18 @@ public final class GameActionsPanel extends JPanel {
         buttonsPanel.add(accusationButton);
         buttonsPanel.add(Box.createVerticalStrut(10));
         buttonsPanel.add(detectiveButton);
+        buttonsPanel.add(Box.createVerticalStrut(10));
+
+        // Ventana de dados animados; no interfiere con las otras tarjetas.
+        diceButton.setFont(new Font("Georgia", Font.BOLD, 17));
+        diceButton.setForeground(new Color(229, 211, 177));
+        diceButton.setBackground(new Color(64, 38, 28));
+        diceButton.setFocusPainted(false);
+        diceButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        diceButton.setPreferredSize(new Dimension(0, 45));
+        diceButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        diceButton.addActionListener(event -> showDiceDialog());
+        buttonsPanel.add(diceButton);
 
         add(buttonsPanel, BorderLayout.SOUTH);
     }
@@ -180,6 +205,41 @@ public final class GameActionsPanel extends JPanel {
                 }
             }
         });
+    }
+
+    // DADOS ANIMADOS
+
+    public void showDiceDialog() {
+        if (diceDialog == null || !diceDialog.isDisplayable()) {
+            Window owner = SwingUtilities.getWindowAncestor(this);
+            diceDialog = new JDialog(owner, "Dados del destino", Dialog.ModalityType.MODELESS);
+            diceDialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            diceRollPanel = new DiceRollPanel(diceModel, new Random());
+            diceRollPanel.setOnRollComplete(onDiceRolled);
+            WoodTablePanel background = new WoodTablePanel(new BorderLayout());
+            background.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+            background.add(diceRollPanel, BorderLayout.CENTER);
+            diceDialog.setContentPane(background);
+            diceDialog.setSize(720, 490);
+            diceDialog.setMinimumSize(new Dimension(400, 330));
+            diceDialog.setLocationRelativeTo(owner);
+        }
+        diceDialog.setVisible(true);
+        diceDialog.toFront();
+    }
+
+    /** Enlaza la tirada animada con la lógica de turnos si se desea. */
+    public void setOnDiceRolled(BiConsumer<Integer, Integer> listener) {
+        onDiceRolled = listener;
+        if (diceRollPanel != null) diceRollPanel.setOnRollComplete(listener);
+    }
+
+    public JButton getDiceButton() {
+        return diceButton;
+    }
+
+    public DiceRollPanel getDiceRollPanel() {
+        return diceRollPanel;
     }
 
     // GETTERS
