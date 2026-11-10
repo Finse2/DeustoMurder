@@ -784,7 +784,7 @@ public class MainScreen extends JFrame {
      * Opens a settings dialog that allows the user to adjust various application settings.
      * The settings are displayed in a table format, and the user can modify values as needed.
      */
-    private void openSettings() {
+    public void openSettings() {
         JFrame settingsFrame = new JFrame("Settings");
         String[] colums = {"Settings", "Value"};
 
@@ -821,7 +821,7 @@ public class MainScreen extends JFrame {
      * Opens a profile statistics dialog that displays the user's game statistics and allows them to change their profile picture.
      * The statistics are displayed in a table format, and the user can modify their profile picture as needed.
      */
-    private void openProfileStats() {
+    public void openProfileStats() {
 
         JFrame statFrame = new JFrame("Profile Statistics");
 
