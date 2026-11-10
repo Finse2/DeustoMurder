@@ -76,6 +76,11 @@ public class LobbyScreen extends JFrame {
         buttonPanel.add(profileButton);
         northPanel.add(buttonPanel);
 
+
+        settings.addActionListener(e -> {
+            openSettings();
+        });
+
         // añadir el panel del norte al principal
         lobbyPanel.add(northPanel, BorderLayout.NORTH);
 
