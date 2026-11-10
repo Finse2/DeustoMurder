@@ -11,7 +11,6 @@ import game.history.GameHistoryWriterThread;
 import game.statistics.StatisticsManager;
 import game.turns.MoveValidator;
 import game.turns.RoundManager;
-import game.turns.TurnTimerThread;
 
 import model.Actor;
 import model.Card;
@@ -25,9 +24,6 @@ import ui.match.BoardLayout;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
 
 public class Game {
 
@@ -70,12 +66,6 @@ public class Game {
     private final Dice dice;
 
     private GameHistoryWriterThread historyWriter;
-
-    // TEMPORIZADOR: un hilo independiente por turno, configurable antes de iniciar.
-    private static final int DEFAULT_TURN_SECONDS = 60;
-    private int turnDurationSeconds = DEFAULT_TURN_SECONDS;
-    private TurnTimerThread turnTimer;
-    private final List<Consumer<Integer>> turnTimeListeners = new CopyOnWriteArrayList<>();
 
     // HISTORIAL Y ESTADÍSTICAS
 
@@ -121,13 +111,9 @@ public class Game {
 
     // INICIALIZAR PARTIDA
 
-    public synchronized GameStartResult startGame() {
-        GameStartResult result = initializer.initialize(this);
-        if (result.isSuccessful() && currentPlayer != null) {
-            recordTurnEvent(GameEvent.Type.TURN_STARTED, currentPlayer);
-            beginTurnTimer();
-        }
-        return result;
+    public GameStartResult startGame() {
+
+        return initializer.initialize(this);
     }
 
 
@@ -304,7 +290,7 @@ public class Game {
 
     // COMPROBAR ACUSACIÓN
 
-    public synchronized boolean checkAccusation(
+    public boolean checkAccusation(
             Card room,
             Card actor,
             Card weapon
@@ -337,9 +323,6 @@ public class Game {
             gameState.setWinner(player);
 
             gameIsOver = true;
-            stopTurnTimer();
-            gameHistory.record(GameEvent.Type.GAME_FINISHED, null, null, "Game finished");
-            if (historyWriter != null) historyWriter.stopWriter();
 
             currentPlayer = null;
 
@@ -352,96 +335,39 @@ public class Game {
     }
 
 
-    // TEMPORIZADOR DE TURNOS
+    // PASAR AL SIGUIENTE TURNO
 
-    /** Duración aplicable a cada turno; configurar antes de iniciar la partida. */
-    public synchronized void setTurnDurationSeconds(int seconds) {
-        if (seconds <= 0) throw new IllegalArgumentException("Seconds must be positive");
-        if (initialized) throw new IllegalStateException("Configure turn time before starting the game");
-        turnDurationSeconds = seconds;
-    }
+    public void nextTurn() {
 
-    public synchronized int getTurnDurationSeconds() {
-        return turnDurationSeconds;
-    }
-
-    public synchronized int getTurnRemainingSeconds() {
-        return turnTimer == null ? 0 : turnTimer.getRemainingSeconds();
-    }
-
-    public void addTurnTimeListener(Consumer<Integer> listener) {
-        turnTimeListeners.add(Objects.requireNonNull(listener));
-        listener.accept(getTurnRemainingSeconds());
-    }
-
-    public void removeTurnTimeListener(Consumer<Integer> listener) {
-        turnTimeListeners.remove(listener);
-    }
-
-    private void notifyTurnTime(int seconds) {
-        for (Consumer<Integer> listener : turnTimeListeners) listener.accept(seconds);
-    }
-
-    private synchronized void beginTurnTimer() {
-        stopTurnTimer();
-        TurnTimerThread timer = new TurnTimerThread(turnDurationSeconds,
-                this::notifyTurnTime, () -> timerExpired((TurnTimerThread) Thread.currentThread()));
-        turnTimer = timer;
-        timer.start();
-    }
-
-    private synchronized void stopTurnTimer() {
-        if (turnTimer != null) {
-            turnTimer.stopTimer();
-            turnTimer = null;
+        if (gameIsOver || roundManager == null) {
+            return;
         }
-    }
 
-    /** El hilo antiguo no puede avanzar un turno después de que otro lo haya sustituido. */
-    private synchronized void timerExpired(TurnTimerThread expiredTimer) {
-        if (turnTimer == expiredTimer && !gameIsOver) nextTurn();
-    }
-
-    public synchronized void pauseTurnTimer() {
-        if (turnTimer != null) turnTimer.pauseTimer();
-    }
-
-    public synchronized void resumeTurnTimer() {
-        if (turnTimer != null) turnTimer.resumeTimer();
-    }
-
-    private void recordTurnEvent(GameEvent.Type type, Player player) {
-        gameHistory.record(type, player.getPlayerID(), player.getName(),
-                type == GameEvent.Type.TURN_STARTED ? "Turn started" : "Turn ended");
-    }
-
-    // PASAR AL SIGUIENTE TURNO (manual o por timeout)
-
-    public synchronized void nextTurn() {
-        if (gameIsOver || roundManager == null || !roundManager.areTurnsActive()) return;
-
-        stopTurnTimer();
-        if (currentPlayer != null) recordTurnEvent(GameEvent.Type.TURN_ENDED, currentPlayer);
         roundManager.nextTurn();
+
         currentPlayer = roundManager.getCurrentPlayer();
 
         if (currentPlayer != null) {
-            recordTurnEvent(GameEvent.Type.TURN_STARTED, currentPlayer);
-            beginTurnTimer();
+
+            gameHistory.record(
+                    GameEvent.Type.TURN_STARTED,
+                    currentPlayer.getPlayerID(),
+                    currentPlayer.getName(),
+                    "Turn started"
+            );
         }
     }
 
 
     // FINALIZAR PARTIDA
 
-    public synchronized void closeGame() {
+    public void closeGame() {
 
         if (gameIsOver) {
             return;
         }
 
         gameIsOver = true;
-        stopTurnTimer();
 
         currentPlayer = null;
 
@@ -459,8 +385,6 @@ public class Game {
                 null,
                 "Game finished"
         );
-
-        if (historyWriter != null) historyWriter.stopWriter();
 
         if (board != null) {
             board.repaint();
@@ -551,12 +475,8 @@ public class Game {
         return statisticsManager;
     }
 
-    public synchronized void startHistoryWriter() {
-        if (historyWriter != null && historyWriter.isAlive()) return;
-        historyWriter = new GameHistoryWriterThread(gameHistory,
-                java.nio.file.Path.of("data/history/game-history.csv"));
-        historyWriter.setDaemon(true);
-        historyWriter.start();
+    public void startHistoryWriter() {
+        historyWriter = new GameHistoryWriterThread(gameHistory, java.nio.file.Path.of("data/history/game-history.csv"));
     }
 
     public void startEventProcessor() {
