@@ -37,13 +37,46 @@ import java.util.stream.Collectors;
  */
 public final class InGameScreen extends JFrame {
 
+    // ================================================================
+    // SCREEN SEGMENTATION - a named panel for every visible area
+    // ================================================================
+    // rootPanel (BorderLayout)
+    //   CENTER: gameRowPanel
+    //     WEST:   playersColumnPanel -> logoPanel + playersPanel
+    //     CENTER: boardScrollPane    -> boardCanvas -> board
+    //     EAST:   rightColumnPanel   -> controlsPanel + historyChatPanel
+    //                                       -> historyPanel + chatRenderer
+    //   SOUTH:  footerPanel          -> handPanel + actionsPanel
+    //
+    // These fields are kept together so screen regions can be found at a glance.
+    private JPanel rootPanel;
+    private JPanel gameRowPanel;
+    private JPanel playersColumnPanel;
+    private JPanel logoPanel;
+    private JPanel playersPanel;
+    private JPanel rightColumnPanel;
+    private JPanel controlsPanel;
+    private JPanel historyChatPanel;
+    private JPanel footerPanel;
+    private JPanel handPanel;
+
+    // Visible content of the named regions.
     private final BoardLayout board;
     private final List<Actor> actors;
-    private final ChatRenderer chatRenderer;
-    private final GameHistoryPanel historyPanel;
-    private final GameActionsPanel actionsPanel;
-    private JScrollPane boardScrollPane;
-    private JPanel boardCanvas;
+    private final ChatRenderer chatRenderer;       // CHAT
+    private final GameHistoryPanel historyPanel;   // HISTORY
+    private final GameActionsPanel actionsPanel;   // ACTIONS
+    private JScrollPane boardScrollPane;           // BOARD (scroll + zoom)
+    private JPanel boardCanvas;                    // BOARD (inside viewport)
+
+    private static final int GAP = 10;
+    private static final int LEFT_COLUMN_WIDTH = 240;
+    private static final int RIGHT_COLUMN_WIDTH = 345;
+    private static final int HEADER_HEIGHT = 125;
+    private static final int HAND_HEIGHT = 230;
+    private static final Color SCREEN_BACKGROUND = Color.BLACK;
+    private static final Color HEADER_BACKGROUND = new Color(10, 35, 55);
+
     private double zoom = 1.0;
     private int baseTileSize = 25;
 
@@ -68,43 +101,128 @@ public final class InGameScreen extends JFrame {
         this.historyPanel = new GameHistoryPanel(history, actors);
         this.actionsPanel = new GameActionsPanel();
 
+        configureWindow();
+        defineScreenPanels(hand);     // 1. Create and configure each named region.
+        assembleScreenPanels();       // 2. Place the regions in the screen layout.
+        SwingUtilities.invokeLater(this::fitBoardToViewport);
+    }
+
+    /** Window settings, independent of the screen's panel hierarchy. */
+    private void configureWindow() {
         setTitle("DeustoMurder");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1500, 900);
         setMinimumSize(new Dimension(900, 600));
         setLocationRelativeTo(null);
+    }
 
-        JPanel root = new JPanel(new BorderLayout(10, 10));
-        root.setBackground(Color.BLACK);
-        root.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    /**
+     * STEP 1 - DEFINE AREAS.
+     * Each field represents one specific section of the screen.
+     * Nothing is positioned in the parent layout here.
+     */
+    private void defineScreenPanels(JComponent hand) {
+        // Entire window.
+        rootPanel = new JPanel(new BorderLayout(GAP, GAP));
+        rootPanel.setName("area.root");
+        rootPanel.setBackground(SCREEN_BACKGROUND);
+        rootPanel.setBorder(BorderFactory.createEmptyBorder(GAP, GAP, GAP, GAP));
 
-        Color headerColor = new Color(10, 35, 55);
+        // Main horizontal row (players | board | sidebar).
+        gameRowPanel = new JPanel(new BorderLayout(GAP, 0));
+        gameRowPanel.setName("area.mainRow");
+        gameRowPanel.setBackground(SCREEN_BACKGROUND);
 
-        JPanel playersColumn = new JPanel(new BorderLayout(0, 10));
-        playersColumn.setBackground(Color.BLACK);
-        playersColumn.setPreferredSize(new Dimension(240, 0));
+        // LEFT: logo above the player list.
+        playersColumnPanel = new JPanel(new BorderLayout(0, GAP));
+        playersColumnPanel.setName("area.leftColumn");
+        playersColumnPanel.setBackground(SCREEN_BACKGROUND);
+        playersColumnPanel.setPreferredSize(new Dimension(LEFT_COLUMN_WIDTH, 0));
 
-        JPanel playersHeader = createDeustoLogoPanel();
-        playersHeader.setBackground(headerColor);
-        playersHeader.setPreferredSize(new Dimension(0, 125));
-        playersColumn.add(playersHeader, BorderLayout.NORTH);
-        playersColumn.add(createPlayersPanel(), BorderLayout.CENTER);
+        logoPanel = createDeustoLogoPanel();
+        logoPanel.setName("area.logo");
+        logoPanel.setBackground(HEADER_BACKGROUND);
+        logoPanel.setPreferredSize(new Dimension(0, HEADER_HEIGHT));
 
-        JPanel rightColumn = new JPanel(new BorderLayout(0, 10));
-        rightColumn.setBackground(Color.BLACK);
-        rightColumn.setPreferredSize(new Dimension(345, 0));
+        playersPanel = createPlayersPanel();
+        playersPanel.setName("area.players");
 
-        JPanel rightHeader = new JPanel(new BorderLayout());
-        rightHeader.setBackground(headerColor);
-        rightHeader.setPreferredSize(new Dimension(0, 125));
+        // CENTER: the board and its own scrollable viewport.
+        boardScrollPane = createBoardScrollPane();
+        boardScrollPane.setName("area.board");
+        boardCanvas.setName("area.boardCanvas");
+
+        // RIGHT: top controls, with the history and chat below.
+        rightColumnPanel = new JPanel(new BorderLayout(0, GAP));
+        rightColumnPanel.setName("area.rightColumn");
+        rightColumnPanel.setBackground(SCREEN_BACKGROUND);
+        rightColumnPanel.setPreferredSize(new Dimension(RIGHT_COLUMN_WIDTH, 0));
+
+        controlsPanel = createHeaderControlsPanel();
+        controlsPanel.setName("area.headerControls");
+        controlsPanel.setBackground(HEADER_BACKGROUND);
+        controlsPanel.setPreferredSize(new Dimension(0, HEADER_HEIGHT));
+
+        historyChatPanel = new JPanel(new GridLayout(2, 1, 0, GAP));
+        historyChatPanel.setName("area.historyAndChat");
+        historyChatPanel.setBackground(SCREEN_BACKGROUND);
+        historyPanel.setName("area.history");
+        chatRenderer.setName("area.chat");
+
+        // BOTTOM: the player's cards on the left and game actions on the right.
+        footerPanel = new JPanel(new BorderLayout(GAP, 0));
+        footerPanel.setName("area.footer");
+        footerPanel.setBackground(SCREEN_BACKGROUND);
+
+        handPanel = new JPanel(new BorderLayout());
+        handPanel.setName("area.hand");
+        handPanel.setBackground(new Color(25, 55, 75));
+        handPanel.setPreferredSize(new Dimension(0, HAND_HEIGHT));
+        handPanel.add(hand, BorderLayout.CENTER);
+
+        actionsPanel.setName("area.actions");
+        actionsPanel.setPreferredSize(new Dimension(RIGHT_COLUMN_WIDTH, 0));
+    }
+
+    /**
+     * STEP 2 - POSITION AREAS.
+     * This is the complete screen map: every add() states exactly where a
+     * named region belongs. Adjust the layout here without touching controls.
+     */
+    private void assembleScreenPanels() {
+        // LEFT COLUMN
+        playersColumnPanel.add(logoPanel, BorderLayout.NORTH);
+        playersColumnPanel.add(playersPanel, BorderLayout.CENTER);
+
+        // RIGHT COLUMN
+        historyChatPanel.add(historyPanel);    // top half
+        historyChatPanel.add(chatRenderer);    // bottom half
+        rightColumnPanel.add(controlsPanel, BorderLayout.NORTH);
+        rightColumnPanel.add(historyChatPanel, BorderLayout.CENTER);
+
+        // MAIN ROW
+        gameRowPanel.add(playersColumnPanel, BorderLayout.WEST);
+        gameRowPanel.add(boardScrollPane, BorderLayout.CENTER);
+        gameRowPanel.add(rightColumnPanel, BorderLayout.EAST);
+
+        // BOTTOM ROW
+        footerPanel.add(handPanel, BorderLayout.CENTER);
+        footerPanel.add(actionsPanel, BorderLayout.EAST);
+
+        // WHOLE SCREEN
+        rootPanel.add(gameRowPanel, BorderLayout.CENTER);
+        rootPanel.add(footerPanel, BorderLayout.SOUTH);
+        setContentPane(rootPanel);
+    }
+
+    /** The top-right control area: profile, settings and quit. */
+    private JPanel createHeaderControlsPanel() {
+        JPanel header = new JPanel(new BorderLayout());
         JPanel topButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 10));
         topButtons.setOpaque(false);
 
-// Profile button
-
-// Cargamos la imagen predeterminada.
+        // Profile button
         BufferedImage profilePicture = null;
-
         try {
             profilePicture = ImageIO.read(
                     Path.of("innerProy/ressources/DefaultProfile.jpg").toFile()
@@ -112,26 +230,18 @@ public final class InGameScreen extends JFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-// Redimensionamos la imagen si es necesario.
         if (profilePicture != null) {
             profilePicture = resizeIfNecessary(profilePicture, 512);
         }
-
-// Creamos el botón circular utilizando nuestra clase ProfileButton.
         ProfileButton profileButton = new ProfileButton(profilePicture);
-
         profileButton.addActionListener(e -> openProfileStats());
 
-// Settings button
+        // Settings button
         ImageIcon settingsIcon = new ImageIcon("innerProy/ressources/settings.png");
-
         Image settingsImage = settingsIcon.getImage().getScaledInstance(
                 40, 40, Image.SCALE_SMOOTH
         );
-
         JButton settingsButton = new JButton(new ImageIcon(settingsImage));
-
         settingsButton.setOpaque(false);
         settingsButton.setBorderPainted(false);
         settingsButton.setContentAreaFilled(false);
@@ -139,46 +249,15 @@ public final class InGameScreen extends JFrame {
         settingsButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         settingsButton.addActionListener(e -> openSettings());
 
-// Quit button
+        // Quit button
         JButton exitButton = new HeaderButton("Quit", 108, true);
         exitButton.addActionListener(e -> exitGame());
 
         topButtons.add(profileButton);
         topButtons.add(settingsButton);
         topButtons.add(exitButton);
-
-        rightHeader.add(topButtons, BorderLayout.NORTH);
-        rightColumn.add(rightHeader, BorderLayout.NORTH);
-
-        JPanel rightContent = new JPanel(new GridLayout(2, 1, 0, 10));
-        rightContent.setBackground(Color.BLACK);
-        rightContent.add(historyPanel);
-        rightContent.add(chatRenderer);
-        rightColumn.add(rightContent, BorderLayout.CENTER);
-
-        JPanel middle = new JPanel(new BorderLayout(10, 0));
-        middle.setBackground(Color.BLACK);
-        middle.add(playersColumn, BorderLayout.WEST);
-        middle.add(createBoardScrollPane(), BorderLayout.CENTER);
-        middle.add(rightColumn, BorderLayout.EAST);
-
-        JPanel handPanel = new JPanel(new BorderLayout());
-        handPanel.setBackground(new Color(25, 55, 75));
-        handPanel.add(hand, BorderLayout.CENTER);
-        handPanel.setPreferredSize(new Dimension(0, 230));
-
-        actionsPanel.setPreferredSize(new Dimension(345, 0));
-
-        JPanel bottom = new JPanel(new BorderLayout(10, 0));
-        bottom.setBackground(Color.BLACK);
-        bottom.add(handPanel, BorderLayout.CENTER);
-        bottom.add(actionsPanel, BorderLayout.EAST);
-
-        root.add(middle, BorderLayout.CENTER);
-        root.add(bottom, BorderLayout.SOUTH);
-        setContentPane(root);
-
-        SwingUtilities.invokeLater(this::fitBoardToViewport);
+        header.add(topButtons, BorderLayout.NORTH);
+        return header;
     }
 
     /** Logo de Deusto en la esquina superior izquierda, adaptado al tamaño del panel. */
