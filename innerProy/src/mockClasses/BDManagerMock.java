@@ -1,5 +1,5 @@
 
-package ui.match.mockClasses;
+package mockClasses;
 
 import utils.JDBC.DBManager;
 

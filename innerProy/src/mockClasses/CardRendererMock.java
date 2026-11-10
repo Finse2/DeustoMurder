@@ -1,5 +1,5 @@
 
-package ui.match.mockClasses;
+package mockClasses;
 
 import model.Actor;
 import model.Card;

@@ -1,4 +1,4 @@
-package ui.match.mockClasses;
+package mockClasses;
 
 import ui.chat.Chat;
 import game.core.Game;
