@@ -1,10 +1,17 @@
 package ui.match.inGameScreen;
 
+import activation.Screen.CluedoTableTheme;
 import ui.chat.Chat;
 import game.history.GameHistory;
 import ui.chat.ChatRenderer;
 import model.Actor;
 import ui.match.BoardLayout;
+
+import activation.Screen.AnimatedBackGround.AnimatedBackGround;
+import activation.Screen.ProfileButton;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.io.IOException;
 
 import javax.swing.*;
 import java.nio.file.Files;
@@ -89,10 +96,54 @@ public final class InGameScreen extends JFrame {
         rightHeader.setPreferredSize(new Dimension(0, 125));
         JPanel topButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 10));
         topButtons.setOpaque(false);
-        JButton settingsButton = new HeaderButton("Configuración", 190, false);
-        JButton exitButton = new HeaderButton("Salir", 108, true);
+
+// Profile button
+
+// Cargamos la imagen predeterminada.
+        BufferedImage profilePicture = null;
+
+        try {
+            profilePicture = ImageIO.read(
+                    Path.of("innerProy/ressources/DefaultProfile.jpg").toFile()
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+// Redimensionamos la imagen si es necesario.
+        if (profilePicture != null) {
+            profilePicture = resizeIfNecessary(profilePicture, 512);
+        }
+
+// Creamos el botón circular utilizando nuestra clase ProfileButton.
+        ProfileButton profileButton = new ProfileButton(profilePicture);
+
+        profileButton.addActionListener(e -> openProfileStats());
+
+// Settings button
+        ImageIcon settingsIcon = new ImageIcon("innerProy/ressources/settings.png");
+
+        Image settingsImage = settingsIcon.getImage().getScaledInstance(
+                40, 40, Image.SCALE_SMOOTH
+        );
+
+        JButton settingsButton = new JButton(new ImageIcon(settingsImage));
+
+        settingsButton.setOpaque(false);
+        settingsButton.setBorderPainted(false);
+        settingsButton.setContentAreaFilled(false);
+        settingsButton.setFocusPainted(false);
+        settingsButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        settingsButton.addActionListener(e -> openSettings());
+
+// Quit button
+        JButton exitButton = new HeaderButton("Quit", 108, true);
+        exitButton.addActionListener(e -> exitGame());
+
+        topButtons.add(profileButton);
         topButtons.add(settingsButton);
         topButtons.add(exitButton);
+
         rightHeader.add(topButtons, BorderLayout.NORTH);
         rightColumn.add(rightHeader, BorderLayout.NORTH);
 
@@ -428,4 +479,107 @@ public final class InGameScreen extends JFrame {
     public JScrollPane getBoardScrollPane() {
         return boardScrollPane;
     }
+
+    public void openSettings() {
+
+        JFrame settingsFrame = new JFrame("Settings");
+
+        String[] columns = {"Settings", "Value"};
+
+        Object[][] data = {
+                {"Music Volume", 0},
+                {"Sound Effects", 0},
+                {"Mute Sound", false},
+                {"Brightness", 0},
+                {"FullScreen", false},
+                {"Highlight Possible Moves", true},
+                {"Player Name", "Finse"},
+                {"Default Server IP", "127.0.0.1"},
+                {"Default Server Port", "5000"}
+        };
+
+        JTable settingsTable = new JTable(data, columns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column != 0;
+            }
+        };
+
+        JScrollPane scrollPane = CluedoTableTheme.styleConnection(settingsTable);
+
+        settingsFrame.getContentPane().setBackground(new Color(20, 22, 27));
+        settingsFrame.add(scrollPane);
+
+        settingsFrame.setSize(450, 300);
+        settingsFrame.setLocationRelativeTo(this);
+        settingsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        settingsFrame.setVisible(true);
+    }
+
+    public void openProfileStats() {
+
+        JFrame statsFrame = new JFrame("Player Statistics");
+
+        String[] columns = {
+                "Statistic",
+                "Value"
+        };
+
+        Object[][] data = {
+                {"Games Played", 0},
+                {"Games Won", 0},
+                {"Games Lost", 0},
+                {"Win Rate", "0%"},
+                {"Total Points", 0}
+        };
+
+        JTable statsTable = new JTable(data, columns);
+
+        JScrollPane scrollPane = CluedoTableTheme.styleConnection(statsTable);
+
+        statsFrame.getContentPane().setBackground(new Color(20, 22, 27));
+        statsFrame.add(scrollPane);
+
+        statsFrame.setSize(450, 300);
+        statsFrame.setLocationRelativeTo(this);
+        statsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        statsFrame.setVisible(true);
+    }
+
+    private void exitGame() {
+
+        int option = JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to exit the game?",
+                "Quit Game",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+        );
+
+        if (option == JOptionPane.YES_OPTION) {
+            dispose();
+        }
+    }
+
+    private BufferedImage resizeIfNecessary(BufferedImage source, int maxSide) {
+        int originalWidth = source.getWidth();
+        int originalHeight = source.getHeight();
+        if (originalWidth <= maxSide && originalHeight <= maxSide) {
+            return source;
+        }
+
+        double factor = Math.min((double) maxSide / originalWidth, (double) maxSide / originalHeight);
+        int width = Math.max(1, (int) Math.round(originalWidth * factor));
+        int height = Math.max(1, (int) Math.round(originalHeight * factor));
+        BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = result.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g2.drawImage(source, 0, 0, width, height, null);
+        g2.dispose();
+        return result;
+    }
+
+
+
+
 }
