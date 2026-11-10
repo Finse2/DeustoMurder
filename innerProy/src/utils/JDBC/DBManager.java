@@ -2,6 +2,8 @@
 package utils.JDBC;
 
 import java.sql.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
 
@@ -90,6 +92,29 @@ public class DBManager implements AutoCloseable {
             }
         }
 
+    }
+
+    /**
+     * returns a Map<String, ResultSet> where the name of each table is the key to its ResultSet<br>
+     * it equals executeQuery("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';")
+     * @throws SQLException
+     */
+    public Map<String, ResultSet> getAllTables() throws SQLException {
+
+        Map<String, ResultSet> map = new LinkedHashMap<>();
+
+        try (ResultSet tables = executeQuery("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';")) {
+
+            while (tables.next()) {
+                String tableName = tables.getString("name");
+                String safeName = tableName.replace("\"", "\"\"");
+
+                ResultSet content = executeQuery("SELECT * FROM \"" + safeName + "\";");
+                map.put(tableName, content);
+            }
+        }
+
+        return map;
     }
 
     /**to close the Connection at the end, it won't do anything if the Connection is already closed */
