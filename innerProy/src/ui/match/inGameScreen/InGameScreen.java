@@ -1,10 +1,13 @@
 package ui.match.inGameScreen;
 
 import activation.Screen.CluedoTableTheme;
+import model.Room;
+import model.Weapon;
 import ui.chat.Chat;
 import game.history.GameHistory;
 import ui.chat.ChatRenderer;
 import model.Actor;
+import ui.match.AccusationCard;
 import ui.match.BoardLayout;
 
 import activation.Screen.AnimatedBackGround.AnimatedBackGround;
@@ -579,7 +582,25 @@ public final class InGameScreen extends JFrame {
         return result;
     }
 
+    public void openAccusationCard(List<Weapon> weapons, List<Room> rooms) {
 
+        AccusationCard.showCard(
+                actors,
+                weapons,
+                rooms,
+                selection -> {
 
+                    Actor accused = selection.actor();
+                    Weapon weapon = selection.weapon();
+                    Room room = selection.room();
+
+                    System.out.println("ACUSACIÓN CONFIRMADA");
+                    System.out.println("Sospechoso: " + accused.getName());
+                    System.out.println("Arma: " + weapon.getName());
+                    System.out.println("Ubicación: " + room.getName());
+
+                }
+        );
+    }
 
 }
