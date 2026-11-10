@@ -54,9 +54,10 @@ public final class LobbyRoster {
                 .sorted(Comparator.comparingInt(Entry::playerID))
                 .toList();
     }
-/**
+
+    /*
      * Sets a callback to be notified when the roster changes.
-     * The callback will be executed on the Swing event dispatch thread.
+     * The callback will be executed n the Swing event dispatch thread.
      * If the callback is set to null, no notifications will be sent.
      *
      * @param callback A Runnable to be executed when the roster changes, or null to disable notifications.
