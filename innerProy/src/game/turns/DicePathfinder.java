@@ -1,6 +1,7 @@
 package game.turns;
 
 import model.Piece;
+import model.Room;
 import model.board.Tile;
 import ui.match.BoardLayout;
 
@@ -40,6 +41,26 @@ public final class DicePathfinder {
             Point current = queue.removeFirst();
             int steps = current.equals(start) ? 0 : distances.get(current);
             if (steps >= maxSteps) continue;
+
+            // Desde una casilla azul de una habitacion, las puertas de ESA sala
+            // cuentan como los primeros destinos, a coste de una casilla.
+            // Esto permite salir en el siguiente turno despues del teletransporte.
+            Tile currentTile = board.getTileAt(current.x, current.y);
+            if (current.equals(start) && currentTile.isRoomPosition() && currentTile.getRoom() != null) {
+                Room room = currentTile.getRoom();
+                for (java.util.List<Room.Cell> entrance : room.getEntrances()) {
+                    for (Room.Cell cell : entrance) {
+                        Point next = new Point(cell.column(), cell.row());
+                        if (!inside(next.x, next.y) || !visited.add(next)) continue;
+                        Tile exit = board.getTileAt(next.x, next.y);
+                        if (exit.isDisabled() || (exit.getPieceOnThisTile() != null
+                                && exit.getPieceOnThisTile() != piece)) continue;
+                        distances.put(next, steps + 1);
+                        queue.addLast(next);
+                    }
+                }
+                continue;
+            }
 
             for (int[] direction : DIRECTIONS) {
                 Point next = new Point(current.x + direction[0], current.y + direction[1]);

@@ -7,6 +7,8 @@ import model.board.RawRoom;
 import model.board.Tile;
 
 import javax.swing.JPanel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -35,6 +37,7 @@ public final class BoardLayout extends JPanel {
     private int fixedTileSize = 0;
     private final Tile[][] tiles;
     private final List<Room> rooms = new ArrayList<>();
+    private final List<ActionListener> entranceListeners = new ArrayList<>();
     private final List<Piece> pieces = new ArrayList<>();
     private final List<PlacedTile> visibleTiles = new ArrayList<>();
     private final List<PlacedTile> roomPositionTiles = new ArrayList<>();
@@ -99,6 +102,26 @@ public final class BoardLayout extends JPanel {
                 && (destination.getPieceOnThisTile() == null || destination.getPieceOnThisTile() == piece);
     }
 
+    /** Se notifica cuando una ficha ACABA de entrar en una casilla roja de acceso.
+     *  El origen del ActionEvent es el Tile, que ya contiene la ficha y la habitacion.
+     *  El evento se emite una sola vez por movimiento realizado mediante movePiece.
+     */
+    public void addEntranceListener(ActionListener listener) {
+        entranceListeners.add(java.util.Objects.requireNonNull(listener));
+    }
+
+    public void removeEntranceListener(ActionListener listener) {
+        entranceListeners.remove(listener);
+    }
+
+    private void notifyEntrance(Tile destination) {
+        if (!destination.givesAccessToRoom() || destination.getPieceOnThisTile() == null) return;
+        ActionEvent event = new ActionEvent(destination, ActionEvent.ACTION_PERFORMED, "ENTRANCE");
+        for (ActionListener listener : List.copyOf(entranceListeners)) {
+            listener.actionPerformed(event);
+        }
+    }
+
     public void movePiece(Piece piece, int xorigin, int yorigin, int xdestination, int ydestination) {
         if (piece == null) {
             throw new IllegalArgumentException("Piece cannot be null");
@@ -119,10 +142,14 @@ public final class BoardLayout extends JPanel {
             throw new IllegalArgumentException("Destination tile is occupied");
         }
 
+        // Al salir de una habitacion hacia su propia puerta, no reentrar
+        // automaticamente: de otro modo la ficha quedaria encerrada.
+        boolean leavingRoom = origin.isRoomPosition() && origin.getRoom() == destination.getAccessibleRoom();
         origin.setPieceOnThisTile(null);
         destination.setPieceOnThisTile(piece);
         piece.setPosition(xdestination, ydestination);
         repaint();
+        if (!leavingRoom) notifyEntrance(destination);
     }
 
     public void enterRoom(Piece piece, Room room) {

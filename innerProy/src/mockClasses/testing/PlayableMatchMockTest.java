@@ -9,6 +9,9 @@ import model.Piece;
 import model.Player;
 import model.board.BoardFactory;
 import model.board.RawPiece;
+import model.board.Tile;
+import model.Room;
+import java.util.concurrent.atomic.AtomicInteger;
 import ui.match.BoardLayout;
 
 import java.awt.Point;
@@ -63,6 +66,45 @@ public final class PlayableMatchMockTest {
         expect(board.getTileAt(1, 5).getPieceOnThisTile() == piece, "Casilla destino no ocupada");
         expect(DicePathfinder.shortestDistance(board, piece, 0, 5, 2) == 1, "No se recalculan rutas");
         System.out.println("OK - Movimiento actualiza modelo y rutas");
+        // Entrada automática: debe disparar UN evento al llegar, e insertar
+        // la ficha en una posición azul libre del cuarto.
+        Player visitor = new Player(actors.getFirst(), new ArrayList<>(), 99);
+        Piece visitorPiece = visitor.getPiece();
+        BoardLayout entranceBoard = new BoardLayout(BoardLayout.GRID_ROWS, BoardLayout.GRID_COLUMNS,
+                BoardFactory.createRawRooms(), new RawPiece[]{new RawPiece(visitorPiece, 8, 0)});
+        AtomicInteger triggers = new AtomicInteger();
+        entranceBoard.addEntranceListener(event -> {
+            triggers.incrementAndGet();
+            Tile entranceTile = (Tile) event.getSource();
+            expect(entranceTile.givesAccessToRoom(), "Notifica tile no entrada");
+            expect(entranceTile.getPieceOnThisTile() == visitorPiece, "Pieza ausente al notificar");
+            Room room = entranceTile.getAccessibleRoom();
+            entranceBoard.enterRoom(visitorPiece, room);
+        });
+        entranceBoard.movePiece(visitorPiece, 8, 0, 7, 0);
+        expect(triggers.get() == 0, "Se notifico una casilla normal");
+        entranceBoard.movePiece(visitorPiece, 7, 0, 7, 1);
+        expect(triggers.get() == 1, "La entrada debe notificarse exactamente una vez");
+        expect(entranceBoard.getTileAt(7, 1).getPieceOnThisTile() == null, "La ficha sigue en la entrada");
+        Tile inside = entranceBoard.getTileAt(visitorPiece.getX(), visitorPiece.getY());
+        expect(inside.isRoomPosition() && inside.getPieceOnThisTile() == visitorPiece,
+                "La pieza no fue enviada a una posicion azul de la habitacion");
+        System.out.println("OK - Entrada notificada una vez y teletransporte a sala correcto");
+
+        // Un jugador dentro de una sala debe poder salir al turno siguiente.
+        expect(DicePathfinder.shortestDistance(entranceBoard, visitorPiece, 7, 1, 2) == 1,
+                "No se puede salir de la habitacion por la puerta");
+        entranceBoard.movePiece(visitorPiece, visitorPiece.getX(), visitorPiece.getY(), 7, 1);
+        expect(triggers.get() == 1, "Se reentro automaticamente al intentar salir");
+        expect(visitorPiece.getX() == 7 && visitorPiece.getY() == 1,
+                "La ficha no salio de la habitacion");
+        entranceBoard.movePiece(visitorPiece, 7, 1, 7, 0);
+        entranceBoard.movePiece(visitorPiece, 7, 0, 7, 1);
+        expect(triggers.get() == 2, "El listener no se activo al entrar otra vez");
+        expect(entranceBoard.getTileAt(visitorPiece.getX(), visitorPiece.getY()).isRoomPosition(),
+                "No se pudo volver a entrar en la sala");
+        System.out.println("OK - Salida de habitacion y reentrada funcionales");
+
         game.closeGame();
         System.out.println("TODAS LAS PRUEBAS DEL MOCK PASARON");
     }

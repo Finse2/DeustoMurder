@@ -23,19 +23,19 @@ public final class ChatRenderer extends JPanel {
     }
 
     public ChatRenderer(Chat chat, Map<String, Color> playerColors) {
-        super(new BorderLayout(0, 5));
+        super(new BorderLayout(0, 2));
         this.chat = Objects.requireNonNull(chat, "chat");
         Objects.requireNonNull(playerColors, "playerColors");
         setBackground(BACKGROUND);
 
         JLabel title = new JLabel("Chat", SwingConstants.CENTER);
         title.setForeground(Color.WHITE);
-        title.setFont(new Font("Arial", Font.BOLD, 25));
-        title.setBorder(new EmptyBorder(12, 10, 0, 10));
+        title.setFont(new Font("Arial", Font.BOLD, 19));
+        title.setBorder(new EmptyBorder(2, 6, 0, 6));
 
         participantCount.setHorizontalAlignment(SwingConstants.CENTER);
         participantCount.setForeground(new Color(175, 200, 215));
-        participantCount.setFont(new Font("Arial", Font.PLAIN, 12));
+        participantCount.setFont(new Font("Arial", Font.PLAIN, 10));
         updateParticipantCount();
 
         JPanel top = new JPanel(new BorderLayout());
@@ -54,8 +54,14 @@ public final class ChatRenderer extends JPanel {
             messageModel.addElement(message);
         }
 
-        JScrollPane scroll = new JScrollPane(messageList);
-        scroll.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+        JScrollPane scroll = new JScrollPane(messageList,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.setBorder(BorderFactory.createEmptyBorder());
+        scroll.setViewportBorder(null);
+        scroll.setBackground(BACKGROUND);
+        messageList.setBorder(BorderFactory.createEmptyBorder());
+        scroll.setOpaque(true);
         scroll.getViewport().setBackground(BACKGROUND);
         scroll.getVerticalScrollBar().setUnitIncrement(15);
         add(scroll, BorderLayout.CENTER);
@@ -72,7 +78,7 @@ public final class ChatRenderer extends JPanel {
 
         JPanel bottom = new JPanel(new BorderLayout(5, 0));
         bottom.setOpaque(false);
-        bottom.setBorder(new EmptyBorder(4, 7, 8, 7));
+        bottom.setBorder(new EmptyBorder(2, 5, 4, 5));
         bottom.add(input, BorderLayout.CENTER);
         bottom.add(send, BorderLayout.EAST);
         add(bottom, BorderLayout.SOUTH);
@@ -136,7 +142,7 @@ public final class ChatRenderer extends JPanel {
             this.playerColors = Map.copyOf(playerColors);
             setOpaque(true);
             setBackground(BACKGROUND);
-            setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+            setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
 
             senderLabel.setFont(new Font("Arial", Font.BOLD, 12));
             timeLabel.setFont(new Font("Arial", Font.PLAIN, 11));
@@ -154,7 +160,7 @@ public final class ChatRenderer extends JPanel {
             messageLabel.setFont(new Font("Arial", Font.PLAIN, 13));
             messageLabel.setBorder(null);
 
-            bubble.setBorder(BorderFactory.createEmptyBorder(7, 10, 7, 10));
+            bubble.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
             bubble.add(header, BorderLayout.NORTH);
             bubble.add(messageLabel, BorderLayout.CENTER);
         }
@@ -180,14 +186,14 @@ public final class ChatRenderer extends JPanel {
             bubble.setBackground(mine ? MY_BUBBLE : OTHER_BUBBLE);
 
             int listWidth = list.getWidth() > 0 ? list.getWidth() : 290;
-            int bubbleWidth = Math.max(120, listWidth - 45);
-            int textWidth = bubbleWidth - 20;
+            int bubbleWidth = Math.max(70, listWidth - 34);
+            int textWidth = Math.max(50, bubbleWidth - 16);
             messageLabel.setSize(textWidth, Short.MAX_VALUE);
             int textHeight = Math.max(18, messageLabel.getPreferredSize().height);
             messageLabel.setPreferredSize(new Dimension(textWidth, textHeight));
-            bubble.setPreferredSize(new Dimension(bubbleWidth, textHeight + 38));
+            bubble.setPreferredSize(new Dimension(bubbleWidth, textHeight + 29));
             add(bubble, mine ? BorderLayout.EAST : BorderLayout.WEST);
-            setPreferredSize(new Dimension(Math.max(listWidth, bubbleWidth + 16), textHeight + 48));
+            setPreferredSize(new Dimension(listWidth, textHeight + 35));
             return this;
         }
     }
