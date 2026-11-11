@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import activation.Screen.*;
 import model.Player;
+import utils.AllThemes;
 
 public class LobbyScreen extends JFrame {
     private static final Path PROFILE_PATH = Path.of(System.getProperty("user.home"), ".deustoCluedo", "profile.png");
@@ -52,7 +53,7 @@ public class LobbyScreen extends JFrame {
 
         InlaidMenuButton infoServer= new InlaidMenuButton("Server Information:", this::infoServer);
         infoServer.setFont(new Font("Georgia", Font.BOLD, 18));
-        infoServer.setForeground(new Color(235, 215, 100));
+        infoServer.setForeground(AllThemes.DoradorDM);
         infoServer.setOpaque(false);
         northPanel.add(infoServer);
 
