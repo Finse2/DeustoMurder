@@ -1,6 +1,8 @@
 package activation.Screen;
 
 import Networking.Client;
+import Networking.packets.GameOverPacket;
+import game.statistics.ProfileMatchTracker;
 import activation.Screen.Lobby.LobbyControl;
 import activation.Screen.Lobby.LobbyRoster;
 import activation.Screen.Lobby.LobbyScreen;
@@ -41,6 +43,8 @@ public class MainScreen extends JFrame {
     private LobbyRoster joinedRoster;
     private String HostUserName;
     private String ClientUserName;
+    private final ProfileMatchTracker hostMatchTracker = new ProfileMatchTracker();
+    private final ProfileMatchTracker joinedMatchTracker = new ProfileMatchTracker();
     private AnimatedBackGround animatedBackGround;
     private boolean animationFinished = false;
     private boolean connectionFinished = false;
@@ -226,7 +230,8 @@ public class MainScreen extends JFrame {
                 Client client = new Client("127.0.0.1", port, new Client.Listener() {
                     @Override
                     public void onConnected(int playerID) {
-                        roster.upsert(
+                                hostMatchTracker.onConnected(playerID, HostUserName);
+                                roster.upsert(
                                 playerID,
                                 HostUserName,
                                 System.getenv().getOrDefault("COMPUTERNAME", "Host-PC")
@@ -239,6 +244,34 @@ public class MainScreen extends JFrame {
                     }
 
                     @Override
+
+
+                    public void onGameStarted() {
+
+
+                        hostMatchTracker.onGameStarted();
+
+
+                    }
+
+
+
+                    @Override
+
+
+                    public void onGameOverPacket(GameOverPacket result) {
+
+
+                        hostMatchTracker.onGameOver(result);
+
+
+                    }
+
+
+
+                    @Override
+
+
                     public void onDisconnected() {
                         accepted.completeExceptionally(new IOException("Disconnected before joining."));
                     }
@@ -402,6 +435,7 @@ public class MainScreen extends JFrame {
 
                             @Override
                             public void onConnected(int playerID) {
+                                joinedMatchTracker.onConnected(playerID, ClientUserName);
                                 roster.upsert(
                                         playerID,
                                         ClientUserName,
@@ -423,6 +457,34 @@ public class MainScreen extends JFrame {
                             }
 
                             @Override
+
+
+                            public void onGameStarted() {
+
+
+                                joinedMatchTracker.onGameStarted();
+
+
+                            }
+
+
+
+                            @Override
+
+
+                            public void onGameOverPacket(GameOverPacket result) {
+
+
+                                joinedMatchTracker.onGameOver(result);
+
+
+                            }
+
+
+
+                            @Override
+
+
                             public void onDisconnected() {
                                 accepted.completeExceptionally(
                                         new IOException("Disconnected before joining.")
@@ -822,42 +884,7 @@ public class MainScreen extends JFrame {
      * The statistics are displayed in a table format, and the user can modify their profile picture as needed.
      */
     public void openProfileStats() {
-
-        JFrame statFrame = new JFrame("Profile Statistics");
-
-        String[] colums = {"Statistic", "Value"};
-
-        Object[][] data = {
-                {"Games Played", 0},
-                {"Games Won", 0},
-                {"Games Lost", 0},
-                {"Win Rate", "0%"},
-                {"correct Accusations", 0}
-        };
-        JTable statsTable = new JTable(data, colums) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // Make all cells non-editable
-            }
-        };
-
-        JScrollPane scrollPane = CluedoTableTheme.style(statsTable);
-        statFrame.getContentPane().setBackground(new Color(20, 22, 27));
-        statFrame.add(scrollPane);
-
-        JButton changePicture = createDialogButton(
-                "Change Profile Picture"
-        );
-
-        changePicture.addActionListener(e -> changeProfilePicture());
-        statFrame.add(changePicture, BorderLayout.SOUTH);
-
-        statFrame.setSize(450, 300);
-        statFrame.setLocationRelativeTo(this);
-        statFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        statFrame.setVisible(true);
-
-
+        ProfileStatisticsDialog.open(this, this::changeProfilePicture);
     }
 /**
      * Creates a custom-styled JButton for use in dialogs.
