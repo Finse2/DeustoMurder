@@ -88,9 +88,6 @@ public final class InGameScreen extends JFrame {
     private JLabel playersTitleLabel;
     private int connectedPlayers;
 
-    // ================================================================
-    // CONSTRUCTORES
-    // ================================================================
 
     public InGameScreen(BoardLayout board, List<Actor> actors,
                         JComponent hand, LobbyRoster roster) {
@@ -800,7 +797,6 @@ public final class InGameScreen extends JFrame {
             SwingUtilities.invokeLater(this::refreshPlayers);
             return;
         }
-
         panelJugadores.removeAll();
 
         List<LobbyRoster.Entry> players = roster.snapshot();
