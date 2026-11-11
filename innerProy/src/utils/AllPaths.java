@@ -26,6 +26,151 @@ public final class AllPaths {
 
         private Resources() {}
 
+            public final class AchievementImages {
+
+                private AchievementImages() {}
+
+                private static final String FOLDER =
+                        "resources/Achievements_Images/";
+                // Borders
+
+
+                public static final class Borders {
+
+                    private Borders() {}
+
+                    private static final String FOLDER =
+                            AchievementImages.FOLDER + "borders/";
+
+                    public static final String BRONCE_STAGE_1 =
+                            FOLDER + "BRONCE_STAGE_1.png";
+
+                    public static final String ORO_STAGE_2 =
+                            FOLDER + "ORO_STAGE_2.png";
+
+                    public static final String DIAMANTE_STAGE_3 =
+                            FOLDER + "DIAMANTE_STAGE_3.png";
+
+                    public static final String CAMPEON_STAGE_4 =
+                            FOLDER + "CAMPEON_STAGE_4.png";
+                }
+
+
+                // Icons
+
+
+                public static final class Icons {
+
+                    private Icons() {}
+
+                    private static final String FOLDER =
+                            AchievementImages.FOLDER + "icons/";
+
+                    public static final String AGAINST_ALL_ODDS =
+                            FOLDER + "AGAINST_ALL_ODDS.png";
+
+                    public static final String CONSECUTIVE_WINS =
+                            FOLDER + "CONSECUTIVE_WINS.png";
+
+                    public static final String DEFEAT_THE_PREVIOUS_MATCH_WINNER =
+                            FOLDER + "DEFEAT_THE_PREVIOUS_MATCH_WINNER.png";
+
+                    public static final String DEFEAT_THE_SAME_OPPONENT =
+                            FOLDER + "DEFEAT_THE_SAME_OPPONENT.png";
+
+                    public static final String ENTER_THE_SAME_ROOM_5_TIMES_IN_ONE_MATCH =
+                            FOLDER + "ENTER_THE_SAME_ROOM_5_TIMES_IN_ONE_MATCH.png";
+
+                    public static final String EVERYONE_SUSPECTS_ME =
+                            FOLDER + "EVERYONE_SUSPECTS_ME.png";
+
+                    public static final String FIRST_ROUND_WIN =
+                            FOLDER + "FIRST_ROUND_WIN.png";
+
+                    public static final String HOST_COMPLETED_GAMES =
+                            FOLDER + "HOST_COMPLETED_GAMES.png";
+
+                    public static final String INCORRECTLY_ACCUSE_IN_YOUR_FIRST_TURN =
+                            FOLDER + "INCORRECTLY_ACCUSE_IN_YOUR_FIRST_TURN.png";
+
+                    public static final String INCORRECT_FINAL_ACCUSATIONS =
+                            FOLDER + "INCORRECT_FINAL_ACCUSATIONS.png";
+
+                    public static final String MAKE_AN_ACCUSATION_WITH_ALL_3_CARDS_WRONG =
+                            FOLDER + "MAKE_AN_ACCUSATION_WITH_ALL_3_CARDS_WRONG.png";
+
+                    public static final String MAKE_AN_ACCUSATION_WITH_EXACTLY_2_CORRECT_CARDS =
+                            FOLDER + "MAKE_AN_ACCUSATION_WITH_EXACTLY_2_CORRECT_CARDS.png";
+
+                    public static final String ONE_ROOM_WONDER =
+                            FOLDER + "ONE_ROOM_WONDER.png";
+
+                    public static final String PERFECTLY_BALANCED =
+                            FOLDER + "PERFECTLY_BALANCED.png";
+
+                    public static final String PLAY_MATCHES_WITH_A_FULL_LOBBY =
+                            FOLDER + "PLAY_MATCHES_WITH_A_FULL_LOBBY.png";
+
+                    public static final String REVEAL_CARDS_TO_OPPONENTS =
+                            FOLDER + "REVEAL_CARDS_TO_OPPONENTS.png";
+
+                    public static final String ROLL_DOUBLE_ONES =
+                            FOLDER + "ROLL_DOUBLE_ONES.png";
+
+                    public static final String ROLL_DOUBLE_ONES_3_TIMES_IN_ONE_MATCH =
+                            FOLDER + "ROLL_DOUBLE_ONES_3_TIMES_IN_ONE_MATCH.png";
+
+                    public static final String ROLL_DOUBLE_SIXES =
+                            FOLDER + "ROLL_DOUBLE_SIXES.png";
+
+                    public static final String SELF_INCRIMINATION =
+                            FOLDER + "SELF_INCRIMINATION.png";
+
+                    public static final String THE_BROKEN_RECORD =
+                            FOLDER + "THE_BROKEN_RECORD.png";
+
+                    public static final String THE_IMPOSTOR =
+                            FOLDER + "THE_IMPOSTOR.png";
+
+                    public static final String THE_NUMBER_SEVEN =
+                            FOLDER + "THE_NUMBER_SEVEN.png";
+
+                    public static final String THE_PARROT =
+                            FOLDER + "THE_PARROT.png";
+
+                    public static final String THE_UNSOLVED_CASE =
+                            FOLDER + "THE_UNSOLVED_CASE.png";
+
+                    public static final String THE_WORST_SUGGESTION =
+                            FOLDER + "THE_WORST_SUGGESTION.png";
+
+                    public static final String TOTAL_TILES_MOVES =
+                            FOLDER + "TOTAL TILES MOVES.png";
+
+                    public static final String VISIT_EVERY_ROOM_IN_ONE_MATCH =
+                            FOLDER + "VISIT_EVERY_ROOM_IN_ONE_MATCH.png";
+
+                    public static final String WIN_GAMES =
+                            FOLDER + "WIN_GAMES.png";
+
+                    public static final String WIN_GAMES_LASTING_MORE_THAN_30_ROUNDS =
+                            FOLDER + "WIN_GAMES_LASTING_MORE_THAN_30_ROUNDS.png";
+
+                    public static final String WIN_WITHIN_5_TURNS =
+                            FOLDER + "WIN_WITHIN_5_TURNS.png";
+
+                    public static final String WIN_WITHOUT_REVEALING_CARDS =
+                            FOLDER + "WIN_WITHOUT_REVEALING_CARDS.png";
+
+                    public static final String WIN_WITH_NO_MORE_THAN_3_SUGGESTIONS =
+                            FOLDER + "WIN_WITH_NO_MORE_THAN_3_SUGGESTIONS.png";
+                }
+            }
+
+
+
+        }
+
         public static final class BoardRooms {
 
             private BoardRooms() {}
@@ -246,4 +391,4 @@ public final class AllPaths {
 
         }
     }
-}
+
