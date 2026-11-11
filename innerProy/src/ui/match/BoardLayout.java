@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public final class BoardLayout extends JPanel {
 
@@ -152,6 +153,27 @@ public final class BoardLayout extends JPanel {
     public Tile getTileAt(int x, int y) {
         validateCoordinates(x, y);
         return tiles[y][x];
+    }
+
+    /** Localiza el Tile desde las coordenadas pixel del JPanel, tambien con zoom. */
+    public Point pixelToTile(Point pixel) {
+        if (pixel == null) return null;
+        int size = calculateTileSize();
+        if (size <= 0) return null;
+        int left = (getWidth() - columns * size) / 2;
+        int top = (getHeight() - rows * size) / 2;
+        int dx = pixel.x - left;
+        int dy = pixel.y - top;
+        if (dx < 0 || dy < 0 || dx >= columns * size || dy >= rows * size) return null;
+        return new Point(dx / size, dy / size);
+    }
+
+    /** Marca casillas alcanzables sin modificar Tile.disabled. */
+    public void setReachableTiles(Set<Point> points) {
+        Set<Point> safe = points == null ? Set.of() : points;
+        for (PlacedTile tile : visibleTiles) {
+            tile.look().setReachable(safe.contains(new Point(tile.column(), tile.row())));
+        }
     }
 
     public List<Room> getRooms() {

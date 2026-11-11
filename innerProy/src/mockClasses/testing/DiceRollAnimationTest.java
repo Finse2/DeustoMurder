@@ -11,71 +11,77 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/** Test automático, compatible con modo headless (sin abrir ventanas). */
+/** Comprueba pulsar/soltar, timeout sin interaccion y timeout manteniendo pulsado. */
 public final class DiceRollAnimationTest {
 
     public static void main(String[] args) throws Exception {
         CountingDice model = new CountingDice(new GameRandomizer(456789L));
-        DiceRollPanel[] panel = new DiceRollPanel[1];
-        CountDownLatch completed = new CountDownLatch(2);
+        DiceRollPanel[] holder = new DiceRollPanel[1];
         AtomicInteger callbacks = new AtomicInteger();
+        CountDownLatch finished = new CountDownLatch(3);
 
         SwingUtilities.invokeAndWait(() -> {
-            panel[0] = new DiceRollPanel(model, new Random(12345L));
-            panel[0].setOnRollComplete((first, second) -> {
-                assertCondition(first >= 1 && first <= 6, "Dado 1 fuera de rango");
-                assertCondition(second >= 1 && second <= 6, "Dado 2 fuera de rango");
-                assertCondition(panel[0].isSettled(), "Debe haber terminado la animación");
-                assertCondition(panel[0].getFirstDie() == model.getFirstDie(), "Resultado dado 1 distinto del modelo");
-                assertCondition(panel[0].getSecondDie() == model.getSecondDie(), "Resultado dado 2 distinto del modelo");
-                assertCondition(panel[0].getTotal() == model.getLastRoll(), "Suma distinta de la lógica");
-                System.out.println("OK tirada " + (callbacks.incrementAndGet()) + ": "
-                        + first + " + " + second + " = " + panel[0].getTotal());
-                completed.countDown();
+            DiceRollPanel panel = new DiceRollPanel(model, new Random(12345L));
+            holder[0] = panel;
+            panel.setOnRollComplete((first, second) -> {
+                check(first >= 1 && first <= 6 && second >= 1 && second <= 6, "Caras fuera de rango");
+                check(panel.isSettled(), "Debe terminar la caida antes de publicar resultado");
+                check(!panel.isVisible(), "La capa debe desaparecer al finalizar");
+                check(panel.getFirstDie() == model.getFirstDie(), "Primer dado distinto al modelo");
+                check(panel.getSecondDie() == model.getSecondDie(), "Segundo dado distinto al modelo");
+                check(panel.getTopFace(0) == first && panel.getTopFace(1) == second,
+                        "Caras 3D incoherentes con resultado");
+                check(panel.getTotal() == model.getLastRoll(), "Suma erronea");
+                System.out.println("OK tirada " + callbacks.incrementAndGet() + ": " + first + " + " + second);
+                finished.countDown();
             });
-            assertCondition(!panel[0].isSettled(), "Debe comenzar agitándose");
-            assertCondition(panel[0].getTotal() == 0, "Todavía no hay resultado");
-            click(panel[0]);
-            assertCondition(panel[0].isRolling(), "El clic debe iniciar la caída");
-            assertCondition(model.rollCalls == 1, "Un clic debe generar una tirada real");
-            click(panel[0]);
-            assertCondition(panel[0].isRolling(), "Un segundo clic no debe interrumpirla");
-            assertCondition(model.rollCalls == 1, "No se debe lanzar de nuevo mientras cae");
+            panel.prepareRoll();
+            check(panel.isWaiting(), "La tirada debe empezar esperando al usuario");
+            send(panel, MouseEvent.MOUSE_PRESSED);
+            check(panel.isHolding(), "Pulsar debe iniciar la agitacion");
+            send(panel, MouseEvent.MOUSE_RELEASED);
+            check(panel.isRolling(), "Soltar debe iniciar la caida");
+            send(panel, MouseEvent.MOUSE_RELEASED);
+            check(model.rollCalls == 1, "Dos eventos no deben duplicar la tirada");
         });
 
-        waitForCallbacks(completed, callbacks, 1);
+        await(callbacks, 1, 5);
         SwingUtilities.invokeAndWait(() -> {
-            assertCondition(panel[0].isSettled(), "La primera tirada debe estar detenida");
-            click(panel[0]);
-            assertCondition(panel[0].isRolling(), "Debe permitir volver a lanzar");
-            assertCondition(model.rollCalls == 2, "La segunda pulsación debe lanzar otra tirada");
-            assertCondition(panel[0].getTotal() == 0, "El resultado antiguo debe ocultarse");
+            holder[0].prepareRoll();
+            check(holder[0].isWaiting(), "Debe permitir una nueva tirada");
+            // Nadie toca los dados: se lanzan automaticamente a los 5 segundos.
         });
-        waitForCallbacks(completed, callbacks, 2);
-        assertCondition(callbacks.get() == 2, "Deben recibirse exactamente 2 callbacks");
-        System.out.println("TODAS LAS PRUEBAS PASARON");
+        await(callbacks, 2, 9);
+        SwingUtilities.invokeAndWait(() -> {
+            holder[0].prepareRoll();
+            send(holder[0], MouseEvent.MOUSE_PRESSED);
+            check(holder[0].isHolding(), "Debe agitarse durante la pulsacion");
+            // Sin soltar: despues de 5 s se activa la caida automatica.
+        });
+        await(callbacks, 3, 9);
+        check(model.rollCalls == 3, "Cada ronda debe tirar los dados exactamente una vez");
+        check(finished.getCount() == 0, "Faltan callbacks");
+        System.out.println("TODAS LAS PRUEBAS DE DADOS PASARON");
     }
 
-    private static void click(DiceRollPanel panel) {
-        panel.dispatchEvent(new MouseEvent(panel, MouseEvent.MOUSE_CLICKED,
-                System.currentTimeMillis(), 0, 120, 120, 1, false, MouseEvent.BUTTON1));
+    private static void send(DiceRollPanel panel, int type) {
+        panel.dispatchEvent(new MouseEvent(panel, type, System.currentTimeMillis(), 0,
+                120, 120, 1, false, MouseEvent.BUTTON1));
+    }
+
+    private static void await(AtomicInteger count, int expected, int timeoutSeconds) throws Exception {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(timeoutSeconds);
+        while (count.get() < expected && System.nanoTime() < deadline) Thread.sleep(50);
+        check(count.get() == expected, "Timeout en la tirada " + expected);
+    }
+
+    private static void check(boolean condition, String description) {
+        if (!condition) throw new AssertionError(description);
     }
 
     private static final class CountingDice extends Dice {
         private int rollCalls;
-        private CountingDice(GameRandomizer randomizer) { super(randomizer); }
+        CountingDice(GameRandomizer randomizer) { super(randomizer); }
         @Override public int roll() { rollCalls++; return super.roll(); }
-    }
-
-    private static void waitForCallbacks(CountDownLatch completed, AtomicInteger callbacks, int expected) throws Exception {
-        long limit = System.nanoTime() + TimeUnit.SECONDS.toNanos(6);
-        while (callbacks.get() < expected && System.nanoTime() < limit) {
-            if (completed.await(50, TimeUnit.MILLISECONDS)) break;
-        }
-        assertCondition(callbacks.get() >= expected, "Timeout: tirada " + expected + " no ha terminado");
-    }
-
-    private static void assertCondition(boolean condition, String message) {
-        if (!condition) throw new AssertionError(message);
     }
 }
