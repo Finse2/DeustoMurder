@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 public class Achievement implements Consumer<AchievementType> {
 
     private final String name;
-    private final boolean hidden;
     private String stage;
     private final AchievementType type;
     private ImageIcon achievementIcon;
@@ -17,7 +16,7 @@ public class Achievement implements Consumer<AchievementType> {
 
         this.type = type;
         this.name = name;
-        this.hidden = false;
+        this.progress = 0;
     }
 
     @Override
@@ -28,14 +27,19 @@ public class Achievement implements Consumer<AchievementType> {
     }
 
     public boolean isHidden() {
-        return hidden;
+        return type.isHidden();
     }
 
     public String getName() {
         return name;
     }
 
+    public AchievementType getType() {
+        return type;
+    }
+
     public int getProgress() {
+
         return progress;
     }
 
@@ -51,6 +55,24 @@ public class Achievement implements Consumer<AchievementType> {
         return tier;
     }
 
+    public int getNextRequirement() {
+        int [] requirements = type.getRequirements();
+
+        for (int requirement : requirements) {
+            if (progress < requirement) {
+                return requirement;
+            }
+        }
+
+        return -1;
+    }
+
+    public boolean isCompleted() {
+        return getTier() == type.getRequirements().length;
+    }
+
     // TODO: añadir los iconos de los achievements
+    // TODO: añadir getters para achievements y borderIcon
+    // TODO: mostrar una notificación al desbloquear un nuevo tier
 
 }
