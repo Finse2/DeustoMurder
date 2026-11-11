@@ -28,6 +28,12 @@ public class StatisticsManager {
     private final Map<String, Integer> gamesPlayed = new HashMap<>();
     private final Map<String, Integer> gamesWon = new HashMap<>();
 
+    /** Restore an independently validated local profile snapshot. */
+    public synchronized void restoreStatistics(PlayerStatistics snapshot) {
+        Objects.requireNonNull(snapshot, "snapshot");
+        statisticsByPlayerId.put(snapshot.getPlayerId(), snapshot);
+    }
+
     public synchronized PlayerStatistics getOrCreate(int playerId, String playerName) {
         PlayerStatistics statistics = statisticsByPlayerId.get(playerId);
 
