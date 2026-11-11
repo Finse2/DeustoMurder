@@ -27,6 +27,8 @@ public final class Client {
     public interface Listener {
         default void onConnected(int playerID) {}
 
+        default void onGameOverPacket(GameOverPacket packet) {}
+
         /**used when a player joins the game*/
         default void onPlayerJoined(int playerID, String playerName, String computerName) {}
 
@@ -170,8 +172,11 @@ public final class Client {
             );
         } else if (packet instanceof GameStartPacket startPacket && startPacket.getGameStart()) {
             listener.onGameStarted();
-        } else if (packet instanceof GameOverPacket gameOverPacket && gameOverPacket.getGameOver()) {
+        } else if (packet instanceof GameOverPacket gameOverPacket
+                && gameOverPacket.getGameOver()) {
+
             listener.onGameOver(gameOverPacket.getWinner());
+            listener.onGameOverPacket(gameOverPacket);
         }
     }
 }
