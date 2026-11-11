@@ -135,4 +135,12 @@ public class StatisticsManager {
             }
         }
     }
+    public synchronized void restoreStatistics(PlayerStatistics statistics) {
+        Objects.requireNonNull(statistics, "statistics");
+
+        statisticsByPlayerId.put(
+                statistics.getPlayerId(),
+                statistics
+        );
+    }
 }

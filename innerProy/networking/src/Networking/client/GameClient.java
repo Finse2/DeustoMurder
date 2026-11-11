@@ -3,6 +3,7 @@ package Networking.client;
 import Networking.common.Packet;
 import Networking.packets.JoinAcceptedPacket;
 import Networking.packets.JoinPacket;
+import Networking.packets.GameOverPacket;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -21,12 +22,12 @@ public final class GameClient {
     public interface PacketListener {
         void onPacket(Packet packet);
 
-        default void onDisconnected() {
-        }
+        default void onDisconnected() {}
 
         default void onError(Exception exception) {
             exception.printStackTrace();
         }
+
     }
 
     private final String host;
