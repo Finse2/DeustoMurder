@@ -79,7 +79,9 @@ public final class InGameScreen extends JFrame {
     private static final int LEFT_COLUMN_WIDTH = 240;
     private static final int RIGHT_COLUMN_WIDTH = 345;
     private static final int HEADER_HEIGHT = 125;
-    private static final int HAND_HEIGHT = 230;
+    private static final int CONTROL_HEIGHT = 70;
+    private static final int CONTROL_WIDTH = 295;
+    private static final int HAND_HEIGHT = 210;
     private static final Color SCREEN_BACKGROUND = Color.BLACK;
     private static final Color HEADER_BACKGROUND = new Color(16, 30, 38);
     private static final Color SECTION_BACKGROUND = new Color(25, 52, 67);
@@ -186,9 +188,9 @@ public final class InGameScreen extends JFrame {
         controlsPanel = createHeaderControlsPanel();
         controlsPanel.setName("area.headerControls");
         controlsPanel.setBackground(HEADER_BACKGROUND);
-        controlsPanel.setPreferredSize(new Dimension(0, HEADER_HEIGHT));
+        controlsPanel.setPreferredSize(new Dimension(CONTROL_WIDTH, CONTROL_HEIGHT));
 
-        historyChatPanel = new JPanel(new GridLayout(2, 1, 0, GAP));
+        historyChatPanel = new JPanel(new GridLayout(2, 1, 0, 8));
         historyChatPanel.setName("area.historyAndChat");
         historyChatPanel.setOpaque(false);
         historyPanel.setName("area.history");
@@ -229,7 +231,11 @@ public final class InGameScreen extends JFrame {
         // RIGHT COLUMN
         historyChatPanel.add(historyPanel);    // top half
         historyChatPanel.add(chatRenderer);    // bottom half
-        rightColumnPanel.add(controlsPanel, BorderLayout.NORTH);
+        // La zona superior no debe ocupar todo el ancho ni la altura del lateral.
+        JPanel compactHeader = new JPanel(new BorderLayout());
+        compactHeader.setOpaque(false);
+        compactHeader.add(controlsPanel, BorderLayout.EAST);
+        rightColumnPanel.add(compactHeader, BorderLayout.NORTH);
         rightColumnPanel.add(historyChatPanel, BorderLayout.CENTER);
 
         // MAIN ROW
@@ -250,7 +256,7 @@ public final class InGameScreen extends JFrame {
     /** The top-right control area: profile, settings and quit. */
     private JPanel createHeaderControlsPanel() {
         JPanel header = new JPanel(new BorderLayout());
-        JPanel topButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 10));
+        JPanel topButtons = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 3));
         topButtons.setOpaque(false);
 
         // Profile button
@@ -266,12 +272,13 @@ public final class InGameScreen extends JFrame {
             profilePicture = resizeIfNecessary(profilePicture, 512);
         }
         ProfileButton profileButton = new ProfileButton(profilePicture);
+        profileButton.setPreferredSize(new Dimension(48, 48));
         profileButton.addActionListener(e -> openProfileStats());
 
         // Settings button
         ImageIcon settingsIcon = new ImageIcon("innerProy/ressources/settings.png");
         Image settingsImage = settingsIcon.getImage().getScaledInstance(
-                40, 40, Image.SCALE_SMOOTH
+                34, 34, Image.SCALE_SMOOTH
         );
         JButton settingsButton = new JButton(new ImageIcon(settingsImage));
         settingsButton.setOpaque(false);
@@ -282,7 +289,7 @@ public final class InGameScreen extends JFrame {
         settingsButton.addActionListener(e -> openSettings());
 
         // Quit button
-        JButton exitButton = new HeaderButton("Quit", 108, true);
+        JButton exitButton = new HeaderButton("Quit", 98, true);
         exitButton.addActionListener(e -> exitGame());
 
         topButtons.add(profileButton);

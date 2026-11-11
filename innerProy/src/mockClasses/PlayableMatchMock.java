@@ -13,6 +13,7 @@ import model.Room;
 import model.Weapon;
 import model.board.BoardFactory;
 import model.board.RawPiece;
+import model.board.Tile;
 import ui.chat.Chat;
 import ui.match.BoardLayout;
 import ui.match.cardDisplayer.PlayersCardsRenderer;
@@ -58,6 +59,7 @@ public final class PlayableMatchMock {
     private Step step = Step.JOINING;
     private int rolledTotal;
     private Map<Point, Integer> reachable = Map.of();
+    private Room enteredRoomThisMove;
 
     public PlayableMatchMock() {
         List<Actor> actors = GameSetup.createActors().subList(0, 4);
@@ -90,6 +92,7 @@ public final class PlayableMatchMock {
         actions.setOnDiceRequested(this::requestRoll);
         actions.setOnDiceRolled(this::diceFinished);
         screen.updateMockPlayers(connected, null);
+        installEntranceListener();
         installBoardClicks();
         screen.addWindowListener(new WindowAdapter() {
             @Override public void windowClosed(WindowEvent event) { game.closeGame(); }
@@ -187,6 +190,29 @@ public final class PlayableMatchMock {
         }
     }
 
+    /** Listener del tablero: al pisar una entrada, salta automaticamente
+     *  a la primera casilla azul disponible de la habitacion asociada.
+     *  Si no queda espacio, el jugador permanece en la casilla de entrada.
+     */
+    private void installEntranceListener() {
+        board.addEntranceListener(event -> {
+            Tile tile = (Tile) event.getSource();
+            Piece piece = tile.getPieceOnThisTile();
+            Room room = tile.getAccessibleRoom();
+            if (piece == null || room == null) return;
+
+            try {
+                board.enterRoom(piece, room);
+                enteredRoomThisMove = room;
+                chat.getHistory().add("Sistema", piece.getOwner().getName()
+                        + " ha entrado automaticamente en " + room.getName() + ".");
+            } catch (IllegalStateException fullRoom) {
+                chat.getHistory().add("Sistema", "No quedan posiciones libres en "
+                        + room.getName() + "; la ficha permanece en la entrada.");
+            }
+        });
+    }
+
     private void installBoardClicks() {
         MouseAdapter click = new MouseAdapter() {
             @Override public void mouseClicked(MouseEvent event) {
@@ -212,6 +238,8 @@ public final class PlayableMatchMock {
         Piece piece = current.getPiece();
         Point origin = new Point(piece.getX(), piece.getY());
         // El BFS verifica TODO el trayecto antes de actualizar el tablero.
+        // movePiece notifica el listener y puede trasladar la ficha dentro de una sala.
+        enteredRoomThisMove = null;
         board.movePiece(piece, origin.x, origin.y, destination.x, destination.y);
         board.setReachableTiles(null);
         reachable = Map.of();
@@ -222,7 +250,8 @@ public final class PlayableMatchMock {
                         + destination.x + "," + destination.y + ") usando " + pathLength
                         + " de " + rolledTotal + " pasos");
         chat.getHistory().add("Sistema", current.getName() + " se ha movido " + pathLength
-                + " casillas. Ahora pulsa Pasar turno.");
+                + " casillas" + (enteredRoomThisMove != null ? " y esta dentro de "
+                + enteredRoomThisMove.getName() : "") + ". Ahora pulsa Pasar turno.");
     }
 
     private void nextTurn() {

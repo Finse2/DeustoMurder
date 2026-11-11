@@ -50,7 +50,7 @@ public final class GameActionsPanel extends JPanel {
         });
 
         setBackground(new Color(25, 55, 75));
-        setBorder(BorderFactory.createEmptyBorder(10, 12, 12, 12));
+        setBorder(BorderFactory.createEmptyBorder(5, 9, 5, 9));
 
         // Botón de la tarjeta del detective.
         detectiveButton.addActionListener(event -> toggleDetectiveCard());
@@ -89,13 +89,13 @@ public final class GameActionsPanel extends JPanel {
         JPanel topRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
         topRow.setBackground(new Color(25, 55, 75));
         topRow.setAlignmentX(Component.CENTER_ALIGNMENT);
-        topRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
+        topRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
         topRow.add(endTurnButton);
         topRow.add(accusationButton);
         buttonsPanel.add(topRow);
-        buttonsPanel.add(Box.createVerticalStrut(5));
+        buttonsPanel.add(Box.createVerticalStrut(3));
         buttonsPanel.add(detectiveButton);
-        buttonsPanel.add(Box.createVerticalStrut(5));
+        buttonsPanel.add(Box.createVerticalStrut(3));
 
         // Los dados aparecen encima de la mesa, no en un JDialog.
         diceButton.setFont(new Font("Georgia", Font.BOLD, 17));
@@ -111,9 +111,9 @@ public final class GameActionsPanel extends JPanel {
         // Espacio fijo bajo el boton: el resto de controles no se mueve al aparecer el resultado.
         diceResultPanel.setOpaque(false);
         diceResultPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        diceResultPanel.setPreferredSize(new Dimension(240, 60));
-        diceResultPanel.setMinimumSize(new Dimension(170, 60));
-        diceResultPanel.setMaximumSize(new Dimension(240, 60));
+        diceResultPanel.setPreferredSize(new Dimension(240, 50));
+        diceResultPanel.setMinimumSize(new Dimension(170, 50));
+        diceResultPanel.setMaximumSize(new Dimension(240, 50));
 
         diceResultLabel.setFont(new Font("Georgia", Font.BOLD, 21));
         diceResultLabel.setForeground(new Color(240, 220, 180));
@@ -122,7 +122,7 @@ public final class GameActionsPanel extends JPanel {
 
         diceResultPanel.add(diceResultLabel, BorderLayout.CENTER);
         diceResultPanel.add(diceResultHint, BorderLayout.SOUTH);
-        buttonsPanel.add(Box.createVerticalStrut(8));
+        buttonsPanel.add(Box.createVerticalStrut(6));
         buttonsPanel.add(diceResultPanel);
 
         add(buttonsPanel, BorderLayout.SOUTH);

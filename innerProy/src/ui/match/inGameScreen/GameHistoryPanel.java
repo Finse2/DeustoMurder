@@ -58,18 +58,18 @@ public final class GameHistoryPanel extends JPanel {
     }
 
     public GameHistoryPanel(GameHistory history, List<Actor> actors) {
-        super(new BorderLayout(0, 8));
+        super(new BorderLayout(0, 4));
         this.history = Objects.requireNonNull(history);
         for (Actor actor : actors) playerColors.put(actor.getName(), actor.getColor());
 
         setOpaque(true);
         setBackground(BACKGROUND);
-        setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));
+        setBorder(BorderFactory.createEmptyBorder(5, 7, 5, 7));
 
         JLabel title = new JLabel("Registro de partida", new RegistryIcon(), SwingConstants.LEFT);
         title.setIconTextGap(9);
         title.setForeground(new Color(232, 204, 157));
-        title.setFont(new Font("Georgia", Font.PLAIN, 18));
+        title.setFont(new Font("Georgia", Font.PLAIN, 17));
 
         JMenuItem exportOption = new JMenuItem("Exportar CSV...");
         JMenuItem importOption = new JMenuItem("Importar CSV...");
@@ -129,19 +129,19 @@ public final class GameHistoryPanel extends JPanel {
         heading.setOpaque(false);
         heading.setLayout(new BoxLayout(heading, BoxLayout.Y_AXIS));
         titleRow.setAlignmentX(LEFT_ALIGNMENT);
-        searchField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 27));
+        searchField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 23));
         searchField.setAlignmentX(LEFT_ALIGNMENT);
-        filters.setMaximumSize(new Dimension(Integer.MAX_VALUE, 27));
+        filters.setMaximumSize(new Dimension(Integer.MAX_VALUE, 23));
         filters.setAlignmentX(LEFT_ALIGNMENT);
         resultCount.setAlignmentX(LEFT_ALIGNMENT);
         heading.add(titleRow);
-        heading.add(Box.createVerticalStrut(5));
-        heading.add(searchField);
-        heading.add(Box.createVerticalStrut(4));
-        heading.add(filters);
         heading.add(Box.createVerticalStrut(3));
+        heading.add(searchField);
+        heading.add(Box.createVerticalStrut(2));
+        heading.add(filters);
+        heading.add(Box.createVerticalStrut(2));
         heading.add(resultCount);
-        heading.add(Box.createVerticalStrut(4));
+        heading.add(Box.createVerticalStrut(2));
         heading.add(new JSeparator());
         add(heading, BorderLayout.NORTH);
 
@@ -166,7 +166,7 @@ public final class GameHistoryPanel extends JPanel {
         turnBox.setBackground(new Color(8, 28, 41));
         turnBox.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(74, 104, 119), 1, true),
-                BorderFactory.createEmptyBorder(7, 8, 7, 8)));
+                BorderFactory.createEmptyBorder(4, 6, 4, 6)));
         turnBox.add(turnIcon, BorderLayout.WEST);
         turnBox.add(turnLabel, BorderLayout.CENTER);
         turnBox.add(timerLabel, BorderLayout.EAST);
@@ -283,7 +283,7 @@ public final class GameHistoryPanel extends JPanel {
         JPanel row = new JPanel(new BorderLayout(7, 0));
         row.setOpaque(false);
         row.setAlignmentX(Component.LEFT_ALIGNMENT);
-        row.setBorder(BorderFactory.createEmptyBorder(5, 2, 5, 2));
+        row.setBorder(BorderFactory.createEmptyBorder(3, 2, 3, 2));
 
         Color color = playerColors.getOrDefault(event.getPlayerName(), BLUE);
         JLabel dot = new JLabel("●");
@@ -295,7 +295,7 @@ public final class GameHistoryPanel extends JPanel {
         String message = who.isBlank() ? escape(narrative) :
                 "<span style='color:" + hex(color) + "'>" + escape(who) + "</span> " + escape(narrative);
         String time = HOUR.format(event.getTimestamp());
-        JLabel content = new JLabel("<html><div style='width:190px;color:" + hex(TEXT)
+        JLabel content = new JLabel("<html><div style='width:245px;color:" + hex(TEXT)
                 + ";font-size:11px;font-family:serif'><span style='color:#8da8b5'>" + time
                 + "</span> " + message + "</div></html>");
         content.setToolTipText("<html>" + escape(event.getType().name()) + " | "
