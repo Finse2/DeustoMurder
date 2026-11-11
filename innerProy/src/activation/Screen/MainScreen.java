@@ -230,8 +230,8 @@ public class MainScreen extends JFrame {
                 Client client = new Client("127.0.0.1", port, new Client.Listener() {
                     @Override
                     public void onConnected(int playerID) {
-                                hostMatchTracker.onConnected(playerID, HostUserName);
-                                roster.upsert(
+                        hostMatchTracker.onConnected(playerID, HostUserName);
+                        roster.upsert(
                                 playerID,
                                 HostUserName,
                                 System.getenv().getOrDefault("COMPUTERNAME", "Host-PC")
@@ -244,34 +244,16 @@ public class MainScreen extends JFrame {
                     }
 
                     @Override
-
-
                     public void onGameStarted() {
-
-
                         hostMatchTracker.onGameStarted();
-
-
                     }
 
-
-
                     @Override
-
-
                     public void onGameOverPacket(GameOverPacket result) {
-
-
                         hostMatchTracker.onGameOver(result);
-
-
                     }
 
-
-
                     @Override
-
-
                     public void onDisconnected() {
                         accepted.completeExceptionally(new IOException("Disconnected before joining."));
                     }
@@ -457,34 +439,16 @@ public class MainScreen extends JFrame {
                             }
 
                             @Override
-
-
                             public void onGameStarted() {
-
-
                                 joinedMatchTracker.onGameStarted();
-
-
                             }
 
-
-
                             @Override
-
-
                             public void onGameOverPacket(GameOverPacket result) {
-
-
                                 joinedMatchTracker.onGameOver(result);
-
-
                             }
 
-
-
                             @Override
-
-
                             public void onDisconnected() {
                                 accepted.completeExceptionally(
                                         new IOException("Disconnected before joining.")
