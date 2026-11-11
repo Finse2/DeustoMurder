@@ -1,5 +1,6 @@
 package mockClasses;
 
+import activation.Screen.Lobby.LobbyRoster;
 import game.core.Game;
 import game.core.GameSetup;
 import game.core.GameStartResult;
@@ -24,6 +25,7 @@ import utils.AllPaths.Resources.DefaultCardModels.ActorsData;
 import utils.AllPaths.Resources.DefaultCardModels.RoomsData;
 import utils.AllPaths.Resources.DefaultCardModels.WeaponsData;
 
+import activation.Screen.Lobby.LobbyRoster;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import java.awt.Color;
@@ -61,6 +63,7 @@ public final class PlayableMatchMock {
     private Map<Point, Integer> reachable = Map.of();
     private Room enteredRoomThisMove;
 
+
     public PlayableMatchMock() {
         List<Actor> actors = GameSetup.createActors().subList(0, 4);
         int[][] startPositions = {{0, 5}, {22, 5}, {22, 15}, {0, 16}};
@@ -85,7 +88,7 @@ public final class PlayableMatchMock {
         };
         hand = new PlayersCardsRenderer(headers, new Object[0]);
         chat = new Chat(List.of(), players.getFirst().getName());
-        screen = new InGameScreen(board, actors, hand, chat, game.getGameHistory());
+        screen = new InGameScreen(board, actors, hand, chat, game.getGameHistory(),new LobbyRoster());
         actions = screen.getActionsPanel();
         actions.showMockEndTurnButton(this::nextTurn);
         actions.getDiceButton().setEnabled(false);

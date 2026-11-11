@@ -1,5 +1,6 @@
 package mockClasses;
 
+import activation.Screen.Lobby.LobbyRoster;
 import ui.chat.Chat;
 import game.core.Game;
 import game.core.GameSetup;
@@ -22,6 +23,8 @@ import java.util.List;
 
 public class InGameScreenMock {
 
+    LobbyRoster roster= new LobbyRoster();
+
     public InGameScreenMock(BoardLayout board, List<Actor> actors) {
         this(board, actors, new GameHistory());
     }
@@ -35,7 +38,7 @@ public class InGameScreenMock {
 
         PlayersCardsRenderer hand = new PlayersCardsRenderer(headers, CardRendererMock.createHand());
         Chat chat = new Chat(actors.stream().map(Actor::getName).toList(), actors.getFirst().getName());
-        InGameScreen screen = new InGameScreen(board, actors, hand, chat, history);
+        InGameScreen screen = new InGameScreen(board, actors, hand, chat, history, roster);
         // Pulsa "Tirar dados", manten el raton presionado y sueltalo sobre el tablero.
         screen.getActionsPanel().setOnDiceRolled((first, second) -> System.out.println("DADOS: " + first + " + " + second + " = " + (first + second)));
         screen.setVisible(true);
