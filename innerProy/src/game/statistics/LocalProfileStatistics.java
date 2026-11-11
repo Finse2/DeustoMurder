@@ -37,7 +37,7 @@ public final class LocalProfileStatistics {
 
     /** A defensive copy: callers cannot change stored counters through the UI. */
     public synchronized PlayerStatistics snapshot() {
-        PlayerStatistics value = manager.getOrCreate(LOCAL_PROFILE_ID, "Local Player");
+        PlayerStatistics value = manager.getOrCreate(LOCAL_PROFILE_ID, null);
         return PlayerStatistics.fromPersisted(
                 value.getPlayerId(), value.getPlayerName(),
                 value.getGamesPlayed(), value.getWins(), value.getLosses(),
@@ -96,7 +96,7 @@ public final class LocalProfileStatistics {
     }
 
     private synchronized void save() {
-        PlayerStatistics value = manager.getOrCreate(LOCAL_PROFILE_ID, "Local Player");
+        PlayerStatistics value = manager.getOrCreate(LOCAL_PROFILE_ID, null);
         Properties p = new Properties();
         p.setProperty("playerName", value.getPlayerName());
         p.setProperty("gamesPlayed", Integer.toString(value.getGamesPlayed()));
