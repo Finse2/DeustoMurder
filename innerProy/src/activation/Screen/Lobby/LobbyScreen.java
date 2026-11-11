@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 
 import activation.Screen.*;
+import activation.Screen.ProfileStatisticsDialog;
 import model.Player;
 
 public class LobbyScreen extends JFrame {
@@ -368,42 +369,7 @@ public class LobbyScreen extends JFrame {
     }
 
     private void openProfileStats() {
-
-        JFrame statFrame = new JFrame("Profile Statistics");
-
-        String[] colums = {"Statistic", "Value"};
-
-        Object[][] data = {
-                {"Games Played", 0},
-                {"Games Won", 0},
-                {"Games Lost", 0},
-                {"Win Rate", "0%"},
-                {"correct Accusations", 0}
-        };
-        JTable statsTable = new JTable(data, colums) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // Make all cells non-editable
-            }
-        };
-
-        JScrollPane scrollPane = CluedoTableTheme.style(statsTable);
-        statFrame.getContentPane().setBackground(new Color(20, 22, 27));
-        statFrame.add(scrollPane);
-
-        JButton changePicture = createDialogButton(
-                "Change Profile Picture"
-        );
-
-        changePicture.addActionListener(e -> changeProfilePicture());
-        statFrame.add(changePicture, BorderLayout.SOUTH);
-
-        statFrame.setSize(450, 300);
-        statFrame.setLocationRelativeTo(this);
-        statFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        statFrame.setVisible(true);
-
-
+        ProfileStatisticsDialog.open(this, this::changeProfilePicture);
     }
 
     private JButton createDialogButton(String text) {
