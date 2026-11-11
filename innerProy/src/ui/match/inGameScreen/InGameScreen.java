@@ -1,3 +1,4 @@
+
 package ui.match.inGameScreen;
 
 import activation.Screen.CluedoTableTheme;
@@ -11,10 +12,8 @@ import ui.chat.ChatRenderer;
 import model.Actor;
 import ui.match.AccusationCard;
 import ui.match.BoardLayout;
-import activation.Screen.Lobby.LobbyRoster;
-
-import activation.Screen.AnimatedBackGround.AnimatedBackGround;
 import activation.Screen.ProfileButton;
+
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.IOException;
@@ -32,6 +31,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -43,15 +43,7 @@ public final class InGameScreen extends JFrame {
     // ================================================================
     // SCREEN SEGMENTATION - a named panel for every visible area
     // ================================================================
-    // rootPanel (BorderLayout)
-    //   CENTER: gameRowPanel
-    //     WEST:   playersColumnPanel -> logoPanel + playersPanel
-    //     CENTER: boardScrollPane    -> boardCanvas -> board
-    //     EAST:   rightColumnPanel   -> controlsPanel + historyChatPanel
-    //                                       -> historyPanel + chatRenderer
-    //   SOUTH:  footerPanel          -> handPanel + actionsPanel
-    //
-    // These fields are kept together so screen regions can be found at a glance.
+
     private JPanel rootPanel;
     private JPanel gameRowPanel;
     private JPanel playersColumnPanel;
@@ -67,13 +59,13 @@ public final class InGameScreen extends JFrame {
     // Visible content of the named regions.
     private final BoardLayout board;
     private final List<Actor> actors;
-    private final ChatRenderer chatRenderer;       // CHAT
-    private final GameHistoryPanel historyPanel;   // HISTORY
-    private final GameActionsPanel actionsPanel;   // ACTIONS
-    private JScrollPane boardScrollPane;           // BOARD (scroll + zoom)
-    private JLayeredPane boardLayer;                // BOARD + dice overlay
+    private final ChatRenderer chatRenderer;
+    private final GameHistoryPanel historyPanel;
+    private final GameActionsPanel actionsPanel;
+    private JScrollPane boardScrollPane;
+    private JLayeredPane boardLayer;
     private final DiceRollPanel diceRollPanel;
-    private JPanel boardCanvas;                    // BOARD (inside viewport)
+    private JPanel boardCanvas;
 
     private static final int GAP = 15;
     private static final int LEFT_COLUMN_WIDTH = 240;
@@ -82,6 +74,7 @@ public final class InGameScreen extends JFrame {
     private static final int CONTROL_HEIGHT = 70;
     private static final int CONTROL_WIDTH = 295;
     private static final int HAND_HEIGHT = 210;
+
     private static final Color SCREEN_BACKGROUND = Color.BLACK;
     private static final Color HEADER_BACKGROUND = new Color(16, 30, 38);
     private static final Color SECTION_BACKGROUND = new Color(25, 52, 67);
@@ -93,34 +86,69 @@ public final class InGameScreen extends JFrame {
     private LobbyRoster roster;
     private JLabel playerCountLabel;
     private JLabel playersTitleLabel;
-    public InGameScreen(BoardLayout board, List<Actor> actors, JComponent hand) {
-        this(board, actors, hand, new Chat(
-                actors.stream().map(Actor::getName).toList(),
-                actors.isEmpty() ? "Jugador" : actors.getFirst().getName()));
+    private int connectedPlayers;
+
+    // ================================================================
+    // CONSTRUCTORES
+    // ================================================================
+
+    public InGameScreen(BoardLayout board, List<Actor> actors,
+                        JComponent hand, LobbyRoster roster) {
+        this(board, actors, hand, createDefaultChat(actors),
+                new GameHistory(), roster);
     }
 
-    public InGameScreen(BoardLayout board, List<Actor> actors, JComponent hand, Chat chat) {
-        this(board, actors, hand, chat, new GameHistory());
+    public InGameScreen(BoardLayout board, List<Actor> actors,
+                        JComponent hand) {
+        this(board, actors, hand, new LobbyRoster());
+    }
+
+    public InGameScreen(BoardLayout board, List<Actor> actors,
+                        JComponent hand, Chat chat, LobbyRoster roster) {
+        this(board, actors, hand, chat, new GameHistory(), roster);
     }
 
     /** Vincula la pantalla al historial real de una partida cuando está disponible. */
-    public InGameScreen(BoardLayout board, List<Actor> actors, JComponent hand,
-                        Chat chat, GameHistory history) {
-        this.board = board;
-        this.actors = actors;
+    public InGameScreen(BoardLayout board, List<Actor> actors,
+                        JComponent hand, Chat chat,
+                        GameHistory history, LobbyRoster roster) {
+
+        this.board = Objects.requireNonNull(board);
+        this.actors = Objects.requireNonNull(actors);
+        this.roster = Objects.requireNonNull(roster);
+
         Map<String, Color> playerColors = actors.stream()
-                .collect(Collectors.toMap(Actor::getName, Actor::getColor, (left, right) -> left));
+                .collect(Collectors.toMap(
+                        Actor::getName,
+                        Actor::getColor,
+                        (left, right) -> left
+                ));
+
         this.chatRenderer = new ChatRenderer(chat, playerColors);
         this.historyPanel = new GameHistoryPanel(history, actors);
         this.actionsPanel = new GameActionsPanel();
+
         this.diceRollPanel = actionsPanel.getDiceRollPanel();
         diceRollPanel.setVisible(false);
         actionsPanel.setOnDiceRequested(() -> diceRollPanel.prepareRoll());
 
         configureWindow();
-        defineScreenPanels(hand);     // 1. Create and configure each named region.
-        assembleScreenPanels();       // 2. Place the regions in the screen layout.
+        defineScreenPanels(hand);
+        assembleScreenPanels();
+
         SwingUtilities.invokeLater(this::fitBoardToViewport);
+    }
+
+    private static Chat createDefaultChat(List<Actor> actors) {
+        List<String> names = actors.stream()
+                .map(Actor::getName)
+                .collect(Collectors.toList());
+
+        String currentPlayer = actors.isEmpty()
+                ? "Jugador"
+                : actors.get(0).getName();
+
+        return new Chat(names, currentPlayer);
     }
 
     /** Window settings, independent of the screen's panel hierarchy. */
@@ -220,8 +248,6 @@ public final class InGameScreen extends JFrame {
 
     /**
      * STEP 2 - POSITION AREAS.
-     * This is the complete screen map: every add() states exactly where a
-     * named region belongs. Adjust the layout here without touching controls.
      */
     private void assembleScreenPanels() {
         // LEFT COLUMN
@@ -229,9 +255,9 @@ public final class InGameScreen extends JFrame {
         playersColumnPanel.add(playersPanel, BorderLayout.CENTER);
 
         // RIGHT COLUMN
-        historyChatPanel.add(historyPanel);    // top half
-        historyChatPanel.add(chatRenderer);    // bottom half
-        // La zona superior no debe ocupar todo el ancho ni la altura del lateral.
+        historyChatPanel.add(historyPanel);
+        historyChatPanel.add(chatRenderer);
+
         JPanel compactHeader = new JPanel(new BorderLayout());
         compactHeader.setOpaque(false);
         compactHeader.add(controlsPanel, BorderLayout.EAST);
@@ -332,7 +358,6 @@ public final class InGameScreen extends JFrame {
         URL url = InGameScreen.class.getResource(resource);
         if (url != null) return new ImageIcon(url).getImage();
 
-        // También funciona cuando IntelliJ no copia los PNG del directorio src.
         for (Path path : List.of(
                 Path.of("src/ui/match/inGameScreen/deusto_logo.png"),
                 Path.of("innerProy/src/ui/match/inGameScreen/deusto_logo.png"),
@@ -381,7 +406,6 @@ public final class InGameScreen extends JFrame {
             g.drawRoundRect(2, 2, getWidth() - 5, getHeight() - 5, 16, 16);
             g.dispose();
 
-            // Swing centra el texto; la X se dibuja aparte, sin desplazar «Salir».
             super.paintComponent(graphics);
             if (exit) {
                 Graphics2D icon = (Graphics2D) graphics.create();
@@ -398,7 +422,6 @@ public final class InGameScreen extends JFrame {
     }
 
     private JScrollPane createBoardScrollPane() {
-        // La mesa y el tablero forman un único componente dentro del viewport.
         boardCanvas = new WoodTablePanel(new GridBagLayout());
         boardCanvas.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         boardCanvas.add(board);
@@ -414,7 +437,6 @@ public final class InGameScreen extends JFrame {
         boardScrollPane.getVerticalScrollBar().setUnitIncrement(30);
         boardScrollPane.getHorizontalScrollBar().setUnitIncrement(30);
 
-        // Rueda: zoom; Mayús+rueda: scroll horizontal; Alt+rueda: scroll vertical.
         MouseAdapter wheelAdapter = new MouseAdapter() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent event) {
@@ -428,7 +450,6 @@ public final class InGameScreen extends JFrame {
             }
         };
 
-        // Botón central / derecho, o Mayús + botón izquierdo: arrastrar en ambos ejes.
         MouseAdapter panAdapter = new MouseAdapter() {
             private Point lastScreenPoint;
 
@@ -471,7 +492,6 @@ public final class InGameScreen extends JFrame {
             }
         };
 
-        // Registrar también en las casillas y habitaciones, que son componentes hijos.
         installBoardMouseControls(boardCanvas, wheelAdapter, panAdapter);
         boardScrollPane.addMouseWheelListener(wheelAdapter);
         boardScrollPane.getViewport().addMouseWheelListener(wheelAdapter);
@@ -563,13 +583,9 @@ public final class InGameScreen extends JFrame {
         panelJugadores.setBackground(SECTION_BACKGROUND);
 
         playerCountLabel = new JLabel("Connected Players (0)");
-        playerCountLabel.setFont(
-                new Font("Georgia", Font.BOLD, 18)
-        );
+        playerCountLabel.setFont(new Font("Georgia", Font.BOLD, 18));
         playerCountLabel.setForeground(new Color(235, 215, 100));
-        playerCountLabel.setBorder(
-                BorderFactory.createEmptyBorder(12, 12, 12, 12)
-        );
+        playerCountLabel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
         panelJugadores.add(playerCountLabel);
 
         playersTitleLabel = new JLabel("Jugadores:");
@@ -578,6 +594,9 @@ public final class InGameScreen extends JFrame {
         playersTitleLabel.setBorder(BorderFactory.createEmptyBorder(0, 12, 8, 12));
         panelJugadores.add(playersTitleLabel);
 
+        roster.setOnChanged(this::refreshPlayers);
+
+        refreshPlayers();
         return panelJugadores;
     }
 
@@ -614,7 +633,6 @@ public final class InGameScreen extends JFrame {
         return boardScrollPane;
     }
 
-    /** Capa animada situada directamente encima del tablero y de la mesa. */
     public DiceRollPanel getDiceRollPanel() {
         return diceRollPanel;
     }
@@ -738,6 +756,7 @@ public final class InGameScreen extends JFrame {
                 }
         );
     }
+
     /** Vista del roster local para mocks: 4 jugadores, resaltando el turno activo. */
     public void updateMockPlayers(List<Player> joined, Player active) {
         if (!SwingUtilities.isEventDispatchThread()) {
@@ -777,35 +796,36 @@ public final class InGameScreen extends JFrame {
     }
 
     private void refreshPlayers() {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            SwingUtilities.invokeLater(this::refreshPlayers);
+            return;
+        }
 
         panelJugadores.removeAll();
 
-        var connectedPlayers = roster.snapshot();
+        List<LobbyRoster.Entry> players = roster.snapshot();
 
-        playerCountLabel.setText(
-                "Connected Players (" + connectedPlayers.size() + ")"
-        );
+        connectedPlayers = players.size();
 
-        for (LobbyRoster.Entry player : connectedPlayers) {
+        // Actualizar el contador, incluso cuando no haya jugadores.
+        playerCountLabel.setText("Connected Players (" + connectedPlayers + ")");
 
-            JPanel playerPanel = new JPanel(
-                    new BorderLayout(10, 5)
-            );
+        panelJugadores.add(playerCountLabel);
+        panelJugadores.add(playersTitleLabel);
+
+        // Si no hay jugadores, el contador mostrará 0 y no se añadirán entradas.
+        for (LobbyRoster.Entry player : players) {
+
+            JPanel playerPanel = new JPanel(new BorderLayout(10, 5));
 
             playerPanel.setBorder(
                     BorderFactory.createCompoundBorder(
-                            BorderFactory.createLineBorder(
-                                    new Color(74, 49, 35)
-                            ),
-                            BorderFactory.createEmptyBorder(
-                                    10, 12, 10, 12
-                            )
+                            BorderFactory.createLineBorder(new Color(74, 49, 35)),
+                            BorderFactory.createEmptyBorder(10, 12, 10, 12)
                     )
             );
 
-            playerPanel.setMaximumSize(
-                    new Dimension(Integer.MAX_VALUE, 70)
-            );
+            playerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
             playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
             JPanel infoPanel = new JPanel(new GridLayout(2, 1));
@@ -815,6 +835,14 @@ public final class InGameScreen extends JFrame {
             name.setFont(new Font("Georgia", Font.BOLD, 15));
             name.setForeground(new Color(235, 229, 212));
             infoPanel.add(name);
+
+            ImageIcon icon1 = new ImageIcon("innerProy/ressources/PerfilDet.png");
+            Image image1 = icon1.getImage().getScaledInstance(
+                    35, 35, Image.SCALE_SMOOTH
+            );
+
+            JLabel icono = new JLabel(new ImageIcon(image1));
+            infoPanel.add(icono);
 
             playerPanel.setOpaque(true);
             playerPanel.setBackground(new Color(30, 55, 70));
@@ -828,5 +856,3 @@ public final class InGameScreen extends JFrame {
         panelJugadores.repaint();
     }
 }
-
-
