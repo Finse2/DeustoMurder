@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.util.Base64;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import achievements.AchievementType;
 
 /**
  * Centralizes immutable card metadata and images. Each unique image is
