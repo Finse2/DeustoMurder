@@ -22,16 +22,6 @@ public class Achievement implements Consumer<AchievementType> {
         this.type = type;
         this.name = name;
         this.progress = 0;
-
-        String iconName = type.name().toLowerCase(Locale.ROOT);
-
-        achievementIcon = loadIcon("resources/icons/" + iconName + ".png");
-
-        if (achievementIcon == null) {
-            achievementIcon = loadIcon ("/ressources/icons.default.png");
-        }
-
-        updateBorderIcon();
     }
 
     @Override
@@ -54,7 +44,7 @@ public class Achievement implements Consumer<AchievementType> {
     }
 
     private void updateBorderIcon() {
-        borderIcon = loadIcon ("/resources/borders/tier_" + getTier() + ".png");
+        borderIcon = loadIcon ("/resources/borders" + getTier() + ".png");
     }
 
     // DETECT WHEN A NEW TIER IS UNLOCKED
