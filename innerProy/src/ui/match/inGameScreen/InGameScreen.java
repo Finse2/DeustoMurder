@@ -90,6 +90,7 @@ public final class InGameScreen extends JFrame {
 
     private LobbyRoster roster;
     private JLabel playerCountLabel;
+    private JLabel playersTitleLabel;
     public InGameScreen(BoardLayout board, List<Actor> actors, JComponent hand) {
         this(board, actors, hand, new Chat(
                 actors.stream().map(Actor::getName).toList(),
@@ -564,11 +565,11 @@ public final class InGameScreen extends JFrame {
         );
         panelJugadores.add(playerCountLabel);
 
-        JLabel title = new JLabel("Jugadores:");
-        title.setFont(new Font("Arial", Font.BOLD, 20));
-        title.setForeground(Color.WHITE);
-        title.setBorder(BorderFactory.createEmptyBorder(0, 12, 8, 12));
-        panelJugadores.add(title);
+        playersTitleLabel = new JLabel("Jugadores:");
+        playersTitleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        playersTitleLabel.setForeground(Color.WHITE);
+        playersTitleLabel.setBorder(BorderFactory.createEmptyBorder(0, 12, 8, 12));
+        panelJugadores.add(playersTitleLabel);
 
         return panelJugadores;
     }
@@ -730,6 +731,44 @@ public final class InGameScreen extends JFrame {
                 }
         );
     }
+    /** Vista del roster local para mocks: 4 jugadores, resaltando el turno activo. */
+    public void updateMockPlayers(List<Player> joined, Player active) {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            SwingUtilities.invokeLater(() -> updateMockPlayers(joined, active));
+            return;
+        }
+        panelJugadores.removeAll();
+        playerCountLabel.setText("Connected Players (" + joined.size() + ")");
+        panelJugadores.add(playerCountLabel);
+        panelJugadores.add(playersTitleLabel);
+
+        for (Player player : joined) {
+            boolean current = player == active;
+            JPanel entry = new JPanel(new BorderLayout(10, 0));
+            entry.setOpaque(true);
+            entry.setBackground(current ? new Color(70, 69, 48) : new Color(29, 55, 70));
+            entry.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(current ? new Color(230, 195, 95) : new Color(74, 49, 35), current ? 2 : 1),
+                    BorderFactory.createEmptyBorder(8, 10, 8, 10)));
+            entry.setMaximumSize(new Dimension(Integer.MAX_VALUE, 55));
+            entry.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            JLabel color = new JLabel("●");
+            color.setFont(new Font("Arial", Font.BOLD, 22));
+            color.setForeground(player.getPiece().getColor());
+            entry.add(color, BorderLayout.WEST);
+
+            JLabel name = new JLabel(player.getName() + (current ? "  ◀" : ""));
+            name.setFont(new Font("Georgia", Font.BOLD, 15));
+            name.setForeground(new Color(235, 229, 212));
+            entry.add(name, BorderLayout.CENTER);
+            panelJugadores.add(entry);
+            panelJugadores.add(Box.createVerticalStrut(5));
+        }
+        panelJugadores.revalidate();
+        panelJugadores.repaint();
+    }
+
     private void refreshPlayers() {
 
         panelJugadores.removeAll();

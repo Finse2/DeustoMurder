@@ -29,6 +29,7 @@ public final class GameActionsPanel extends JPanel {
     private final DetectiveButton detectiveButton = new DetectiveButton();
     private final JButton accusationButton = new JButton("Accusation Card");
     private final JButton diceButton = new JButton("Tirar dados");
+    private final JButton endTurnButton = new JButton("<html><center>Pasar<br>turno</center></html>");
     private final JPanel diceResultPanel = new JPanel(new BorderLayout());
     private final JLabel diceResultLabel = new JLabel("", SwingConstants.CENTER);
     private final JLabel diceResultHint = new JLabel("", SwingConstants.CENTER);
@@ -73,10 +74,28 @@ public final class GameActionsPanel extends JPanel {
         detectiveButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         detectiveButton.setPreferredSize(new Dimension(310, 35));
 
-        buttonsPanel.add(accusationButton);
-        buttonsPanel.add(Box.createVerticalStrut(10));
+        // Boton de pasar turno, situado en la esquina superior izquierda del panel.
+        endTurnButton.setFont(new Font("Georgia", Font.BOLD, 15));
+        endTurnButton.setForeground(new Color(240, 220, 180));
+        endTurnButton.setBackground(new Color(129, 74, 39));
+        endTurnButton.setBorder(BorderFactory.createLineBorder(new Color(205, 165, 105), 2));
+        endTurnButton.setFocusPainted(false);
+        endTurnButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        endTurnButton.setPreferredSize(new Dimension(95, 45));
+        endTurnButton.setVisible(false); // unicamente aparece en el mock jugable.
+        endTurnButton.setEnabled(false); // solo se activa al completar el movimiento.
+
+        accusationButton.setPreferredSize(new Dimension(200, 35));
+        JPanel topRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
+        topRow.setBackground(new Color(25, 55, 75));
+        topRow.setAlignmentX(Component.CENTER_ALIGNMENT);
+        topRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
+        topRow.add(endTurnButton);
+        topRow.add(accusationButton);
+        buttonsPanel.add(topRow);
+        buttonsPanel.add(Box.createVerticalStrut(5));
         buttonsPanel.add(detectiveButton);
-        buttonsPanel.add(Box.createVerticalStrut(10));
+        buttonsPanel.add(Box.createVerticalStrut(5));
 
         // Los dados aparecen encima de la mesa, no en un JDialog.
         diceButton.setFont(new Font("Georgia", Font.BOLD, 17));
@@ -282,6 +301,17 @@ public final class GameActionsPanel extends JPanel {
     public void setOnDiceRolled(BiConsumer<Integer, Integer> listener) {
         onDiceRolled = listener;
     }
+
+    /** Habilita el boton especial del mock, sin afectar a la partida normal. */
+    public void showMockEndTurnButton(Runnable onEndTurn) {
+        endTurnButton.setVisible(true);
+        for (var listener : endTurnButton.getActionListeners()) endTurnButton.removeActionListener(listener);
+        if (onEndTurn != null) endTurnButton.addActionListener(event -> onEndTurn.run());
+        revalidate();
+        repaint();
+    }
+
+    public JButton getEndTurnButton() { return endTurnButton; }
 
     public JButton getDiceButton() {
         return diceButton;

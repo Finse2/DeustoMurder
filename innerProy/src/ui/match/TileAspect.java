@@ -19,6 +19,7 @@ class TileAspect extends JPanel {
 
     private final Tile tile;
     private Color color = Color.WHITE;
+    private boolean reachable;
     private int x;
     private int y;
 
@@ -54,6 +55,11 @@ class TileAspect extends JPanel {
                 new Color(145, 145, 145),
                 Math.max(1, thickness)
         ));
+    }
+
+    void setReachable(boolean value) {
+        reachable = value;
+        repaint();
     }
 
     void darker() {
@@ -92,6 +98,13 @@ class TileAspect extends JPanel {
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
+
+        if (reachable) {
+            Graphics2D overlay = (Graphics2D) graphics.create();
+            overlay.setColor(new Color(60, 205, 115, 105));
+            overlay.fillRect(2, 2, Math.max(0, getWidth() - 4), Math.max(0, getHeight() - 4));
+            overlay.dispose();
+        }
 
         Piece piece = tile.getPieceOnThisTile();
 
