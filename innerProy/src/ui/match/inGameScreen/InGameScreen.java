@@ -1,6 +1,7 @@
 package ui.match.inGameScreen;
 
 import activation.Screen.CluedoTableTheme;
+import activation.Screen.ProfileStatisticsDialog;
 import activation.Screen.Lobby.LobbyRoster;
 import model.Player;
 import model.Room;
@@ -649,33 +650,7 @@ public final class InGameScreen extends JFrame {
     }
 
     public void openProfileStats() {
-
-        JFrame statsFrame = new JFrame("Player Statistics");
-
-        String[] columns = {
-                "Statistic",
-                "Value"
-        };
-
-        Object[][] data = {
-                {"Games Played", 0},
-                {"Games Won", 0},
-                {"Games Lost", 0},
-                {"Win Rate", "0%"},
-                {"Total Points", 0}
-        };
-
-        JTable statsTable = new JTable(data, columns);
-
-        JScrollPane scrollPane = CluedoTableTheme.styleConnection(statsTable);
-
-        statsFrame.getContentPane().setBackground(new Color(20, 22, 27));
-        statsFrame.add(scrollPane);
-
-        statsFrame.setSize(450, 300);
-        statsFrame.setLocationRelativeTo(this);
-        statsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        statsFrame.setVisible(true);
+        ProfileStatisticsDialog.open(this, null);
     }
 
     private void exitGame() {
