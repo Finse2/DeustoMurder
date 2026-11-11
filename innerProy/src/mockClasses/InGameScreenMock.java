@@ -35,7 +35,10 @@ public class InGameScreenMock {
 
         PlayersCardsRenderer hand = new PlayersCardsRenderer(headers, CardRendererMock.createHand());
         Chat chat = new Chat(actors.stream().map(Actor::getName).toList(), actors.getFirst().getName());
-        new InGameScreen(board, actors, hand, chat, history).setVisible(true);
+        InGameScreen screen = new InGameScreen(board, actors, hand, chat, history);
+        // Pulsa "Tirar dados", manten el raton presionado y sueltalo sobre el tablero.
+        screen.getActionsPanel().setOnDiceRolled((first, second) -> System.out.println("DADOS: " + first + " + " + second + " = " + (first + second)));
+        screen.setVisible(true);
     }
 
     public static void main(String[] args) {

@@ -21,14 +21,18 @@ public final class GameActionsPanel extends JPanel {
 
     private JDialog detectiveDialog;
     private JDialog accusationDialog;
-    private JDialog diceDialog;
-    private DiceRollPanel diceRollPanel;
+    private final DiceRollPanel diceRollPanel;
+    private Runnable onDiceRequested;
     private final Dice diceModel;
     private BiConsumer<Integer, Integer> onDiceRolled;
 
     private final DetectiveButton detectiveButton = new DetectiveButton();
     private final JButton accusationButton = new JButton("Accusation Card");
     private final JButton diceButton = new JButton("Tirar dados");
+    private final JPanel diceResultPanel = new JPanel(new BorderLayout());
+    private final JLabel diceResultLabel = new JLabel("", SwingConstants.CENTER);
+    private final JLabel diceResultHint = new JLabel("", SwingConstants.CENTER);
+    private boolean diceResultVisible;
 
     public GameActionsPanel() {
         this(new Dice());
@@ -37,6 +41,12 @@ public final class GameActionsPanel extends JPanel {
     public GameActionsPanel(Dice dice) {
         super(new BorderLayout());
         this.diceModel = java.util.Objects.requireNonNull(dice, "Dice model cannot be null");
+        this.diceRollPanel = new DiceRollPanel(diceModel, new Random());
+        diceRollPanel.setVisible(false);
+        diceRollPanel.setOnRollComplete((first, second) -> {
+            showDiceResult(first, second);
+            if (onDiceRolled != null) onDiceRolled.accept(first, second);
+        });
 
         setBackground(new Color(25, 55, 75));
         setBorder(BorderFactory.createEmptyBorder(10, 12, 12, 12));
@@ -50,7 +60,7 @@ public final class GameActionsPanel extends JPanel {
         accusationButton.setBackground(new Color(238, 207, 105));
         accusationButton.setFocusPainted(false);
         accusationButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        accusationButton.setPreferredSize(new Dimension(0, 55));
+        accusationButton.setPreferredSize(new Dimension(0, 35));
 
         accusationButton.addActionListener(event -> showAccusationCard());
 
@@ -61,22 +71,40 @@ public final class GameActionsPanel extends JPanel {
 
         accusationButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         detectiveButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        detectiveButton.setPreferredSize(new Dimension(310, 35));
 
         buttonsPanel.add(accusationButton);
         buttonsPanel.add(Box.createVerticalStrut(10));
         buttonsPanel.add(detectiveButton);
         buttonsPanel.add(Box.createVerticalStrut(10));
 
-        // Ventana de dados animados; no interfiere con las otras tarjetas.
+        // Los dados aparecen encima de la mesa, no en un JDialog.
         diceButton.setFont(new Font("Georgia", Font.BOLD, 17));
         diceButton.setForeground(new Color(229, 211, 177));
         diceButton.setBackground(new Color(64, 38, 28));
         diceButton.setFocusPainted(false);
         diceButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        diceButton.setPreferredSize(new Dimension(0, 45));
+        diceButton.setPreferredSize(new Dimension(0, 35));
         diceButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        diceButton.addActionListener(event -> showDiceDialog());
+        diceButton.addActionListener(event -> showDiceOnTable());
         buttonsPanel.add(diceButton);
+
+        // Espacio fijo bajo el boton: el resto de controles no se mueve al aparecer el resultado.
+        diceResultPanel.setOpaque(false);
+        diceResultPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        diceResultPanel.setPreferredSize(new Dimension(240, 60));
+        diceResultPanel.setMinimumSize(new Dimension(170, 60));
+        diceResultPanel.setMaximumSize(new Dimension(240, 60));
+
+        diceResultLabel.setFont(new Font("Georgia", Font.BOLD, 21));
+        diceResultLabel.setForeground(new Color(240, 220, 180));
+        diceResultHint.setFont(new Font("Arial", Font.PLAIN, 11));
+        diceResultHint.setForeground(new Color(205, 180, 143));
+
+        diceResultPanel.add(diceResultLabel, BorderLayout.CENTER);
+        diceResultPanel.add(diceResultHint, BorderLayout.SOUTH);
+        buttonsPanel.add(Box.createVerticalStrut(8));
+        buttonsPanel.add(diceResultPanel);
 
         add(buttonsPanel, BorderLayout.SOUTH);
     }
@@ -207,31 +235,52 @@ public final class GameActionsPanel extends JPanel {
         });
     }
 
-    // DADOS ANIMADOS
+    // DADOS ANIMADOS SOBRE EL TABLERO
 
-    public void showDiceDialog() {
-        if (diceDialog == null || !diceDialog.isDisplayable()) {
-            Window owner = SwingUtilities.getWindowAncestor(this);
-            diceDialog = new JDialog(owner, "Dados del destino", Dialog.ModalityType.MODELESS);
-            diceDialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-            diceRollPanel = new DiceRollPanel(diceModel, new Random());
-            diceRollPanel.setOnRollComplete(onDiceRolled);
-            WoodTablePanel background = new WoodTablePanel(new BorderLayout());
-            background.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-            background.add(diceRollPanel, BorderLayout.CENTER);
-            diceDialog.setContentPane(background);
-            diceDialog.setSize(720, 490);
-            diceDialog.setMinimumSize(new Dimension(400, 330));
-            diceDialog.setLocationRelativeTo(owner);
-        }
-        diceDialog.setVisible(true);
-        diceDialog.toFront();
+    /** El contenedor principal instala la accion que activa la capa de dados. */
+    public void setOnDiceRequested(Runnable listener) {
+        onDiceRequested = listener;
     }
 
-    /** Enlaza la tirada animada con la lógica de turnos si se desea. */
+    public void showDiceOnTable() {
+        if (onDiceRequested == null) return;
+        if (diceRollPanel.isVisible() || diceRollPanel.isHolding() || diceRollPanel.isRolling()) return;
+        clearDiceResult();
+        onDiceRequested.run();
+    }
+
+    /** El resultado queda visible en el panel derecho hasta la siguiente tirada. */
+    private void showDiceResult(int first, int second) {
+        diceResultLabel.setText(first + " + " + second + " = " + (first + second));
+        diceResultHint.setText("Resultado final");
+        diceResultPanel.setBackground(new Color(29, 19, 13));
+        diceResultPanel.setOpaque(true);
+        diceResultPanel.setBorder(BorderFactory.createLineBorder(new Color(205, 165, 105), 2));
+        diceResultVisible = true;
+        diceResultPanel.repaint();
+    }
+
+    private void clearDiceResult() {
+        diceResultLabel.setText("");
+        diceResultHint.setText("");
+        diceResultPanel.setOpaque(false);
+        diceResultPanel.setBorder(null);
+        diceResultVisible = false;
+        diceResultPanel.repaint();
+    }
+
+    /** Permite comprobar el resultado sin acceder a componentes internos. */
+    public boolean isDiceResultVisible() { return diceResultVisible; }
+    public String getDiceResultText() { return diceResultLabel.getText(); }
+
+    /** Alias compatible con el codigo anterior; ya no abre un dialogo. */
+    public void showDiceDialog() {
+        showDiceOnTable();
+    }
+
+    /** Permite integrar el resultado con el juego (movimientos, historial, etc.). */
     public void setOnDiceRolled(BiConsumer<Integer, Integer> listener) {
         onDiceRolled = listener;
-        if (diceRollPanel != null) diceRollPanel.setOnRollComplete(listener);
     }
 
     public JButton getDiceButton() {

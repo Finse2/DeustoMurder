@@ -71,6 +71,8 @@ public final class InGameScreen extends JFrame {
     private final GameHistoryPanel historyPanel;   // HISTORY
     private final GameActionsPanel actionsPanel;   // ACTIONS
     private JScrollPane boardScrollPane;           // BOARD (scroll + zoom)
+    private JLayeredPane boardLayer;                // BOARD + dice overlay
+    private final DiceRollPanel diceRollPanel;
     private JPanel boardCanvas;                    // BOARD (inside viewport)
 
     private static final int GAP = 15;
@@ -108,6 +110,9 @@ public final class InGameScreen extends JFrame {
         this.chatRenderer = new ChatRenderer(chat, playerColors);
         this.historyPanel = new GameHistoryPanel(history, actors);
         this.actionsPanel = new GameActionsPanel();
+        this.diceRollPanel = actionsPanel.getDiceRollPanel();
+        diceRollPanel.setVisible(false);
+        actionsPanel.setOnDiceRequested(() -> diceRollPanel.prepareRoll());
 
         configureWindow();
         defineScreenPanels(hand);     // 1. Create and configure each named region.
@@ -157,6 +162,17 @@ public final class InGameScreen extends JFrame {
 
         // CENTER: the board and its own scrollable viewport.
         boardScrollPane = createBoardScrollPane();
+        boardLayer = new JLayeredPane() {
+            @Override
+            public void doLayout() {
+                boardScrollPane.setBounds(0, 0, getWidth(), getHeight());
+                diceRollPanel.setBounds(0, 0, getWidth(), getHeight());
+            }
+        };
+        boardLayer.setOpaque(false);
+        boardLayer.setName("area.boardAndDice");
+        boardLayer.add(boardScrollPane, JLayeredPane.DEFAULT_LAYER);
+        boardLayer.add(diceRollPanel, JLayeredPane.PALETTE_LAYER);
         boardScrollPane.setName("area.board");
         boardCanvas.setName("area.boardCanvas");
 
@@ -217,7 +233,7 @@ public final class InGameScreen extends JFrame {
 
         // MAIN ROW
         gameRowPanel.add(playersColumnPanel, BorderLayout.WEST);
-        gameRowPanel.add(boardScrollPane, BorderLayout.CENTER);
+        gameRowPanel.add(boardLayer, BorderLayout.CENTER);
         gameRowPanel.add(rightColumnPanel, BorderLayout.EAST);
 
         // BOTTOM ROW
@@ -588,6 +604,11 @@ public final class InGameScreen extends JFrame {
 
     public JScrollPane getBoardScrollPane() {
         return boardScrollPane;
+    }
+
+    /** Capa animada situada directamente encima del tablero y de la mesa. */
+    public DiceRollPanel getDiceRollPanel() {
+        return diceRollPanel;
     }
 
     public void openSettings() {

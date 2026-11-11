@@ -22,7 +22,7 @@ public final class DiceRollMock {
 
             WoodTablePanel table = new WoodTablePanel(new BorderLayout());
             DiceRollPanel dice = new DiceRollPanel();
-            JLabel result = new JLabel("Mantén pulsado sobre los dados y suelta para lanzarlos", SwingConstants.CENTER);
+            JLabel result = new JLabel("Mantén pulsado sobre la mesa y suelta para lanzar los dados", SwingConstants.CENTER);
             result.setForeground(new Color(220, 199, 163));
             result.setFont(new Font("Georgia", Font.BOLD, 16));
 
@@ -33,6 +33,7 @@ public final class DiceRollMock {
             });
 
             table.add(dice, BorderLayout.CENTER);
+            dice.prepareRoll();
             table.add(result, BorderLayout.SOUTH);
             window.setContentPane(table);
             window.setSize(800, 570);
