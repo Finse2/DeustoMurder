@@ -41,6 +41,9 @@ public final class Client {
 
         default void onGameOver(String winner) {}
 
+        /** Full server result, including winner ID, for reliable local profile accounting. */
+        default void onGameOverPacket(GameOverPacket packet) {}
+
         default void onChatMessage(int playerID, String senderName, String text) {}
 
         default void onDisconnected() {}
@@ -172,6 +175,7 @@ public final class Client {
             listener.onGameStarted();
         } else if (packet instanceof GameOverPacket gameOverPacket && gameOverPacket.getGameOver()) {
             listener.onGameOver(gameOverPacket.getWinner());
+            listener.onGameOverPacket(gameOverPacket);
         }
     }
 }
