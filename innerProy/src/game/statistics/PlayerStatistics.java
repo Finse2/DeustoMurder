@@ -30,6 +30,35 @@ public class PlayerStatistics {
         this.playerName = playerName == null ? "" : playerName;
     }
 
+    /**
+     * Restore a previously saved local profile. Validate invariants so damaged
+     * files cannot turn the win rate or counters into inconsistent values.
+     */
+    public static PlayerStatistics fromPersisted(
+            int playerId, String playerName, int gamesPlayed, int wins, int losses,
+            int accusationsMade, int correctAccusations, int incorrectAccusations,
+            long totalGameDurationMillis) {
+        if (gamesPlayed < 0 || wins < 0 || losses < 0 || wins + (long) losses != gamesPlayed
+                || accusationsMade < 0 || correctAccusations < 0 || incorrectAccusations < 0
+                || correctAccusations + (long) incorrectAccusations != accusationsMade
+                || totalGameDurationMillis < 0) {
+            throw new IllegalArgumentException("Invalid saved player statistics");
+        }
+        PlayerStatistics result = new PlayerStatistics(playerId, playerName);
+        result.gamesPlayed = gamesPlayed;
+        result.wins = wins;
+        result.losses = losses;
+        result.accusationsMade = accusationsMade;
+        result.correctAccusations = correctAccusations;
+        result.incorrectAccusations = incorrectAccusations;
+        result.totalGameDurationMillis = totalGameDurationMillis;
+        return result;
+    }
+
+    public synchronized long getTotalGameDurationMillis() {
+        return totalGameDurationMillis;
+    }
+
     public synchronized void updateName (String name) {
         if (name != null && !name.trim().isEmpty()) {
             playerName = name.trim();
