@@ -127,5 +127,42 @@ public class PlayerStatistics {
                 String.format("%.1f%%", getWinRate() * 100) +
                 '}';
     }
+    public synchronized long getTotalGameDurationMillis() {
+        return totalGameDurationMillis;
+    }
+
+    public static PlayerStatistics fromPersisted(
+            int playerId,
+            String playerName,
+            int gamesPlayed,
+            int wins,
+            int losses,
+            int accusationsMade,
+            int correctAccusations,
+            int incorrectAccusations,
+            long totalGameDurationMillis
+    ) {
+        if (gamesPlayed < 0 || wins < 0 || losses < 0 ||
+                (long) wins + losses != gamesPlayed ||
+                accusationsMade < 0 ||
+                correctAccusations < 0 ||
+                incorrectAccusations < 0 ||
+                (long) correctAccusations + incorrectAccusations != accusationsMade ||
+                totalGameDurationMillis < 0) {
+            throw new IllegalArgumentException("Invalid saved statistics");
+        }
+
+        PlayerStatistics stats = new PlayerStatistics(playerId, playerName);
+
+        stats.gamesPlayed = gamesPlayed;
+        stats.wins = wins;
+        stats.losses = losses;
+        stats.accusationsMade = accusationsMade;
+        stats.correctAccusations = correctAccusations;
+        stats.incorrectAccusations = incorrectAccusations;
+        stats.totalGameDurationMillis = totalGameDurationMillis;
+
+        return stats;
+    }
 
 }
