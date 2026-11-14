@@ -7,9 +7,9 @@ import model.Room;
 import model.Weapon;
 import ui.match.cardDisplayer.PlayersCardsRenderer;
 import ui.match.cardDisplayer.PlayersHandsRendererHeader;
-import utils.AllPaths.Resources.DefaultCardModels.ActorsData;
-import utils.AllPaths.Resources.DefaultCardModels.RoomsData;
-import utils.AllPaths.Resources.DefaultCardModels.WeaponsData;
+import utils.AllPaths.DefaultCardModels.ActorsData;
+import utils.AllPaths.DefaultCardModels.RoomsData;
+import utils.AllPaths.DefaultCardModels.WeaponsData;
 
 import javax.swing.*;
 import java.awt.*;

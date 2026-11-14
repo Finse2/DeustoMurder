@@ -69,16 +69,16 @@ class RoomsLook extends JComponent {
                 .toUpperCase(Locale.ROOT);
 
         return switch (normalized) {
-            case "CRY", "CRAI" -> AllPaths.Resources.BoardRooms.CRAI;
-            case "BANOS" -> AllPaths.Resources.BoardRooms.BANOS;
-            case "CAFETERIA", "CAFTERIA" -> AllPaths.Resources.BoardRooms.CAFETERIA;
-            case "MAQUINAS", "SALADEMAQUINAS" -> AllPaths.Resources.BoardRooms.MAQUINAS;
-            case "LABORATORIO", "LABORATORIOS" -> AllPaths.Resources.BoardRooms.LABORATORIO;
-            case "DEUSTOTECH" -> AllPaths.Resources.BoardRooms.DEUSTOTECH;
-            case "AULA1", "AULAE208" -> AllPaths.Resources.BoardRooms.AULA_1;
-            case "AULA2" -> AllPaths.Resources.BoardRooms.AULA_2;
-            case "ROOM9" -> AllPaths.Resources.BoardRooms.ROOM_9;
-            case "ROOM10" -> AllPaths.Resources.BoardRooms.ROOM_10;
+            case "CRY", "CRAI" -> AllPaths.BoardRooms.CRAI;
+            case "BANOS" -> AllPaths.BoardRooms.BANOS;
+            case "CAFETERIA", "CAFTERIA" -> AllPaths.BoardRooms.CAFETERIA;
+            case "MAQUINAS", "SALADEMAQUINAS" -> AllPaths.BoardRooms.MAQUINAS;
+            case "LABORATORIO", "LABORATORIOS" -> AllPaths.BoardRooms.LABORATORIO;
+            case "DEUSTOTECH" -> AllPaths.BoardRooms.DEUSTOTECH;
+            case "AULA1", "AULAE208" -> AllPaths.BoardRooms.AULA_1;
+            case "AULA2" -> AllPaths.BoardRooms.AULA_2;
+            case "ROOM9" -> AllPaths.BoardRooms.ROOM_9;
+            case "ROOM10" -> AllPaths.BoardRooms.ROOM_10;
             default -> null;
         };
     }

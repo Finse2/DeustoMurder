@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import utils.AllThemes;
+import utils.AllFonts;
 
 /**
  * Contenedor principal de la partida. El tablero se muestra dentro de un
@@ -74,11 +76,6 @@ public final class InGameScreen extends JFrame {
     private static final int CONTROL_HEIGHT = 70;
     private static final int CONTROL_WIDTH = 295;
     private static final int HAND_HEIGHT = 210;
-
-    private static final Color SCREEN_BACKGROUND = Color.BLACK;
-    private static final Color HEADER_BACKGROUND = new Color(16, 30, 38);
-    private static final Color SECTION_BACKGROUND = new Color(25, 52, 67);
-    private static final Color SECTION_BORDER = new Color(58, 36, 24);
 
     private double zoom = 1.0;
     private int baseTileSize = 25;
@@ -166,7 +163,7 @@ public final class InGameScreen extends JFrame {
         // Entire window.
         rootPanel = new WoodTablePanel(new BorderLayout(GAP, GAP));
         rootPanel.setName("area.root");
-        rootPanel.setBackground(SCREEN_BACKGROUND);
+        rootPanel.setBackground(AllThemes.NegroDM);
         rootPanel.setBorder(BorderFactory.createEmptyBorder(GAP, GAP, GAP, GAP));
 
         // Main horizontal row (players | board | sidebar).
@@ -182,7 +179,7 @@ public final class InGameScreen extends JFrame {
 
         logoPanel = createDeustoLogoPanel();
         logoPanel.setName("area.logo");
-        logoPanel.setBackground(HEADER_BACKGROUND);
+        logoPanel.setBackground(AllThemes.AzulOscuroDM);
         logoPanel.setPreferredSize(new Dimension(0, HEADER_HEIGHT));
 
         playersPanel = createPlayersPanel();
@@ -212,7 +209,7 @@ public final class InGameScreen extends JFrame {
 
         controlsPanel = createHeaderControlsPanel();
         controlsPanel.setName("area.headerControls");
-        controlsPanel.setBackground(HEADER_BACKGROUND);
+        controlsPanel.setBackground(AllThemes.AzulOscuroDM);
         controlsPanel.setPreferredSize(new Dimension(CONTROL_WIDTH, CONTROL_HEIGHT));
 
         historyChatPanel = new JPanel(new GridLayout(2, 1, 0, 8));
@@ -366,9 +363,7 @@ public final class InGameScreen extends JFrame {
 
     /** Botones de cabecera: esquinas redondeadas y contorno contrastado. */
     private static final class HeaderButton extends JButton {
-        private static final Color NORMAL = new Color(6, 25, 39);
-        private static final Color HOVER = new Color(16, 45, 62);
-        private static final Color OUTLINE = new Color(112, 146, 163);
+
         private final boolean exit;
         private boolean hovered;
 
@@ -376,7 +371,7 @@ public final class InGameScreen extends JFrame {
             super(label);
             this.exit = exit;
             setPreferredSize(new Dimension(width, 50));
-            setFont(new Font("Georgia", Font.BOLD, 18));
+            setFont(AllFonts.GEORGIA_BOLD_18);
             setForeground(new Color(243, 246, 247));
             setHorizontalAlignment(SwingConstants.CENTER);
             setVerticalAlignment(SwingConstants.CENTER);
@@ -394,11 +389,11 @@ public final class InGameScreen extends JFrame {
         @Override
         protected void paintComponent(Graphics graphics) {
             Graphics2D g = (Graphics2D) graphics.create();
-            g.setColor(hovered ? HOVER : NORMAL);
+            g.setColor(hovered ? AllThemes.AzulVerdosoDM : AllThemes.AzulOscuro2DM);
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
             g.fillRoundRect(2, 2, getWidth() - 5, getHeight() - 5, 16, 16);
-            g.setColor(OUTLINE);
+            g.setColor(AllThemes.AzulClaroDM);
             g.setStroke(new BasicStroke(2f));
             g.drawRoundRect(2, 2, getWidth() - 5, getHeight() - 5, 16, 16);
             g.dispose();
@@ -409,7 +404,7 @@ public final class InGameScreen extends JFrame {
                 icon.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                         RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
                 icon.setColor(getForeground());
-                icon.setFont(new Font("SansSerif", Font.BOLD, 23));
+                icon.setFont(AllFonts.SANS_SERIF_BOLD_23);
                 FontMetrics metrics = icon.getFontMetrics();
                 int baseline = (getHeight() - metrics.getHeight()) / 2 + metrics.getAscent();
                 icon.drawString("X", 13, baseline);
@@ -428,8 +423,8 @@ public final class InGameScreen extends JFrame {
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
         );
-        boardScrollPane.setBorder(BorderFactory.createLineBorder(new Color(45, 24, 16), 6));
-        boardScrollPane.getViewport().setBackground(new Color(32, 17, 11));
+        boardScrollPane.setBorder(BorderFactory.createLineBorder(AllThemes.MarronOscuro3DM, 6));
+        boardScrollPane.getViewport().setBackground(AllThemes.Granate2DM);
         boardScrollPane.setWheelScrollingEnabled(false);
         boardScrollPane.getVerticalScrollBar().setUnitIncrement(30);
         boardScrollPane.getHorizontalScrollBar().setUnitIncrement(30);
@@ -577,7 +572,7 @@ public final class InGameScreen extends JFrame {
     private JPanel createPlayersPanel() {
         panelJugadores = new JPanel();
         panelJugadores.setLayout(new BoxLayout(panelJugadores, BoxLayout.Y_AXIS));
-        panelJugadores.setBackground(SECTION_BACKGROUND);
+        panelJugadores.setBackground(AllThemes.AzulVerdosoDM);
 
         playerCountLabel = new JLabel("Connected Players (0)");
         playerCountLabel.setFont(new Font("Georgia", Font.BOLD, 18));
@@ -587,7 +582,7 @@ public final class InGameScreen extends JFrame {
 
         playersTitleLabel = new JLabel("Jugadores:");
         playersTitleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        playersTitleLabel.setForeground(Color.WHITE);
+        playersTitleLabel.setForeground(AllThemes.BlancoDM);
         playersTitleLabel.setBorder(BorderFactory.createEmptyBorder(0, 12, 8, 12));
         panelJugadores.add(playersTitleLabel);
 
@@ -599,9 +594,9 @@ public final class InGameScreen extends JFrame {
 
     private void styleSectionPanel(JComponent component) {
         component.setOpaque(true);
-        component.setBackground(SECTION_BACKGROUND);
+        component.setBackground(AllThemes.AzulVerdosoDM);
         component.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(SECTION_BORDER, 3),
+                BorderFactory.createLineBorder(AllThemes.MarronOscuro2DM, 3),
                 BorderFactory.createEmptyBorder(3, 3, 3, 3)
         ));
     }
@@ -691,7 +686,7 @@ public final class InGameScreen extends JFrame {
 
         JScrollPane scrollPane = CluedoTableTheme.styleConnection(statsTable);
 
-        statsFrame.getContentPane().setBackground(new Color(20, 22, 27));
+        statsFrame.getContentPane().setBackground(AllThemes.MarinoDM);
         statsFrame.add(scrollPane);
 
         statsFrame.setSize(450, 300);
@@ -769,21 +764,21 @@ public final class InGameScreen extends JFrame {
             boolean current = player == active;
             JPanel entry = new JPanel(new BorderLayout(10, 0));
             entry.setOpaque(true);
-            entry.setBackground(current ? new Color(70, 69, 48) : new Color(29, 55, 70));
+            entry.setBackground(current ? AllThemes.VerdeTierraDM : AllThemes.AzulVerdosoDM);
             entry.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(current ? new Color(230, 195, 95) : new Color(74, 49, 35), current ? 2 : 1),
+                    BorderFactory.createLineBorder(current ? AllThemes.DoradorDM : AllThemes.MarronDM, current ? 2 : 1),
                     BorderFactory.createEmptyBorder(8, 10, 8, 10)));
             entry.setMaximumSize(new Dimension(Integer.MAX_VALUE, 55));
             entry.setAlignmentX(Component.LEFT_ALIGNMENT);
 
             JLabel color = new JLabel("●");
-            color.setFont(new Font("Arial", Font.BOLD, 22));
+            color.setFont(AllFonts.ARIAL_BOLD_12);
             color.setForeground(player.getPiece().getColor());
             entry.add(color, BorderLayout.WEST);
 
-            JLabel name = new JLabel(player.getName() + (current ? "  ◀" : ""));
-            name.setFont(new Font("Georgia", Font.BOLD, 15));
-            name.setForeground(new Color(235, 229, 212));
+            JLabel name = new JLabel(player.getName() + (current ? " ◀ " : ""));
+            name.setFont(AllFonts.GEORGIA_BOLD_15);
+            name.setForeground(AllThemes.CremaDM);
             entry.add(name, BorderLayout.CENTER);
             panelJugadores.add(entry);
             panelJugadores.add(Box.createVerticalStrut(5));
@@ -816,7 +811,7 @@ public final class InGameScreen extends JFrame {
 
             playerPanel.setBorder(
                     BorderFactory.createCompoundBorder(
-                            BorderFactory.createLineBorder(new Color(74, 49, 35)),
+                            BorderFactory.createLineBorder(AllThemes.MarronOscuroDM),
                             BorderFactory.createEmptyBorder(10, 12, 10, 12)
                     )
             );
@@ -828,8 +823,8 @@ public final class InGameScreen extends JFrame {
             infoPanel.setOpaque(false);
 
             JLabel name = new JLabel(player.name());
-            name.setFont(new Font("Georgia", Font.BOLD, 15));
-            name.setForeground(new Color(235, 229, 212));
+            name.setFont(AllFonts.GEORGIA_BOLD_15);
+            name.setForeground(AllThemes.CremaDM);
             infoPanel.add(name);
 
             ImageIcon icon1 = new ImageIcon("innerProy/ressources/PerfilDet.png");
@@ -841,7 +836,7 @@ public final class InGameScreen extends JFrame {
             infoPanel.add(icono);
 
             playerPanel.setOpaque(true);
-            playerPanel.setBackground(new Color(30, 55, 70));
+            playerPanel.setBackground(AllThemes.AzulVerdosoDM);
             playerPanel.add(infoPanel, BorderLayout.CENTER);
 
             panelJugadores.add(playerPanel);

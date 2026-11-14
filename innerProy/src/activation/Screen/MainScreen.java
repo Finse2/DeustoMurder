@@ -25,11 +25,15 @@ import java.nio.Buffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
+import utils.AllFonts;
+import utils.AllThemes;
+
 /**
  * The MainScreen class represents the main user interface of the application.
  * It extends JFrame and provides functionality for hosting and joining games,
  * managing user profiles, and displaying various settings and statistics.
  */
+
 public class MainScreen extends JFrame {
     private static final Path PROFILE_PATH = Path.of(System.getProperty("user.home"), ".deustoCluedo", "profile.png");
     private static final Path DEFAULT_PROFILE_PATH = Path.of("innerProy", "ressources", "DefaultProfile.jpg");
@@ -78,8 +82,8 @@ public class MainScreen extends JFrame {
         JPanel northPanel = new JPanel(new BorderLayout());
 
         JLabel Title = new JLabel("Deusto Cluedo", SwingConstants.CENTER);
-        Title.setFont(new Font("Arial", Font.BOLD, 32));
-        Title.setForeground(Color.RED);
+        Title.setFont(AllFonts.GEORGIA_BOLD_24);
+        Title.setForeground(AllThemes.RojoDM);
         northPanel.add(Title, BorderLayout.CENTER);
         northPanel.setOpaque(false);
 
@@ -144,11 +148,11 @@ public class MainScreen extends JFrame {
         // Center MENU
         JPanel centerPanel = new JPanel(new BorderLayout());
         JLabel welcome = new JLabel("Welcome, Detective", SwingConstants.CENTER);
-        welcome.setFont(new Font("Georgia", Font.BOLD, 24));
-        welcome.setForeground(new Color(235, 215, 100));
+        welcome.setFont(AllFonts.GEORGIA_BOLD_24);
+        welcome.setForeground(AllThemes.DoradorDM);
         JLabel welcome2 = new JLabel("A Deusto version of the famous game Cluedo", SwingConstants.CENTER);
-        welcome2.setFont(new Font("Georgia", Font.PLAIN, 14));
-        welcome2.setForeground(new Color(220, 200, 175));
+        welcome2.setFont(AllFonts.GEORGIA_PLAIN_14);
+        welcome2.setForeground(AllThemes.CremaDM);
         centerPanel.add(welcome, BorderLayout.NORTH);
         centerPanel.add(welcome2, BorderLayout.SOUTH);
         centerPanel.setOpaque(false);
@@ -158,6 +162,8 @@ public class MainScreen extends JFrame {
         // South Menu
         JPanel southPanel = new JPanel();
         JLabel status = new JLabel("Deusto Clue version 1.0", SwingConstants.CENTER);
+        status.setFont(AllFonts.GEORGIA_PLAIN_14);
+        status.setForeground(AllThemes.CremaDM);
         southPanel.add(status);
         southPanel.setOpaque(false);
         add(southPanel, BorderLayout.SOUTH);

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import activation.Screen.*;
 import model.Player;
 import utils.AllThemes;
+import utils.AllFonts;
 
 public class LobbyScreen extends JFrame {
     private static final Path PROFILE_PATH = Path.of(System.getProperty("user.home"), ".deustoCluedo", "profile.png");
@@ -52,7 +53,7 @@ public class LobbyScreen extends JFrame {
         String code = ServerCode.Encode(ServerIP,port,HostNAME);
 
         InlaidMenuButton infoServer= new InlaidMenuButton("Server Information:", this::infoServer);
-        infoServer.setFont(new Font("Georgia", Font.BOLD, 18));
+        infoServer.setFont(AllFonts.GEORGIA_BOLD_18);
         infoServer.setForeground(AllThemes.DoradorDM);
         infoServer.setOpaque(false);
         northPanel.add(infoServer);
@@ -94,9 +95,9 @@ public class LobbyScreen extends JFrame {
         westPanel.setOpaque(false);
         playerCountLabel = new JLabel("Connected Players (0)");
         playerCountLabel.setFont(
-                new Font("Georgia", Font.BOLD, 18)
+                AllFonts.GEORGIA_BOLD_18
         );
-        playerCountLabel.setForeground(new Color(235, 215, 100));
+        playerCountLabel.setForeground(AllThemes.DoradorDM);
         playerCountLabel.setBorder(
                 BorderFactory.createEmptyBorder(12, 12, 12, 12)
         );
@@ -132,9 +133,10 @@ public class LobbyScreen extends JFrame {
         JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         southPanel.setOpaque(false);
         JLabel southVersion = new JLabel("Game Version: 1.0");
-        southVersion.setFont(new Font("Arial", Font.BOLD, 20));
-        southVersion.setForeground(new Color(235, 215, 100));
+        southVersion.setFont(AllFonts.ARIAL_BOLD_20);
+        southVersion.setForeground(AllThemes.DoradorDM);
         southPanel.add(southVersion);
+
         //añadir el panel del sur al panel principal
         lobbyPanel.add(southPanel,BorderLayout.SOUTH);
 
@@ -245,7 +247,7 @@ public class LobbyScreen extends JFrame {
             };
 
             JScrollPane scrollPane = CluedoTableTheme.style(statsTable);
-            infoServer.getContentPane().setBackground(new Color(20, 22, 27));
+            infoServer.getContentPane().setBackground(AllThemes.MarinoDM);
             infoServer.add(scrollPane);
 
 
@@ -295,7 +297,7 @@ public class LobbyScreen extends JFrame {
             playerPanel.setBorder(
                     BorderFactory.createCompoundBorder(
                             BorderFactory.createLineBorder(
-                                    new Color(85, 65, 55)
+                                    AllThemes.MarronOscuroDM
                             ),
                             BorderFactory.createEmptyBorder(
                                     10, 12, 10, 12
@@ -312,14 +314,14 @@ public class LobbyScreen extends JFrame {
             infoPanel.setOpaque(false);
 
             JLabel name = new JLabel(player.name());
-            name.setFont(new Font("Georgia", Font.BOLD, 15));
+            name.setFont(AllFonts.GEORGIA_BOLD_15);
 
             JLabel details = new JLabel(
                     "ID: " + player.playerID()
                             + " | " + player.computerName()
             );
 
-            details.setFont(new Font("Arial", Font.PLAIN, 11));
+            details.setFont(AllFonts.ARIAL_PLAIN_11);
 
             infoPanel.add(name);
             infoPanel.add(details);
@@ -354,12 +356,12 @@ public class LobbyScreen extends JFrame {
         JTable settingsTable = new JTable(Settings.toArray(data), colums) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column != 0; // Make all cells oof the first column non-editable
+                return column != 0; // Make all cells of the first column non-editable
             }
         };
 
         JScrollPane scrollPane = CluedoTableTheme.styleConnection(settingsTable);
-        settingsFrame.getContentPane().setBackground(new Color(20, 22, 27));
+        settingsFrame.getContentPane().setBackground(AllThemes.MarinoDM);
         settingsFrame.add(scrollPane);
 
         settingsFrame.setSize(450, 300);
@@ -389,7 +391,7 @@ public class LobbyScreen extends JFrame {
         };
 
         JScrollPane scrollPane = CluedoTableTheme.style(statsTable);
-        statFrame.getContentPane().setBackground(new Color(20, 22, 27));
+        statFrame.getContentPane().setBackground(AllThemes.MarinoDM);
         statFrame.add(scrollPane);
 
         JButton changePicture = createDialogButton(
@@ -409,9 +411,9 @@ public class LobbyScreen extends JFrame {
 
     private JButton createDialogButton(String text) {
         JButton button = new JButton(text);
-        button.setBackground(new Color(75, 38, 42));
-        button.setForeground(new Color(225, 190, 140));
-        button.setFont(new Font("Georgia", Font.BOLD, 14));
+        button.setBackground(AllThemes.GranateDM);
+        button.setForeground(AllThemes.BeigeDM);
+        button.setFont(AllFonts.GEORGIA_BOLD_14);
         button.setFocusPainted(false);
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.setBorder(BorderFactory.createEmptyBorder(10, 18, 10, 18));

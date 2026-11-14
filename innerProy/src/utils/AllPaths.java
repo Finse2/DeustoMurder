@@ -26,7 +26,7 @@ public final class AllPaths {
 
         private Resources() {}
 
-            public final class AchievementImages {
+            public static final class AchievementImages {
 
                 private AchievementImages() {}
 
