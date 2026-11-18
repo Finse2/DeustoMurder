@@ -1,6 +1,8 @@
 package ui.match.inGameScreen;
 
 import Networking.packets.GameOverPacket;
+import utils.AllFonts;
+import utils.AllThemes;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -11,10 +13,6 @@ import java.util.Objects;
 
 public final class WinnerScreen extends JFrame {
 
-    private static final Color GOLD = new Color(218, 183, 105);
-    private static final Color IVORY = new Color(250, 235, 203);
-    private static final Color MUTED = new Color(173, 164, 161);
-    private static final Color BURGUNDY = new Color(91, 37, 49);
 
     private final Timer revealTimer;
     private final FadePanel headline;
@@ -56,28 +54,28 @@ public final class WinnerScreen extends JFrame {
         headline.setLayout(new BoxLayout(headline, BoxLayout.Y_AXIS));
         headline.setAlignmentX(Component.CENTER_ALIGNMENT);
         headline.add(centeredLabel("✦  DEUSTO CLUEDO  ✦",
-                new Font("Georgia", Font.BOLD, 15), MUTED));
+                AllFonts.GEORGIA_PLAIN_14, AllThemes.CremaDM));
         headline.add(Box.createVerticalStrut(14));
         headline.add(centeredLabel("THE MYSTERY HAS BEEN SOLVED",
-                new Font("Georgia", Font.BOLD, 28), GOLD));
+                AllFonts.GEORGIA_BOLD_28, AllThemes.DoradorDM));
         headline.add(Box.createVerticalStrut(22));
         headline.add(centeredLabel(localPlayerWon ? "YOU WON!" : "THE WINNER IS",
-                new Font("Georgia", Font.BOLD, 21), IVORY));
+                AllFonts.GEORGIA_BOLD_21, AllThemes.CremaDM));
         headline.add(Box.createVerticalStrut(10));
         int nameSize = winnerName.length() > 23 ? 33 : winnerName.length() > 15 ? 41 : 52;
         headline.add(centeredLabel(winnerName,
-                new Font("Georgia", Font.BOLD, nameSize), GOLD));
+                new Font("Georgia", Font.BOLD, nameSize), AllThemes.DoradorDM));
         headline.add(Box.createVerticalStrut(9));
         headline.add(centeredLabel(localPlayerWon
                         ? "You uncovered the truth. Case closed."
                         : "The case has finally been solved.",
-                new Font("SansSerif", Font.PLAIN, 15), MUTED));
+                AllFonts.SANS_SERIF_PLAIN_15, AllThemes.CremaDM));
 
         evidence = new FadePanel();
         evidence.setLayout(new BoxLayout(evidence, BoxLayout.Y_AXIS));
         evidence.setAlignmentX(Component.CENTER_ALIGNMENT);
         evidence.add(centeredLabel("THE FINAL REVELATION",
-                new Font("Georgia", Font.BOLD, 19), IVORY));
+                AllFonts.GEORGIA_BOLD_19, AllThemes.CremaDM));
         evidence.add(Box.createVerticalStrut(18));
 
         JPanel cards = new JPanel(new GridLayout(1, 3, 17, 0));
@@ -91,13 +89,13 @@ public final class WinnerScreen extends JFrame {
         evidence.add(cards);
 
         JButton returnButton = new JButton("RETURN TO MAIN MENU");
-        returnButton.setFont(new Font("Georgia", Font.BOLD, 15));
-        returnButton.setForeground(IVORY);
-        returnButton.setBackground(BURGUNDY);
+        returnButton.setFont(AllFonts.GEORGIA_BOLD_15);
+        returnButton.setForeground(AllThemes.CremaDM);
+        returnButton.setBackground(AllThemes.GranateDM);
         returnButton.setFocusPainted(false);
         returnButton.setOpaque(true);
         returnButton.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(GOLD, 1),
+                BorderFactory.createLineBorder(AllThemes.DoradorDM, 1),
                 new EmptyBorder(14, 28, 14, 28)));
         returnButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         returnButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -202,15 +200,15 @@ public final class WinnerScreen extends JFrame {
             super.paintComponent(graphics);
             Graphics2D g2 = (Graphics2D) graphics.create();
             g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-            g2.setPaint(new GradientPaint(0, 0, new Color(31, 17, 25),
-                    0, getHeight(), new Color(10, 12, 19)));
+            g2.setPaint(new GradientPaint(0, 0, AllThemes.Granate2DM,
+                    0, getHeight(), AllThemes.NegroDM));
             g2.fillRect(0, 0, getWidth(), getHeight());
 
             float radius = Math.max(1, Math.max(getWidth(), getHeight()) * .68f);
             g2.setPaint(new RadialGradientPaint(
                     new Point(getWidth() / 2, getHeight() / 3), radius,
                     new float[]{0f, 1f},
-                    new Color[]{new Color(128, 80, 45, 58), new Color(10, 12, 19, 0)}));
+                    new Color[]{AllThemes.MarronOscuro2DM, AllThemes.MoradoOscuroDM}));
             g2.fillRect(0, 0, getWidth(), getHeight());
             g2.dispose();
         }
@@ -222,12 +220,12 @@ public final class WinnerScreen extends JFrame {
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
             setBorder(new EmptyBorder(20, 12, 16, 12));
 
-            add(centeredLabel(number, new Font("Georgia", Font.BOLD, 19), GOLD));
+            add(centeredLabel(number, AllFonts.GEORGIA_BOLD_19, AllThemes.DoradorDM));
             add(Box.createVerticalStrut(8));
-            add(centeredLabel(category, new Font("SansSerif", Font.BOLD, 12), MUTED));
+            add(centeredLabel(category, AllFonts.SANS_SERIF_BOLD_12, AllThemes.CremaDM));
             add(Box.createVerticalStrut(17));
             int fontSize = solution.length() > 18 ? 15 : 20;
-            add(centeredLabel(solution, new Font("Georgia", Font.BOLD, fontSize), IVORY));
+            add(centeredLabel(solution, new Font("Georgia", Font.BOLD, fontSize), AllThemes.CremaDM));
         }
 
         @Override
@@ -235,9 +233,9 @@ public final class WinnerScreen extends JFrame {
             Graphics2D g2 = (Graphics2D) graphics.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             Shape box = new RoundRectangle2D.Float(1, 1, getWidth() - 3, getHeight() - 3, 20, 20);
-            g2.setColor(new Color(30, 28, 37, 235));
+            g2.setColor(AllThemes.MoradoOscuroDM);
             g2.fill(box);
-            g2.setColor(new Color(122, 90, 59));
+            g2.setColor(AllThemes.MielDM);
             g2.setStroke(new BasicStroke(1.2f));
             g2.draw(box);
             g2.dispose();

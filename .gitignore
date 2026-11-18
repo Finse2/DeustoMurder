@@ -1,16 +1,38 @@
-# IntelliJ IDEA local settings
-.idea/workspace.xml
-
-# Java compiled files
+# Código compilado
 *.class
-
-# IntelliJ build output
-out/
-
-# Other Java build directories
-target/
+bin/
 build/
+out/
+target/
 
-# Temporary files
+# Logs y errores de la JVM
 *.log
-*.tmp
+hs_err_pid*
+
+# Eclipse
+.metadata/
+.settings/
+.project
+.classpath
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# Ficheros de SQLite
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# Ficheros del sistema operativo y temporales
+.DS_Store
+Thumbs.db
+desktop.ini
+*.bak
+*~
