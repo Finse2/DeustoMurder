@@ -4,7 +4,6 @@ import Networking.common.Packet;
 import Networking.common.PacketType;
 import Networking.packets.CardShowPacket;
 import Networking.packets.ChatMessagePacket;
-import Networking.packets.GameOverPacket;
 import Networking.packets.JoinAcceptedPacket;
 import Networking.packets.JoinPacket;
 import Networking.packets.PlayerJoinedPacket;

@@ -9,13 +9,12 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../Java - Intelliji2/university/lib/rqlite-jdbc-9.1.2.1.jar!/" />
+          <root url="jar://$USER_HOME$/Java - Intelliji2/university/lib/rqlite-jdbc-9.1.2.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="networking" />
   </component>
 </module>
