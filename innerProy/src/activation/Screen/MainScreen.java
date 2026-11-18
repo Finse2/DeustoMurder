@@ -856,9 +856,9 @@ public class MainScreen extends JFrame {
      */
     private JButton createDialogButton(String text) {
         JButton button = new JButton(text);
-        button.setBackground(new Color(75, 38, 42));
-        button.setForeground(new Color(225, 190, 140));
-        button.setFont(new Font("Georgia", Font.BOLD, 14));
+        button.setBackground(AllThemes.GranateDM);
+        button.setForeground(AllThemes.BeigeDM);
+        button.setFont(AllFonts.GEORGIA_BOLD_14);
         button.setFocusPainted(false);
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.setBorder(BorderFactory.createEmptyBorder(10, 18, 10, 18));
@@ -969,7 +969,7 @@ public class MainScreen extends JFrame {
                 throw new IllegalStateException("Host is Disconected");
             }
             hostClient.startGame();
-        });
+        })
         lobbyScreen.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
