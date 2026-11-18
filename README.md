@@ -283,6 +283,8 @@ DeustoMurder-Main/
 ├── debug.log
 ├── clear
 └── exit
+
+// Este diagrama del proyecto ha sido realizado con la ayuda de ChatGPT: https://chatgpt.com/es-ES/
 ```
 
 La estructura del proyecto irá creciendo a medida que se implementen la red, la lógica del tablero, la interfaz de usuario y los sistemas de gestión del juego.
