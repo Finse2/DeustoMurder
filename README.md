@@ -98,7 +98,7 @@ Más adelante se añadirá red para permitir que varios jugadores participen des
 ## Estructura del proyecto
 
 ```text
-DeustoMurder-David/
+DeustoMurder-Main/
 │
 ├── innerProy/
 │   │
