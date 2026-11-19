@@ -1,35 +1,93 @@
-
 package utils.JDBC;
 
-import java.sql.*;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;
+import java.net.URI;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
+/**
+ * jdbc:sqlite:some/path/database.db -> file-backed SQLite (no server).<br>
+ * jdbc:rqlite:http://localhost:4001 -> managed local rqlite server.<br>
+ * jdbc:rqlite:http://host:4001 -> connect to an existing rqlite server.<br>
+ */
 public class DBManager implements AutoCloseable {
 
-    public Connection connection;
+    public final Connection connection;
 
-    public DBManager(String DB_URL) throws Exception {
-        JDBCDependencyHandler.startServer() ;
-        connection = DriverManager.getConnection(DB_URL);
-    }
-    public DBManager(Connection connection) throws Exception {
-        JDBCDependencyHandler.startServer() ;
-        this.connection = connection;
+    public DBManager(String jdbcUrl) throws Exception {
+        Objects.requireNonNull(jdbcUrl, "jdbcUrl");
 
-    }
-
-    /**executes and returns a SQL query, displaying is done throught System.out.println()<br>
-     * if no "," is present at the end of the provided sql string, it will be added at the beginning of the function<br>
-     * @return null if there are no rows that where selected, ResultSet if there was a returnable result*/
-    public ResultSet printQuery(String sql) throws SQLException {
-
-        if(sql.endsWith(";")) {
-            sql += ";";
+        if (jdbcUrl.startsWith("jdbc:rqlite:")) {
+            if (isManagedLocalRqlite(jdbcUrl)) {
+                JDBCDependencyHandler.startServer();        //only gets executed if we are trying to run a host / localhost
+            }
+        } else if (!jdbcUrl.startsWith("jdbc:sqlite:")) {
+            throw new IllegalArgumentException("Unsupported JDBC URL: " + jdbcUrl);
         }
 
+        this.connection = DriverManager.getConnection(jdbcUrl); //only gets executed if we are trying to run a local .db
+    }
+
+    /** Wrap an existing JDBC connection without starting a server. */
+    public DBManager(Connection connection) {
+        this.connection = Objects.requireNonNull(connection, "connection");
+    }
+
+    private static boolean isManagedLocalRqlite(String jdbcUrl) {
+        try {
+            URI uri = URI.create(jdbcUrl.substring("jdbc:rqlite:".length()));
+            String host = uri.getHost();
+            return "http".equalsIgnoreCase(uri.getScheme())
+                    && uri.getPort() == 4001
+                    && host != null
+                    && (host.equalsIgnoreCase("localhost")
+                    || host.equals("127.0.0.1")
+                    || host.equals("[::1]")
+                    || host.equals("::1"));
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Malformed rqlite URL: " + jdbcUrl, e);
+        }
+    }
+
+    /**
+     * Executes any SQL statement.
+     * @return true if it produced a ResultSet, false if it produced an update count.
+     * Use executeQuery() to access rows or executeUpdate() for affected-row counts.
+     */
+    public boolean execute(String sql) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            return statement.execute(sql);
+        }
+    }
+
+    /** Executes a SELECT and returns a disconnected ResultSet usable after the Statement closes. */
+    public ResultSet executeQuery(String sql) throws SQLException {
+        try (Statement statement = connection.createStatement();
+             ResultSet result = statement.executeQuery(sql)) {
+            return detachedCopy(result);
+        }
+    }
+
+    /**
+     * Executes INSERT, UPDATE, DELETE, CREATE TABLE, DROP TABLE, etc.
+     * @return rows affected (typically 0 for DDL).
+     */
+    public int executeUpdate(String sql) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            return statement.executeUpdate(sql);
+        }
+    }
+
+    /** Executes any SQL statement, prints results or update count, and returns rows when present. */
+    public ResultSet printQuery(String sql) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             if (!statement.execute(sql)) {
                 System.out.println("Statement executed. Rows affected: " + statement.getUpdateCount());
@@ -37,8 +95,7 @@ public class DBManager implements AutoCloseable {
             }
 
             try (ResultSet result = statement.getResultSet()) {
-                CachedRowSet rows = RowSetProvider.newFactory().createCachedRowSet();
-                rows.populate(result);
+                CachedRowSet rows = detachedCopy(result);
                 ResultSetMetaData metadata = rows.getMetaData();
                 int columns = metadata.getColumnCount();
                 boolean hasRows = false;
@@ -57,69 +114,32 @@ public class DBManager implements AutoCloseable {
                 return rows;
             }
         }
-
-    }
-    /**
-     * Executes and returns an SQL query.
-     *
-     * <h4>Example - Usage</h4>
-     * <pre>{@code
-     * ResultSet rs = db.executeQuery("SELECT * FROM person");
-     *
-     * while (rs != null && rs.next()) {
-     *     String name = rs.getString("name");
-     *     int age = rs.getInt("age");
-     *
-     *     System.out.println(name + " - " + age);
-     * }
-     * }</pre>
-     *
-     * @return a ResultSet if the statement produces one, or null otherwise
-     * @throws SQLException if a database error occurs
-     */
-    public ResultSet executeQuery(String sql) throws SQLException {
-
-        try (Statement statement = connection.createStatement()) {
-            if (!statement.execute(sql)) {
-                return null;
-            }
-
-            try (ResultSet result = statement.getResultSet()) {
-                CachedRowSet rows = RowSetProvider.newFactory().createCachedRowSet();
-                rows.populate(result);
-                rows.beforeFirst();
-                return rows;
-            }
-        }
-
     }
 
-    /**
-     * returns a Map<String, ResultSet> where the name of each table is the key to its ResultSet<br>
-     * it equals executeQuery("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';")
-     * @throws SQLException
-     */
+    /** Returns each non-system table name mapped to a disconnected ResultSet of its rows. */
     public Map<String, ResultSet> getAllTables() throws SQLException {
+        Map<String, ResultSet> tablesByName = new LinkedHashMap<>();
+        String sql = "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'";
 
-        Map<String, ResultSet> map = new LinkedHashMap<>();
-
-        try (ResultSet tables = executeQuery("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';")) {
-
-            while (tables.next()) {
-                String tableName = tables.getString("name");
-                String safeName = tableName.replace("\"", "\"\"");
-
-                ResultSet content = executeQuery("SELECT * FROM \"" + safeName + "\";");
-                map.put(tableName, content);
+        try (ResultSet names = executeQuery(sql)) {
+            while (names.next()) {
+                String tableName = names.getString("name");
+                String escapedName = tableName.replace("\"", "\"\"");
+                tablesByName.put(tableName, executeQuery("SELECT * FROM \"" + escapedName + "\""));
             }
         }
-
-        return map;
+        return tablesByName;
     }
 
-    /**to close the Connection at the end, it won't do anything if the Connection is already closed */
+    private static CachedRowSet detachedCopy(ResultSet result) throws SQLException {
+        CachedRowSet rows = RowSetProvider.newFactory().createCachedRowSet();
+        rows.populate(result);
+        rows.beforeFirst();
+        return rows;
+    }
+
     @Override
     public void close() throws SQLException {
-        if (connection != null && !connection.isClosed()) connection.close();
+        if (!connection.isClosed()) connection.close();
     }
 }

@@ -16,5 +16,6 @@
       </library>
     </orderEntry>
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="io.rqlite.jdbc" level="project" />
   </component>
 </module>

@@ -2,31 +2,50 @@
 package mockClasses;
 
 import utils.JDBC.DBManager;
-
 import java.sql.ResultSet;
 
 public class BDManagerMock {
 
     public static void main(String[] args) {
 
+        try (DBManager db = new DBManager(
+                "jdbc:rqlite:http://localhost:4001")) {
 
-        try (DBManager db = new DBManager("jdbc:rqlite:http://localhost:4001")) {
+            db.execute("DROP TABLE IF EXISTS person");
 
-            db.executeQuery("DROP TABLE IF EXISTS person");
-            db.executeQuery("CREATE TABLE person (age INTEGER, name TEXT)");
-            db.executeQuery("INSERT INTO person VALUES (15, 'Antal')");
-            db.executeQuery("INSERT INTO person VALUES(20, 'Luka'");
-            db.executeQuery("INSERT INTO person VALUES(30, 'Antonio')");
-            db.executeQuery("INSERT INTO person VALUES(19, 'Andrada')");
-            db.executeQuery("INSERT INTO person VALUES(19, 'David')");
-           ResultSet rs =  db.executeQuery("SELECT * FROM person");
+            db.execute("""
+                CREATE TABLE person (
+                    age INTEGER,
+                    name TEXT
+                )
+                """);
 
-            while (rs != null && rs.next()) {
-                String name = rs.getString("name");
-                int age = rs.getInt("age");
+            db.executeUpdate(
+                    "INSERT INTO person VALUES (15, 'Antal')");
 
-                System.out.println(name + " - " + age);
+            db.executeUpdate(
+                    "INSERT INTO person VALUES (20, 'Luka')");
+
+            db.executeUpdate(
+                    "INSERT INTO person VALUES (30, 'Antonio')");
+
+            db.executeUpdate(
+                    "INSERT INTO person VALUES (19, 'Andrada')");
+
+            db.executeUpdate(
+                    "INSERT INTO person VALUES (19, 'David')");
+
+            try (ResultSet rs = db.executeQuery(
+                    "SELECT * FROM person")) {
+
+                while (rs.next()) {
+                    String name = rs.getString("name");
+                    int age = rs.getInt("age");
+
+                    System.out.println(name + " - " + age);
+                }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }

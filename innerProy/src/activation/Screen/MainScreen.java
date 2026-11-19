@@ -969,7 +969,7 @@ public class MainScreen extends JFrame {
                 throw new IllegalStateException("Host is Disconected");
             }
             hostClient.startGame();
-        })
+        });
         lobbyScreen.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
