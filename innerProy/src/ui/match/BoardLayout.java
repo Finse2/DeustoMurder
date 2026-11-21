@@ -43,7 +43,7 @@ public final class BoardLayout extends JPanel {
     private final List<PlacedTile> roomPositionTiles = new ArrayList<>();
     private final List<RoomsLook> roomLooks = new ArrayList<>();
 
-    private record PlacedTile(TileAspect look, int column, int row) {
+    private record PlacedTile(TileAspect look, JPanel container, int column, int row) {
     }
 
     public BoardLayout(int rows, int columns, RawRoom[] rawRooms, RawPiece[] rawPieces) {
@@ -272,10 +272,13 @@ public final class BoardLayout extends JPanel {
 
         for (int row = 0; row < rows; row++) {
             for (int column = 0; column < columns; column++) {
+
                 Room.Cell cell = new Room.Cell(column, row);
+
                 Room room = roomByCell.get(cell);
                 Room accessibleRoom = roomByEntranceCell.get(cell);
                 Room positionRoom = roomByPlayerPosition.get(cell);
+
                 Tile tile = new Tile(null, accessibleRoom);
 
                 if (room != null) {
@@ -293,18 +296,40 @@ public final class BoardLayout extends JPanel {
                 if (room == null) {
                     TileAspect tileLook = new TileAspect(tile);
 
+                    JPanel container;
+
                     if (tile.givesAccessToRoom()) {
                         tileLook.setTileColor(Color.RED);
+                        container = tileLook;
+                    } else {
+                        container = new MarbleTilePanel(tileLook);
                     }
 
-                    add(tileLook);
-                    visibleTiles.add(new PlacedTile(tileLook, column, row));
+                    add(container);
+
+                    visibleTiles.add(
+                            new PlacedTile(
+                                    tileLook,
+                                    container,
+                                    column,
+                                    row
+                            )
+                    );
                 }
 
                 if (positionRoom != null) {
                     TileAspect tileLook = new TileAspect(tile);
+
                     tileLook.setTileColor(Color.BLUE);
-                    roomPositionTiles.add(new PlacedTile(tileLook, column, row));
+
+                    roomPositionTiles.add(
+                            new PlacedTile(
+                                    tileLook,
+                                    tileLook,
+                                    column,
+                                    row
+                            )
+                    );
                 }
             }
         }
@@ -315,13 +340,16 @@ public final class BoardLayout extends JPanel {
             }
 
             RoomsLook roomLook = new RoomsLook(room);
+
             add(roomLook);
             roomLooks.add(roomLook);
         }
 
         for (PlacedTile tile : roomPositionTiles) {
-            add(tile.look());
-            setComponentZOrder(tile.look(), 0);
+            add(tile.container());
+
+            setComponentZOrder(tile.container(), 0);
+
             visibleTiles.add(tile);
         }
     }
