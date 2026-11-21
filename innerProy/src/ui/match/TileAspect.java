@@ -42,10 +42,13 @@ class TileAspect extends JPanel {
 
     void setTileColor(Color color) {
         if (color == null) {
-            throw new IllegalArgumentException("Tile color cannot be null");
+            throw new IllegalArgumentException(
+                    "Tile color cannot be null"
+            );
         }
 
         this.color = color;
+        setOpaque(true);
         setBackground(color);
         repaint();
     }
