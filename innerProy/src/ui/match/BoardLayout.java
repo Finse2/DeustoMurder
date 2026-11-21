@@ -483,23 +483,42 @@ public final class BoardLayout extends JPanel {
         super.doLayout();
 
         int tileSize = calculateTileSize();
-        if (tileSize <= 0) return;
+
+        if (tileSize <= 0) {
+            return;
+        }
 
         int startX = (getWidth() - columns * tileSize) / 2;
         int startY = (getHeight() - rows * tileSize) / 2;
 
         for (PlacedTile tile : visibleTiles) {
-            tile.look().setBounds(
-                    startX + tile.column() * tileSize,
-                    startY + tile.row() * tileSize,
+
+            int x = startX + tile.column() * tileSize;
+            int y = startY + tile.row() * tileSize;
+
+            tile.container().setBounds(
+                    x,
+                    y,
                     tileSize,
                     tileSize
             );
-            tile.look().setGridLineThickness(Math.max(1, tileSize / 25));
+
+            tile.look().setGridLineThickness(
+                    Math.max(1, tileSize / 25)
+            );
+
+            if (tile.container() instanceof MarbleTilePanel marblePanel) {
+                marblePanel.doLayout();
+            }
         }
 
         for (RoomsLook roomLook : roomLooks) {
-            roomLook.placeOnGrid(startX, startY, tileSize, tileSize);
+            roomLook.placeOnGrid(
+                    startX,
+                    startY,
+                    tileSize,
+                    tileSize
+            );
         }
 
         repaint();
