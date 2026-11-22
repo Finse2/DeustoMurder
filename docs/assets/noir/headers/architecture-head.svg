@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="164" viewBox="0 0 1200 164" role="img" aria-label="DeustoMurder noir portfolio illustration">
+<defs>
+ <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#060608"/><stop offset=".48" stop-color="#181015"/><stop offset="1" stop-color="#07070A"/></linearGradient>
+ <linearGradient id="gold" x2="1" y2=".2"><stop stop-color="#6A4D34"/><stop offset=".32" stop-color="#D3B184"/><stop offset=".64" stop-color="#F5E1B7"/><stop offset="1" stop-color="#7B5337"/></linearGradient>
+ <linearGradient id="blood" x2="1" y2=".4"><stop stop-color="#26070E"/><stop offset=".5" stop-color="#991E39"/><stop offset="1" stop-color="#360916"/></linearGradient>
+ <radialGradient id="glow"><stop stop-color="#8C2036" stop-opacity=".5"/><stop offset="1" stop-color="#8C2036" stop-opacity="0"/></radialGradient>
+ <radialGradient id="moon"><stop stop-color="#A44752"/><stop offset=".65" stop-color="#72202F"/><stop offset="1" stop-color="#310916"/></radialGradient>
+ <pattern id="noise" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M0 100L100 0M-50 100L50 0M50 100L150 0" stroke="#C4A37B" stroke-opacity=".022" stroke-width="1"/></pattern>
+ <filter id="shadow" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
+ 
+</defs>
+<style>
+ .serif{font-family:Georgia,'Noto Serif',serif; font-weight:bold}
+ .mono{font-family:'Courier New',monospace; font-weight:bold}
+ .small{font-family:'Courier New',monospace; letter-spacing:3px}
+ @keyframes heartbeat{0%,100%{opacity:.55}50%{opacity:1}}
+ @keyframes waft{0%,100%{transform:translateX(0px)}50%{transform:translateX(34px)}}
+ @keyframes twinkle{0%,100%{opacity:.05}50%{opacity:.42}}
+ @keyframes dash{to{stroke-dashoffset:-60}}
+ @keyframes reveal{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:translateY(0)}}
+ .heartbeat{animation:heartbeat 5s ease-in-out infinite}.waft{animation:waft 10s ease-in-out infinite}
+ .twinkle{animation:twinkle 4s ease-in-out infinite}.reveal{animation:reveal 1.8s both}
+ .signal{stroke-dasharray:6 10;animation:dash 15s linear infinite}
+ @media(prefers-reduced-motion:reduce){*{animation:none!important}}
+ 
+</style>
+<rect width="1200" height="164" fill="url(#bg)"/><rect width="1200" height="164" fill="url(#noise)"/>
+ <rect x="12" y="13" width="1176" height="138" fill="none" stroke="#76543F" stroke-opacity=".5"/>
+ <rect x="22" y="23" width="1156" height="118" fill="none" stroke="#7A192C" stroke-opacity=".4"/>
+ <path d="M48 82H159M1040 82H1152" stroke="#8D2436" stroke-width="2"/><circle cx="158" cy="82" r="3" fill="#CBA36C"/>
+ <text x="95" y="90" class="serif" font-size="58" fill="#7F2337" text-anchor="middle">04</text>
+ <text x="600" y="81" class="serif" font-size="35" letter-spacing="5" fill="#F2E8D7" text-anchor="middle">BENEATH THE SURFACE</text>
+ <text x="600" y="115" class="small" font-size="14" letter-spacing="2.2" fill="#BA9578" text-anchor="middle">ENGINEERING THE MYSTERY</text>
+ <path d="M72 12H12V72 M1128 12H1188V72 M72 152H12V92 M1128 152H1188V92" fill="none" stroke="#CAA46F" stroke-opacity=".6" stroke-width="2"/>
+</svg>

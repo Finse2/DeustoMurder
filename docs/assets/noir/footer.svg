@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="260" viewBox="0 0 1200 260" role="img" aria-label="DeustoMurder noir portfolio illustration">
+<defs>
+ <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#060608"/><stop offset=".48" stop-color="#181015"/><stop offset="1" stop-color="#07070A"/></linearGradient>
+ <linearGradient id="gold" x2="1" y2=".2"><stop stop-color="#6A4D34"/><stop offset=".32" stop-color="#D3B184"/><stop offset=".64" stop-color="#F5E1B7"/><stop offset="1" stop-color="#7B5337"/></linearGradient>
+ <linearGradient id="blood" x2="1" y2=".4"><stop stop-color="#26070E"/><stop offset=".5" stop-color="#991E39"/><stop offset="1" stop-color="#360916"/></linearGradient>
+ <radialGradient id="glow"><stop stop-color="#8C2036" stop-opacity=".5"/><stop offset="1" stop-color="#8C2036" stop-opacity="0"/></radialGradient>
+ <radialGradient id="moon"><stop stop-color="#A44752"/><stop offset=".65" stop-color="#72202F"/><stop offset="1" stop-color="#310916"/></radialGradient>
+ <pattern id="noise" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M0 100L100 0M-50 100L50 0M50 100L150 0" stroke="#C4A37B" stroke-opacity=".022" stroke-width="1"/></pattern>
+ <filter id="shadow" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
+ 
+</defs>
+<style>
+ .serif{font-family:Georgia,'Noto Serif',serif; font-weight:bold}
+ .mono{font-family:'Courier New',monospace; font-weight:bold}
+ .small{font-family:'Courier New',monospace; letter-spacing:3px}
+ @keyframes heartbeat{0%,100%{opacity:.55}50%{opacity:1}}
+ @keyframes waft{0%,100%{transform:translateX(0px)}50%{transform:translateX(34px)}}
+ @keyframes twinkle{0%,100%{opacity:.05}50%{opacity:.42}}
+ @keyframes dash{to{stroke-dashoffset:-60}}
+ @keyframes reveal{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:translateY(0)}}
+ .heartbeat{animation:heartbeat 5s ease-in-out infinite}.waft{animation:waft 10s ease-in-out infinite}
+ .twinkle{animation:twinkle 4s ease-in-out infinite}.reveal{animation:reveal 1.8s both}
+ .signal{stroke-dasharray:6 10;animation:dash 15s linear infinite}
+ @media(prefers-reduced-motion:reduce){*{animation:none!important}}
+ 
+</style>
+<rect width="1200" height="260" fill="url(#bg)"/><circle cx="600" cy="140" r="320" fill="url(#glow)"/>
+<rect x="20" y="18" width="1160" height="224" fill="none" stroke="#755340"/>
+<path d="M110 80H405 M795 80H1090 M110 197H420 M780 197H1090" stroke="url(#gold)" opacity=".6"/>
+<text x="600" y="73" text-anchor="middle" class="small" fill="#D2A77F" font-size="14">END OF DOSSIER / CASE REMAINS OPEN</text>
+<text x="600" y="145" text-anchor="middle" class="serif" font-size="49" letter-spacing="3" fill="#F1E7D8">THE TRUTH IS STILL OUT THERE.</text>
+<text x="600" y="185" text-anchor="middle" class="small" fill="#A83F52" font-size="15">DEUSTO MURDER  •  2026</text>
+<path d="M80 20H20V80 M1120 20H1180V80 M80 240H20V180 M1120 240H1180V180" fill="none" stroke="#CAA46F" stroke-opacity=".7" stroke-width="2"/>
+</svg>
