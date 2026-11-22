@@ -1,638 +1,241 @@
-
 <div align="center">
 
-<img src="docs/assets/deustomurder-cover.png" alt="DeustoMurder Official Cover" width="100%">
+<img src="docs/assets/deustomurder-cover.png" alt="DeustoMurder — cinematic cover" width="100%">
 
-<h3>THE MYSTERY BEGINS HERE</h3>
+<br>
 
-<p>
-  <em>One murder. Six suspects. One truth.</em>
-</p>
+**ONE MURDER. SIX SUSPECTS. ONE TRUTH.**
 
-<p>
-  An immersive multiplayer murder mystery
-  built with Java & Swing.
-</p>
+*An atmospheric multiplayer detective board game built with Java and Swing.*
 
-<p>
-  <img src="https://img.shields.io/badge/Java-171717?style=flat-square&logo=openjdk&logoColor=D4AF37">
-  <img src="https://img.shields.io/badge/Swing-171717?style=flat-square&logoColor=D4AF37">
-  <img src="https://img.shields.io/badge/Multiplayer-171717?style=flat-square&logoColor=D4AF37">
-  <img src="https://img.shields.io/badge/In_Development-761B30?style=flat-square&logoColor=white">
-</p>
+[![Java](https://img.shields.io/badge/Java-171717?style=flat-square&logo=openjdk&logoColor=C9A46A)](https://www.java.com/)
+![Swing](https://img.shields.io/badge/Java_Swing-171717?style=flat-square&logoColor=C9A46A)
+![Multiplayer](https://img.shields.io/badge/TCP%2FIP_Multiplayer-171717?style=flat-square&logoColor=C9A46A)
+![Status](https://img.shields.io/badge/Status-In_Development-761B30?style=flat-square&logoColor=white)
+
+[The Case](#the-case) · [Gameplay](#gameplay) · [Gallery](#gallery) · [Architecture](#architecture) · [Installation](#installation) · [Roadmap](#roadmap) · [Team](#team)
 
 </div>
 
-<div align="center">
-<a href="#the-case">THE CASE</a> · <a href="#how-to-play">GAMEPLAY</a> · <a href="#inside-the-mystery">GALLERY</a> · <a href="#under-the-hood">TECH</a> · <a href="#getting-started">INSTALL</a> · <a href="#development-roadmap">ROADMAP</a>
-</div>
-
-<p align="center"><img src="docs/assets/divider.png" alt="" width="90%"></p>
-<!-- CASE FILE -->
-
-<div align="center">
-
+---
 
 <a id="the-case"></a>
+<div align="center">
 <img src="docs/assets/headers/the-case.png" alt="THE CASE" width="100%">
 
-<p><em>Every suspect has a secret. Every clue tells a story.</em></p>
-
+*Every suspect has a secret. Every clue tells a story.*
 </div>
 
-A mysterious murder has shaken the **University of Deusto**.
-Behind its historic walls lies a mystery waiting to be solved.
+A mysterious murder has shaken the **University of Deusto**. Step into the role of a detective, investigate the board, examine the cards, and piece together the truth before your opponents.
 
-Step into the role of a detective, explore the crime scene,
-examine the evidence, and uncover the truth before anyone else.
-
-**The question is simple: Who committed the murder, where, and with what weapon?**
-
-<br>
+Your mission is simple: discover **who** committed the crime, **where** it happened, and **which weapon** was used.
 
 <table>
 <tr>
-<td align="center" width="33%">
-  <h3>INVESTIGATE</h3>
-  <p>Explore the mystery and gather evidence.</p>
-</td>
-<td align="center" width="33%">
-  <h3>DEDUCE</h3>
-  <p>Connect the clues and eliminate suspects.</p>
-</td>
-<td align="center" width="33%">
-  <h3>ACCUSE</h3>
-  <p>Make your final accusation and reveal the truth.</p>
-</td>
+<td width="33%" align="center"><strong>INVESTIGATE</strong><br><sub>Explore the board and examine the evidence.</sub></td>
+<td width="33%" align="center"><strong>DEDUCE</strong><br><sub>Rule out suspects, rooms and weapons.</sub></td>
+<td width="33%" align="center"><strong>ACCUSE</strong><br><sub>Make your final accusation.</sub></td>
 </tr>
 </table>
 
-<br>
+<div align="center"><img src="docs/assets/divider.png" alt="" width="85%"></div>
 
+<a id="gameplay"></a>
 <div align="center">
-  <sub>DEUSTO MURDER | INVESTIGATION FILE 001</sub>
-</div>
-
-<p align="center"><img src="docs/assets/divider.png" alt="" width="90%"></p>
-<!-- GAMEPLAY SECTION -->
-
-<div align="center">
-
-
-<a id="how-to-play"></a>
 <img src="docs/assets/headers/how-to-play.png" alt="HOW TO PLAY" width="100%">
 
-<p><em>Follow the clues. Eliminate the impossible. Uncover the truth.</em></p>
-
+*Follow the clues. Eliminate the impossible. Uncover the truth.*
 </div>
-
-<br>
 
 <table>
 <tr>
-<td width="50%" valign="top">
-
-<h3>01 — JOIN THE GAME</h3>
-
-Enter an investigation alongside other detectives.
-
-Prepare to uncover the secrets hidden within Deusto.
-
-</td>
-<td width="50%" valign="top">
-
-<h3>02 — ROLL & MOVE</h3>
-
-Roll the dice and navigate the game board.
-
-Explore different locations as the investigation unfolds.
-
-</td>
+<td width="50%" valign="top"><h3>01 · Join the Investigation</h3>Join a multiplayer session and prepare to investigate with other detectives.</td>
+<td width="50%" valign="top"><h3>02 · Roll & Move</h3>Take turns, roll two dice, and move across the board.</td>
 </tr>
 <tr>
-<td width="50%" valign="top">
-
-<h3>03 — COLLECT CLUES</h3>
-
-Examine your cards and keep track of the evidence.
-
-Use your detective notes to eliminate possibilities.
-
-</td>
-<td width="50%" valign="top">
-
-<h3>04 — SOLVE THE CASE</h3>
-
-Connect the evidence and make your final accusation.
-
-Identify the suspect, the weapon, and the room.
-
-</td>
+<td width="50%" valign="top"><h3>03 · Examine the Evidence</h3>Use your cards and detective notes to eliminate impossible combinations.</td>
+<td width="50%" valign="top"><h3>04 · Solve the Case</h3>Identify the suspect, weapon and room, then make your accusation.</td>
 </tr>
 </table>
 
-<br>
+> **Development note:** The project is under active development. Some multiplayer and gameplay features may not yet be fully integrated or tested end to end.
 
+<div align="center"><img src="docs/assets/divider.png" alt="" width="85%"></div>
+
+<a id="gallery"></a>
 <div align="center">
-
-<h3>THREE ANSWERS. ONE SOLUTION.</h3>
-
-<p>
-  <code>SUSPECT</code>
-  &nbsp;&bull;&nbsp;
-  <code>WEAPON</code>
-  &nbsp;&bull;&nbsp;
-  <code>ROOM</code>
-</p>
-
-<sub>DEUSTO MURDER | INVESTIGATION PROTOCOL 002</sub>
-
-</div>
-
-<p align="center"><img src="docs/assets/divider.png" alt="" width="90%"></p>
-<!-- GAME GALLERY: Add real screenshots to docs/assets/screenshots/ before publishing this section. -->
-
-<div align="center">
-
-
-<a id="inside-the-mystery"></a>
 <img src="docs/assets/headers/inside-the-mystery.png" alt="INSIDE THE MYSTERY" width="100%">
 
-<p><em>A glimpse behind the investigation.</em></p>
-
+*A glimpse behind the investigation.*
 </div>
 
-<br>
-
+<!-- Add this gallery when all three real screenshots exist in docs/assets/screenshots/.
 <table>
-  <tr>
-    <td width="50%" align="center">
-      <img src="docs/assets/screenshots/main-menu.png" width="100%" alt="DeustoMurder Main Menu">
-      <br>
-      <b>01 / MAIN MENU</b>
-      <br>
-      <sub>Where every mystery begins.</sub>
-    </td>
-    <td width="50%" align="center">
-      <img src="docs/assets/screenshots/lobby.png" width="100%" alt="DeustoMurder Lobby">
-      <br>
-      <b>02 / MULTIPLAYER LOBBY</b>
-      <br>
-      <sub>Gather your fellow detectives.</sub>
-    </td>
-  </tr>
+<tr>
+<td width="50%" align="center"><img src="docs/assets/screenshots/main-menu.png" alt="Main menu" width="100%"><br><b>01 / MAIN MENU</b></td>
+<td width="50%" align="center"><img src="docs/assets/screenshots/lobby.png" alt="Multiplayer lobby" width="100%"><br><b>02 / MULTIPLAYER LOBBY</b></td>
+</tr>
 </table>
+<div align="center"><img src="docs/assets/screenshots/game-board.png" alt="Game board" width="95%"><br><b>03 / THE INVESTIGATION BOARD</b></div>
+-->
 
-<br>
+<p align="center"><em>Gameplay screenshots will be added as the interface is finalized.</em></p>
 
+<div align="center"><img src="docs/assets/divider.png" alt="" width="85%"></div>
+
+<a id="architecture"></a>
 <div align="center">
-
-<img src="docs/assets/screenshots/game-board.png" width="95%" alt="DeustoMurder Game Board">
-
-<p><b>03 / THE INVESTIGATION BOARD</b></p>
-
-<p><sub>Every room hides a secret. Every move matters.</sub></p>
-
-</div>
-
-<br>
-
-<div align="center">
-  <sub>DEUSTO MURDER | VISUAL EVIDENCE 003</sub>
-</div>
-
-<p align="center"><img src="docs/assets/divider.png" alt="" width="90%"></p>
-<!-- TECH STACK -->
-
-<div align="center">
-
-
-<a id="under-the-hood"></a>
 <img src="docs/assets/headers/under-the-hood.png" alt="UNDER THE HOOD" width="100%">
 
-<p><em>The engineering behind the mystery.</em></p>
+*The engineering behind the mystery.*
 
-<p>
-  A modular desktop game built with object-oriented
-  programming, custom networking and Java Swing.
-</p>
-
-<br>
-
-<img src="https://skillicons.dev/icons?i=java,idea,git,github&theme=dark" alt="Development Technologies">
-
-<br><br>
-
-<img src="https://img.shields.io/badge/Java-171717?style=for-the-badge&logo=openjdk&logoColor=D4AF37">
-<img src="https://img.shields.io/badge/Swing-171717?style=for-the-badge&logoColor=D4AF37">
-<img src="https://img.shields.io/badge/TCP%2FIP-171717?style=for-the-badge&logoColor=D4AF37">
-<img src="https://img.shields.io/badge/Multithreading-761B30?style=for-the-badge">
-
+![Java](https://img.shields.io/badge/Java-171717?style=for-the-badge&logo=openjdk&logoColor=C9A46A)
+![Swing](https://img.shields.io/badge/Swing-171717?style=for-the-badge&logoColor=C9A46A)
+![Sockets](https://img.shields.io/badge/TCP_Sockets-171717?style=for-the-badge&logoColor=C9A46A)
+![Threads](https://img.shields.io/badge/Multithreading-171717?style=for-the-badge&logoColor=C9A46A)
 </div>
 
-<br>
-
-
-### System Architecture
-
-The project follows a modular architecture that separates
-the graphical interface, game logic, networking, and
-supporting services.
+DeustoMurder uses an object-oriented, modular structure to separate user interface, game rules, networking and supporting services.
 
 ```mermaid
 flowchart TD
-    UI["USER INTERFACE<br/>Java Swing"]
-    CORE["GAME CORE<br/>Game · GameState"]
-    TURNS["TURN MANAGEMENT<br/>RoundManager"]
-    CARDS["CARD SYSTEM<br/>DeckManager"]
-    NETWORK["NETWORKING<br/>Client · GameServer"]
-    SERVICES["GAME SERVICES<br/>Statistics · History"]
-
-    UI <--> CORE
-    CORE --> TURNS
-    CORE --> CARDS
-    CORE <--> NETWORK
-    CORE --> SERVICES
-
-    classDef primary fill:#761B30,stroke:#C9A46A,color:#FFFFFF;
-    classDef secondary fill:#171717,stroke:#C9A46A,color:#FFFFFF;
-
-    class CORE primary;
-    class UI,TURNS,CARDS,NETWORK,SERVICES secondary;
+    UI["Java Swing UI"] <--> CORE["Game Core"]
+    CORE --> TURNS["Turn & Movement System"]
+    CORE --> CARDS["Cards & Accusations"]
+    CORE <--> NET["TCP Client / Server"]
+    CORE --> SERVICES["Statistics & History"]
+    classDef central fill:#761B30,stroke:#C9A46A,color:#fff;
+    classDef module fill:#171717,stroke:#C9A46A,color:#fff;
+    class CORE central;
+    class UI,TURNS,CARDS,NET,SERVICES module;
 ```
 
+### Main components
 
-### Project Structure
+| Area | Examples | Responsibility |
+|:--|:--|:--|
+| Game core | `Game`, `GameState`, `GameSetup` | Game lifecycle and shared state |
+| Turns | `RoundManager`, `MoveValidator` | Turn order and legal movement |
+| Cards | `DeckManager`, `AccusationValidator` | Distribution and solution checking |
+| Networking | `Client`, `GameServer` | Multiplayer communication |
+| Services | `StatisticsManager`, `GameHistory` | Player statistics and event records |
+| Interface | `MainScreen`, `LobbyScreen`, `InGameScreen` | Desktop screens |
+
+<details>
+<summary><strong>View a simplified source layout</strong></summary>
 
 ```text
-DeustoMurder/
-├── README.md
-├── docs/assets/             # README visual assets
-└── innerProy/
-    ├── src/
-    │   ├── activation/      # Main menu and lobby
-    │   ├── app/             # Application entry point
-    │   ├── game/            # Core, cards, turns, history, statistics
-    │   ├── model/           # Players, rooms, weapons, board
-    │   ├── ui/              # Swing screens and rendering
-    │   └── utils/           # Shared utilities and JDBC
-    ├── networking/src/      # Client, server, packets
-    └── ressources/          # Game media and images
+innerProy/
+└── src/
+    ├── game/
+    │   ├── core/
+    │   ├── turns/
+    │   ├── cards/
+    │   ├── accusations/
+    │   └── history/
+    ├── networking/
+    └── ui/
 ```
 
-<br>
+The directory layout is illustrative; consult the repository for the latest package structure.
+</details>
 
+<div align="center"><img src="docs/assets/divider.png" alt="" width="85%"></div>
+
+<a id="installation"></a>
 <div align="center">
-
-  <sub>
-    DEUSTO MURDER | TECHNICAL DOSSIER 004
-  </sub>
-
-</div>
-
-<p align="center"><img src="docs/assets/divider.png" alt="" width="90%"></p>
-<!-- GETTING STARTED -->
-
-<div align="center">
-
-
-<a id="getting-started"></a>
 <img src="docs/assets/headers/getting-started.png" alt="GETTING STARTED" width="100%">
 
-<p><em>Every investigation begins somewhere.</em></p>
-
-<p>Follow these steps to set up DeustoMurder on your computer.</p>
-
+*Every investigation begins somewhere.*
 </div>
 
-### 01 — Prerequisites
+### Requirements
 
-Before launching the investigation, make sure you have:
+- A **JDK** compatible with the project source code.
+- **IntelliJ IDEA** (recommended).
+- **Git** to clone the repository.
 
-- **Java Development Kit (JDK)** — a version compatible with the project.
-- **IntelliJ IDEA** — recommended development environment.
-- **Git** — to clone the repository.
-
-### 02 — Clone the Repository
-
-Open a terminal and run:
+### 01 · Clone
 
 ```bash
 git clone https://github.com/Finse2/DeustoMurder.git
 cd DeustoMurder
 ```
 
-### 03 — Configure the Project
+### 02 · Configure
 
-1. Open **IntelliJ IDEA**.
-2. Select `File > Open`.
-3. Choose the cloned `DeustoMurder` directory.
-4. Configure the project's **JDK** in Project Structure.
-5. Ensure `innerProy/src` is recognized as a source directory.
+1. Open the cloned folder in **IntelliJ IDEA**.
+2. Configure the project SDK under **File → Project Structure**.
+3. If necessary, mark `innerProy/src` as **Sources Root**.
+4. Locate the class containing the application's `public static void main(String[] args)` entry point and run it.
 
-### 04 — Launch the Game
-
-1. Navigate to `innerProy/src/app/Main.java`.
-2. Open the application entry point.
-3. Run the `main()` method.
-4. The game interface should appear.
-
-> **Note:** DeustoMurder is under active development.
-> Some gameplay and multiplayer features may be incomplete.
-
-<br>
-
-<div align="center">
-
-<b>THE INVESTIGATION IS READY TO BEGIN.</b>
-
-<br><br>
-
-<sub>DEUSTO MURDER | DEPLOYMENT PROTOCOL 005</sub>
-
-</div>
+> The exact JDK version and entry-point class should be verified against the current repository before publishing release instructions.
 
 <details>
-<summary><b> Troubleshooting — Common Issues</b></summary>
+<summary><strong>Troubleshooting</strong></summary>
 
-<br>
-
-**Java SDK not configured**
-
-Open `File > Project Structure > Project` and select a compatible JDK.
-
-**Source files not recognized**
-
-Right-click `innerProy/src` in IntelliJ and select:
-
-`Mark Directory as > Sources Root`
-
-**Application does not start**
-
-Verify that your Java version is compatible, the
-main class is correctly configured, and the required
-project resources are available.
-
-**Multiplayer connection fails**
-
-Ensure both players can communicate over the network,
-that the host is running, and that the required port
-is not blocked by the firewall.
-
+- **JDK not configured:** Select a compatible SDK in IntelliJ's Project Structure.
+- **Sources not recognized:** Mark the source directory as *Sources Root*.
+- **Resources missing:** Check the resource paths and working directory in the run configuration.
+- **Multiplayer connection fails:** Verify the host is running, the network is reachable, and the firewall permits the required connection.
 </details>
 
-<p align="center"><img src="docs/assets/divider.png" alt="" width="90%"></p>
+<div align="center"><img src="docs/assets/divider.png" alt="" width="85%"></div>
 
-
-
-<!-- DEVELOPMENT ROADMAP -->
-
+<a id="roadmap"></a>
 <div align="center">
-
-
-<a id="development-roadmap"></a>
 <img src="docs/assets/headers/development-roadmap.png" alt="DEVELOPMENT ROADMAP" width="100%">
 
-<p><em>Building the mystery, one commit at a time.</em></p>
-
-<p>
-  Follow the evolution of DeustoMurder,
-  from its core game systems to a complete
-  multiplayer detective experience.
-</p>
-
+*Building the mystery, one commit at a time.*
 </div>
 
-<br>
+The following checklist describes the project's development areas. **Confirm the completion markers against the current code and tests before publishing.**
 
-### 01 — Core Systems
-
-The foundations of the investigation.
-
-- [x] Game engine and state management
-- [x] Turn management system
-- [x] Dice and movement validation
-- [x] Card deck and distribution logic
-- [x] Accusation validation
-- [x] Player statistics infrastructure
-
-### 02 — Multiplayer & Integration
-
-Connecting detectives across the network.
-
-- [x] Client and server foundations
-- [ ] Complete multiplayer game flow
-- [ ] Synchronization of game state
-- [ ] Robust connection error handling
-- [ ] Full multiplayer testing
-
-### 03 — Gameplay Enhancements
-
-Making every investigation more immersive.
-
+- [x] Core game model and state management components
+- [x] Turn, movement, deck and accusation logic components
+- [x] Initial Java Swing screens and networking foundations
+- [ ] Fully integrated and tested multiplayer game flow
 - [ ] Complete achievements integration
-- [ ] Save and load game functionality
-- [ ] Persistent game history
-- [ ] Complete sound and settings integration
-- [ ] Final interface polish
+- [ ] Save/load and persistent game history
+- [ ] End-to-end tests, stability improvements and release packaging
 
-### 04 — Final Release
+<div align="center"><img src="docs/assets/divider.png" alt="" width="85%"></div>
 
-Preparing the investigation for everyone.
-
-- [ ] Automated and integration testing
-- [ ] Performance optimization
-- [ ] Bug fixing and stabilization
-- [ ] Complete documentation
-- [ ] Stable playable release
-
-<br>
-
+<a id="team"></a>
 <div align="center">
-
-<img src="https://img.shields.io/badge/STATUS-ACTIVE_DEVELOPMENT-761B30?style=for-the-badge&labelColor=171717">
-
-<br><br>
-
-<sub>DEUSTO MURDER | PROJECT INTELLIGENCE 006</sub>
-
-</div>
-
-
-<details>
-<summary><b>Explore the development milestones</b></summary>
-
-<br>
-
-<table>
-<tr>
-<th>System</th>
-<th>Core components</th>
-</tr>
-
-<tr>
-<td>Game Engine</td>
-<td>Game, GameState, GameSetup</td>
-</tr>
-
-<tr>
-<td>Turn Management</td>
-<td>RoundManager, MoveValidator</td>
-</tr>
-
-<tr>
-<td>Card System</td>
-<td>DeckManager, AccusationValidator</td>
-</tr>
-
-<tr>
-<td>Networking</td>
-<td>Client, GameServer</td>
-</tr>
-
-<tr>
-<td>Statistics</td>
-<td>StatisticsManager, PlayerStatistics</td>
-</tr>
-
-<tr>
-<td>Game History</td>
-<td>GameHistory, GameEvent</td>
-</tr>
-</table>
-
-</details>
-
-
-<p align="center"><img src="docs/assets/divider.png" alt="" width="90%"></p>
-<!-- DEVELOPMENT TEAM -->
-
-<div align="center">
-
-
-<a id="the-team"></a>
 <img src="docs/assets/headers/the-team.png" alt="THE MINDS BEHIND THE MYSTERY" width="100%">
 
-<p><em>Four developers. One investigation.</em></p>
-
-<p>
-  Created by a team of Data Science and Artificial
-  Intelligence students at the University of Deusto.
-</p>
-
+*Four developers. One investigation.*
 </div>
 
-<br>
+Developed as a student project at the **University of Deusto**.
 
-<table>
-<tr>
-<td width="50%" align="center" valign="top">
-
-<h3>01 / DAVID</h3>
-<sub>GAME LOGIC & BACKEND</sub>
-
-<br><br>
-
-Game architecture, turn management, card systems,
-statistics and gameplay logic.
-
-</td>
-<td width="50%" align="center" valign="top">
-
-<h3>02 / ANDRADA</h3>
-<sub>MULTIPLAYER LOBBY</sub>
-
-<br><br>
-
-Lobby interface, player management
-and multiplayer session experience.
-
-</td>
-</tr>
-<tr>
-<td width="50%" align="center" valign="top">
-
-<h3>03 / ANTAL</h3>
-<sub>BOARD & COMPONENTS</sub>
-
-<br><br>
-
-Board components, interface elements
-and game board integration.
-
-</td>
-<td width="50%" align="center" valign="top">
-
-<h3>04 / LUKA</h3>
-<sub>USER INTERFACE</sub>
-
-<br><br>
-
-Main menu, board visualization
-and graphical interface components.
-
-</td>
-</tr>
-</table>
-
-<br>
+| Developer | Primary focus |
+|:--|:--|
+| **David** | Game logic, backend and gameplay systems |
+| **Andrada** | Multiplayer lobby and player experience |
+| **Antal** | Board and interface components |
+| **Luka** | Main interface and board visualization |
 
 <div align="center">
 
-<a href="https://github.com/Finse2/DeustoMurder/graphs/contributors">
-  <img src="https://img.shields.io/badge/VIEW_ALL_CONTRIBUTORS-171717?style=for-the-badge&logo=github&logoColor=D4AF37">
-</a>
-
-<br><br>
-
-<sub>DEUSTO MURDER | PERSONNEL DOSSIER 007</sub>
+[**View repository contributors**](https://github.com/Finse2/DeustoMurder/graphs/contributors)
 
 </div>
 
-<p align="center"><img src="docs/assets/divider.png" alt="" width="90%"></p>
-<!-- FINAL VERDICT -->
+<div align="center"><img src="docs/assets/divider.png" alt="" width="85%"></div>
 
 <div align="center">
+<img src="docs/assets/headers/final-verdict.png" alt="THE FINAL VERDICT" width="100%">
 
+### THE CASE IS NEVER TRULY CLOSED.
 
-<br><br>
+*Every mystery leaves a trace.*
 
-<a id="final-verdict"></a>
-<img src="docs/assets/headers/final-verdict.png" alt="THE CASE IS NEVER TRULY CLOSED." width="100%">
+[![Source](https://img.shields.io/badge/SOURCE_CODE-171717?style=for-the-badge&logo=github&logoColor=C9A46A)](https://github.com/Finse2/DeustoMurder)
+[![Issues](https://img.shields.io/badge/ISSUES-171717?style=for-the-badge&logo=github&logoColor=C9A46A)](https://github.com/Finse2/DeustoMurder/issues)
+[![Contributors](https://img.shields.io/badge/CONTRIBUTORS-761B30?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Finse2/DeustoMurder/graphs/contributors)
 
-<p><em>Every mystery leaves a trace.</em></p>
-
-<br>
-
-<a href="https://github.com/Finse2/DeustoMurder">
-  <img src="https://img.shields.io/badge/SOURCE_CODE-171717?style=for-the-badge&logo=github&logoColor=D4AF37">
-</a>
-
-<a href="https://github.com/Finse2/DeustoMurder/issues">
-  <img src="https://img.shields.io/badge/REPORT_AN_ISSUE-171717?style=for-the-badge&logo=github&logoColor=D4AF37">
-</a>
-
-<a href="https://github.com/Finse2/DeustoMurder/graphs/contributors">
-  <img src="https://img.shields.io/badge/CONTRIBUTORS-761B30?style=for-the-badge&logo=github&logoColor=white">
-</a>
-
-<br><br>
-
-<p>
-  Developed with dedication by students
-  of the University of Deusto.
-</p>
-
-<p>
-  <sub>DEUSTO MURDER · 2026</sub>
-</p>
-
-<p>
-  <sub>
-    Built with Java & Swing.
-    Designed for curious minds.
-  </sub>
-</p>
+<sub>DEUSTO MURDER · UNIVERSITY OF DEUSTO · 2026</sub>
 
 </div>
-
