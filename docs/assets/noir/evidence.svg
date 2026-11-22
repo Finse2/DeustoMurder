@@ -26,21 +26,21 @@
 </style>
 <rect width="1200" height="480" fill="url(#bg)"/><rect width="1200" height="480" fill="url(#noise)"/><rect x="35" y="25" width="365" height="425" rx="7" fill="#171116" stroke="#8A6A50" stroke-width="2"/>
  <rect x="50" y="39" width="335" height="397" rx="3" fill="none" stroke="#5D3D34" stroke-width="1"/>
- <text x="210" y="77" class="small" fill="#D0AC83" text-anchor="middle" font-size="14">EVIDENCE / 01</text>
- <text x="210" y="310" class="serif" fill="#EFE2C9" text-anchor="middle" font-size="33" letter-spacing="3">THE SUSPECT</text>
- <text x="210" y="350" class="mono" fill="#B44758" text-anchor="middle" font-size="24" letter-spacing="2">WHO?</text>
+ <text x="210" y="77" class="small" fill="#D0AC83" text-anchor="middle" font-size="14">PRUEBA / 01</text>
+ <text x="210" y="310" class="serif" fill="#EFE2C9" text-anchor="middle" font-size="32.5" letter-spacing="3">EL SOSPECHOSO</text>
+ <text x="210" y="350" class="mono" fill="#B44758" text-anchor="middle" font-size="24" letter-spacing="2">¿QUIÉN?</text>
  <path d="M130 371H290" stroke="#AE8064" opacity=".6"/>
- <text x="210" y="403" fill="#B8A89A" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="20">A face among six</text><circle cx="210" cy="173" r="42" fill="#251C20" stroke="#9A634F" stroke-width="3"/><path d="M127 266Q127 209 210 216Q293 209 293 266Z" fill="#241B1F" stroke="#9A634F" stroke-width="3"/><path d="M190 131L173 143L230 131L245 143" fill="none" stroke="#9A634F" stroke-width="2"/><rect x="432" y="25" width="365" height="425" rx="7" fill="#171116" stroke="#8A6A50" stroke-width="2"/>
+ <text x="210" y="403" fill="#B8A89A" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="20.0">Un rostro entre seis</text><circle cx="210" cy="173" r="42" fill="#251C20" stroke="#9A634F" stroke-width="3"/><path d="M127 266Q127 209 210 216Q293 209 293 266Z" fill="#241B1F" stroke="#9A634F" stroke-width="3"/><path d="M190 131L173 143L230 131L245 143" fill="none" stroke="#9A634F" stroke-width="2"/><rect x="432" y="25" width="365" height="425" rx="7" fill="#171116" stroke="#8A6A50" stroke-width="2"/>
  <rect x="447" y="39" width="335" height="397" rx="3" fill="none" stroke="#5D3D34" stroke-width="1"/>
- <text x="607" y="77" class="small" fill="#D0AC83" text-anchor="middle" font-size="14">EVIDENCE / 02</text>
- <text x="607" y="310" class="serif" fill="#EFE2C9" text-anchor="middle" font-size="33" letter-spacing="3">THE WEAPON</text>
- <text x="607" y="350" class="mono" fill="#B44758" text-anchor="middle" font-size="24" letter-spacing="2">HOW?</text>
+ <text x="607" y="77" class="small" fill="#D0AC83" text-anchor="middle" font-size="14">PRUEBA / 02</text>
+ <text x="607" y="310" class="serif" fill="#EFE2C9" text-anchor="middle" font-size="33.0" letter-spacing="3">EL ARMA</text>
+ <text x="607" y="350" class="mono" fill="#B44758" text-anchor="middle" font-size="24" letter-spacing="2">¿CÓMO?</text>
  <path d="M527 371H687" stroke="#AE8064" opacity=".6"/>
- <text x="607" y="403" fill="#B8A89A" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="20">One object tells all</text><path d="M592 121L631 121L623 208L641 231L617 251L594 234L609 208Z" fill="#6D3B41" stroke="#CB997C" stroke-width="3"/><path d="M547 210L665 210" stroke="#C59B78" stroke-width="9"/><circle cx="607" cy="202" r="14" fill="#2F1C21" stroke="#C59B78" stroke-width="3"/><rect x="829" y="25" width="365" height="425" rx="7" fill="#171116" stroke="#8A6A50" stroke-width="2"/>
+ <text x="607" y="403" fill="#B8A89A" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="20.0">Un objeto lo revela todo</text><path d="M592 121L631 121L623 208L641 231L617 251L594 234L609 208Z" fill="#6D3B41" stroke="#CB997C" stroke-width="3"/><path d="M547 210L665 210" stroke="#C59B78" stroke-width="9"/><circle cx="607" cy="202" r="14" fill="#2F1C21" stroke="#C59B78" stroke-width="3"/><rect x="829" y="25" width="365" height="425" rx="7" fill="#171116" stroke="#8A6A50" stroke-width="2"/>
  <rect x="844" y="39" width="335" height="397" rx="3" fill="none" stroke="#5D3D34" stroke-width="1"/>
- <text x="1004" y="77" class="small" fill="#D0AC83" text-anchor="middle" font-size="14">EVIDENCE / 03</text>
- <text x="1004" y="310" class="serif" fill="#EFE2C9" text-anchor="middle" font-size="33" letter-spacing="3">THE ROOM</text>
- <text x="1004" y="350" class="mono" fill="#B44758" text-anchor="middle" font-size="24" letter-spacing="2">WHERE?</text>
+ <text x="1004" y="77" class="small" fill="#D0AC83" text-anchor="middle" font-size="14">PRUEBA / 03</text>
+ <text x="1004" y="310" class="serif" fill="#EFE2C9" text-anchor="middle" font-size="33.0" letter-spacing="3">LA HABITACIÓN</text>
+ <text x="1004" y="350" class="mono" fill="#B44758" text-anchor="middle" font-size="24" letter-spacing="2">¿DÓNDE?</text>
  <path d="M924 371H1084" stroke="#AE8064" opacity=".6"/>
- <text x="1004" y="403" fill="#B8A89A" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="20">Every door hides a clue</text><path d="M932 263V145Q932 105 1004 105Q1076 105 1076 145V263Z" fill="#24191D" stroke="#AB7259" stroke-width="4"/><path d="M955 263V152Q955 121 1004 121Q1053 121 1053 152V263" stroke="#7D5248" stroke-width="2" fill="none"/><circle cx="1039" cy="203" r="6" fill="#CEAA78"/>
+ <text x="1004" y="403" fill="#B8A89A" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="20.0">Cada puerta esconde una pista</text><path d="M932 263V145Q932 105 1004 105Q1076 105 1076 145V263Z" fill="#24191D" stroke="#AB7259" stroke-width="4"/><path d="M955 263V152Q955 121 1004 121Q1053 121 1053 152V263" stroke="#7D5248" stroke-width="2" fill="none"/><circle cx="1039" cy="203" r="6" fill="#CEAA78"/>
 </svg>

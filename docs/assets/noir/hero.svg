@@ -40,13 +40,13 @@
 <rect x="34" y="34" width="1532" height="612" fill="none" stroke="#C69C6A" stroke-opacity=".16"/>
 <path d="M83 23H23V83 M1517 23H1577V83 M83 657H23V597 M1517 657H1577V597" fill="none" stroke="#CAA46F" stroke-opacity=".65" stroke-width="2"/>
 <g transform="translate(800 76)" text-anchor="middle">
- <text y="0" class="small" font-size="18" fill="#D9B485">THE DEUSTO DETECTIVE ARCHIVES</text>
+ <text y="0" class="small" font-size="18.0" fill="#D9B485">LOS ARCHIVOS DE INVESTIGACIÓN DE DEUSTO</text>
  <path d="M-320 22H-65 M65 22H320" stroke="#946A51" stroke-width="1"/><path d="M0 11l11 11-11 11-11-11z" stroke="#D0A675" fill="none"/>
 </g>
 <text x="800" y="310" text-anchor="middle" font-family="Georgia,serif" font-weight="bold" font-size="133" letter-spacing="17" fill="#F0E5D2" class="reveal">DEUSTO</text>
 <text x="800" y="433" text-anchor="middle" font-family="Georgia,serif" font-weight="bold" font-size="154" letter-spacing="18" fill="#AA263D" class="reveal" stroke="#D18778" stroke-opacity=".22" stroke-width="1">MURDER</text>
 <path d="M430 452H1170" stroke="url(#gold)" opacity=".58"/>
-<text x="800" y="502" text-anchor="middle" class="small" font-size="21" fill="#D8BA93">ONE MURDER  /  SIX SUSPECTS  /  ONE TRUTH</text>
-<g transform="translate(800 584)" text-anchor="middle"><text y="0" class="mono" font-size="16" letter-spacing="2" fill="#E7D5BC">A JAVA MULTIPLAYER MYSTERY</text><text y="32" class="small" font-size="13" letter-spacing="2" fill="#937F71">CASE FILE 001   •   UNIVERSITY OF DEUSTO   •   2026</text></g>
-<g transform="translate(1390 565) rotate(-16)"><rect x="-80" y="-33" width="160" height="66" rx="4" fill="none" stroke="#8D2D3E" stroke-width="4" opacity=".8"/><text text-anchor="middle" y="6" class="mono" font-size="20" letter-spacing="3" fill="#A03E50" opacity=".85">UNSOLVED</text></g>
+<text x="800" y="502" text-anchor="middle" class="small" font-size="21.0" fill="#D8BA93">UN ASESINATO  /  SEIS SOSPECHOSOS  /  UNA VERDAD</text>
+<g transform="translate(800 584)" text-anchor="middle"><text y="0" class="mono" font-size="16.0" letter-spacing="2" fill="#E7D5BC">UN MISTERIO MULTIJUGADOR EN JAVA</text><text y="32" class="small" font-size="13.0" letter-spacing="2" fill="#937F71">EXPEDIENTE 001   •   UNIVERSIDAD DE DEUSTO   •   2026</text></g>
+<g transform="translate(1390 565) rotate(-16)"><rect x="-80" y="-33" width="160" height="66" rx="4" fill="none" stroke="#8D2D3E" stroke-width="4" opacity=".8"/><text text-anchor="middle" y="6" class="mono" font-size="16.5" letter-spacing="3" fill="#A03E50" opacity=".85">SIN RESOLVER</text></g>
 </svg>

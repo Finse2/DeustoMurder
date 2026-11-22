@@ -30,9 +30,9 @@
 <path d="M55 400Q240 115 440 270M720 180Q905 100 1120 340" fill="none" stroke="#7D2639" stroke-width="2" opacity=".42"/>
 <g transform="translate(120 200)" opacity=".9"><circle cx="0" cy="0" r="43" fill="#261A20" stroke="#835C49"/><path d="M-80 170Q-87 50 0 53Q87 50 80 170Z" fill="#180F14" stroke="#835C49"/></g>
 <g transform="translate(1060 210)" opacity=".82"><circle cx="0" cy="0" r="38" fill="#261A20" stroke="#835C49"/><path d="M-72 145Q-75 49 0 50Q75 49 72 145Z" fill="#180F14" stroke="#835C49"/></g>
-<g transform="translate(610 120)" text-anchor="middle"><text class="small" font-size="15" fill="#CDA27C">FILE 001 / SCENE RECONSTRUCTION</text>
-<text y="47" class="serif" font-size="59" letter-spacing="3" fill="#F2E8D5">EVERY SECRET</text>
-<text y="103" class="serif" font-size="56" letter-spacing="3" fill="#AE2A44">LEAVES A TRACE.</text></g>
+<g transform="translate(610 120)" text-anchor="middle"><text class="small" font-size="15.0" fill="#CDA27C">EXPEDIENTE 001 / RECONSTRUCCIÓN</text>
+<text y="47" class="serif" font-size="59.0" letter-spacing="3" fill="#F2E8D5">TODO SECRETO</text>
+<text y="103" class="serif" font-size="56.0" letter-spacing="3" fill="#AE2A44">DEJA UN RASTRO.</text></g>
 <rect x="22" y="20" width="1156" height="398" fill="none" stroke="#B58F65" opacity=".45"/>
-<rect x="26" y="382" width="385" height="38" fill="#150E12"/><text x="42" y="406" class="mono" font-size="13" fill="#D7B693">CONCEPT ART — NOT IN-GAME FOOTAGE</text><path d="M82 22H22V82 M1118 22H1178V82 M82 418H22V358 M1118 418H1178V358" fill="none" stroke="#CAA46F" stroke-opacity=".7" stroke-width="2"/>
+<rect x="26" y="382" width="385" height="38" fill="#150E12"/><text x="42" y="406" class="mono" font-size="13.0" fill="#D7B693">ILUSTRACIÓN CONCEPTUAL — NO ES UNA CAPTURA DEL JUEGO</text><path d="M82 22H22V82 M1118 22H1178V82 M82 418H22V358 M1118 418H1178V358" fill="none" stroke="#CAA46F" stroke-opacity=".7" stroke-width="2"/>
 </svg>
