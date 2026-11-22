@@ -1,18 +1,19 @@
+
 <div align="center">
 
-<img src="docs/assets/noir/hero.svg" alt="DEUSTO MURDER — a cinematic university murder mystery" width="100%" />
+<img src="docs/assets/noir/hero.svg" alt="DEUSTO MURDER — Un misterioso asesinato universitario" width="100%" />
 
 <br />
 
-<img src="docs/assets/noir/terminal.gif" alt="Animated case file terminal: accessing case file 001, status unsolved" width="85%" />
+<img src="docs/assets/noir/terminal.gif" alt="Terminal animada del expediente 001 — Caso sin resolver" width="85%" />
 
 <br /><br />
 
-**ONE MURDER. SIX SUSPECTS. ONE TRUTH.**
+**UN ASESINATO. SEIS SOSPECHOSOS. UNA SOLA VERDAD.**
 
-*A multiplayer detective board game inspired by Cluedo — built with Java and Swing.*
+*Un juego de mesa multijugador de investigación inspirado en Cluedo, desarrollado con Java y Swing.*
 
-[The Case](#the-case) · [Investigation](#the-investigation) · [Evidence](#the-evidence) · [Architecture](#architecture) · [Installation](#installation) · [Development](#development) · [Team](#the-team)
+[El caso](#the-case) · [La investigación](#the-investigation) · [Las pruebas](#the-evidence) · [Arquitectura](#architecture) · [Instalación](#installation) · [Desarrollo](#development) · [Equipo](#the-team)
 
 </div>
 
@@ -20,170 +21,219 @@
 
 <a id="the-case"></a>
 <div align="center">
-  <img src="docs/assets/noir/headers/case.svg" alt="01 — The Case" width="100%" />
+  <img src="docs/assets/noir/headers/case.svg" alt="01 — El caso" width="100%" />
 </div>
 
-A mysterious crime has shaken the **University of Deusto**. The halls are quiet, the suspects are many, and the evidence is incomplete. Each player becomes a detective, gathering clues and eliminating possibilities before making a final accusation.
+Un misterioso crimen ha sacudido la **Universidad de Deusto**. Los pasillos permanecen en silencio, los sospechosos se multiplican y las pruebas todavía son insuficientes.
 
-The objective is to identify the **suspect**, **weapon**, and **room** hidden in the sealed solution.
+Cada jugador asume el papel de un detective que deberá reunir pistas, analizar las pruebas y descartar posibilidades antes de formular su acusación definitiva.
+
+El objetivo es descubrir al **sospechoso**, el **arma** y la **habitación** que componen la solución secreta del crimen.
 
 <div align="center">
-  <img src="docs/assets/noir/atmosphere.svg" alt="Dark detective manor concept artwork — not an in-game screenshot" width="100%" />
-  <sub>Atmospheric concept art created for this README — not an in-game screenshot.</sub>
+  <img src="docs/assets/noir/atmosphere.svg" alt="Ilustración conceptual de una mansión de misterio — No es una captura del juego" width="100%" />
+  <sub>Ilustración conceptual creada para este README. No representa una captura real del juego.</sub>
 </div>
 
 <a id="the-investigation"></a>
 <div align="center">
-  <img src="docs/assets/noir/headers/gameplay.svg" alt="02 — The Investigation" width="100%" />
+  <img src="docs/assets/noir/headers/gameplay.svg" alt="02 — La investigación" width="100%" />
 </div>
 
-| Act | The investigation |
+| Acto | La investigación |
 |:--|:--|
-| **I — Gather** | Join or host a session and prepare the investigation. |
-| **II — Explore** | Take turns, roll dice, and move through the board. |
-| **III — Deduce** | Study the cards, track revealed information, and eliminate impossible combinations. |
-| **IV — Accuse** | Choose a suspect, a weapon, and a room to test your theory. |
+| **I — Preparación** | Crea una partida o únete a una sesión existente y prepárate para comenzar la investigación. |
+| **II — Exploración** | Avanza por turnos, lanza los dados y desplázate por las diferentes casillas del tablero. |
+| **III — Deducción** | Examina tus cartas, registra las pistas descubiertas y descarta las combinaciones imposibles. |
+| **IV — Acusación** | Selecciona un sospechoso, un arma y una habitación para comprobar tu teoría y resolver el misterio. |
 
-> **Development status:** DeustoMurder is an evolving student project. Its game model, Swing UI, and networking components exist, but the full multiplayer gameplay flow is still being integrated and tested. These steps describe the intended player experience, not a claim that every step is release-ready.
+> **Estado del desarrollo:** DeustoMurder es un proyecto universitario en constante evolución. Actualmente dispone de componentes para la lógica del juego, una interfaz gráfica desarrollada con Swing y funcionalidades de comunicación en red. Sin embargo, la integración y las pruebas del flujo multijugador completo todavía están en desarrollo. Las fases descritas representan la experiencia de juego prevista, no funcionalidades necesariamente finalizadas.
 
 <a id="the-evidence"></a>
 <div align="center">
-  <img src="docs/assets/noir/headers/evidence-head.svg" alt="03 — The Evidence" width="100%" />
-  <img src="docs/assets/noir/evidence.svg" alt="Three illustrated evidence cards: the suspect, the weapon, and the room" width="100%" />
+  <img src="docs/assets/noir/headers/evidence-head.svg" alt="03 — Las pruebas" width="100%" />
+  <img src="docs/assets/noir/evidence.svg" alt="Tres cartas de investigación: sospechoso, arma y habitación" width="100%" />
 </div>
 
-At the start of a game, one card from each category forms the secret solution. The remaining cards are shuffled and distributed to players; unassigned cards are publicly visible clues.
+Al comenzar una partida, se selecciona una carta de cada categoría para formar la **solución secreta del crimen**.
+
+Las cartas restantes se barajan y se reparten entre los jugadores. Aquellas que no se asignan a ningún participante se convierten en pistas públicas que podrán utilizarse durante la investigación.
+
+Cada detective deberá combinar la información de sus propias cartas con las pistas descubiertas durante la partida para identificar la única combinación correcta.
 
 <details>
-<summary><strong>Open the evidence archive — suspects, weapons & rooms</strong></summary>
+<summary><strong>📂 Abrir el archivo de pruebas — Sospechosos, armas y habitaciones</strong></summary>
 
-**Suspects:** Garaizar, Luka, David, Andrada, Antal, Bringas.
+### Sospechosos
 
-**Weapons:** Machete, chalk, keyboard, cable, chair, screwdriver.
+- Garaizar
+- Luka
+- David
+- Andrada
+- Antal
+- Bringas
 
-**Rooms:** CRAI, bathrooms, cafeteria, machine room, laboratories, DeustoTech, E208 classroom, dean's office, sports centre.
+### Armas
 
-*Names and locations reflect the project's documented game setup and may evolve.*
+- Machete
+- Tiza
+- Teclado
+- Cable
+- Silla
+- Destornillador
+
+### Habitaciones
+
+- CRAI
+- Baños
+- Cafetería
+- Sala de máquinas
+- Laboratorios
+- DeustoTech
+- Aula E208
+- Decanato
+- Polideportivo
+
+*Los nombres y las localizaciones corresponden a la configuración documentada del proyecto y pueden modificarse durante su desarrollo.*
+
 </details>
 
-<div align="center"><img src="docs/assets/noir/divider.svg" alt="" width="88%" /></div>
+<div align="center">
+  <img src="docs/assets/noir/divider.svg" alt="" width="88%" />
+</div>
 
 <a id="architecture"></a>
 <div align="center">
-  <img src="docs/assets/noir/headers/architecture-head.svg" alt="04 — Beneath the Surface" width="100%" />
+  <img src="docs/assets/noir/headers/architecture-head.svg" alt="04 — Bajo la superficie" width="100%" />
 </div>
 
-A **modular Java architecture** separates the visual experience, gameplay rules, card deduction, multiplayer communication, and supporting game services. The modules below are present in the repository; the diagram is a high-level conceptual representation, not a verified runtime dependency map.
+DeustoMurder utiliza una **arquitectura modular desarrollada en Java**, diseñada para separar las diferentes responsabilidades del sistema y facilitar su mantenimiento, ampliación y evolución.
+
+La estructura distingue entre la interfaz gráfica, las reglas del juego, la gestión de cartas, la comunicación multijugador y los servicios auxiliares.
+
+Los módulos descritos están presentes en el repositorio. El siguiente diagrama representa una visión conceptual de alto nivel, no un mapa verificado de todas las dependencias durante la ejecución.
 
 <div align="center">
-  <img src="docs/assets/noir/architecture.svg" alt="Technical blueprint of the game core, user interface, TCP networking, movement, cards, history and statistics" width="100%" />
+  <img src="docs/assets/noir/architecture.svg" alt="Diagrama de arquitectura: núcleo del juego, interfaz, comunicación TCP, movimiento, cartas, historial y estadísticas" width="100%" />
 </div>
 
-| Layer | Technologies & relevant classes |
+| Capa | Tecnologías y clases principales |
 |:--|:--|
-| **Application / UI** | Java Swing · `app.Main` · `MainScreen` · `LobbyScreen` · `InGameScreen` |
-| **Game engine** | `Game` · `GameState` · `GameSetup` · `GameInitializer` |
-| **Turn management** | `RoundManager` · `MoveValidator` · `TurnTimerThread` · `Dice` |
-| **Cards & deduction** | `DeckManager` · `AccusationValidator` |
-| **Multiplayer** | TCP sockets · `Client` · `GameServer` · serialized packets |
-| **Services** | `GameHistory` · `StatisticsManager` · background event-processing threads |
+| **Aplicación e interfaz gráfica** | Java Swing · `app.Main` · `MainScreen` · `LobbyScreen` · `InGameScreen` |
+| **Motor del juego** | `Game` · `GameState` · `GameSetup` · `GameInitializer` |
+| **Gestión de turnos** | `RoundManager` · `MoveValidator` · `TurnTimerThread` · `Dice` |
+| **Cartas y deducción** | `DeckManager` · `AccusationValidator` |
+| **Sistema multijugador** | Sockets TCP · `Client` · `GameServer` · Paquetes serializados |
+| **Servicios auxiliares** | `GameHistory` · `StatisticsManager` · Hilos de procesamiento de eventos en segundo plano |
 
 <details>
-<summary><strong>Explore the source structure</strong></summary>
+<summary><strong>📁 Explorar la estructura del código fuente</strong></summary>
 
 ```text
 DeustoMurder/
 ├── innerProy/
 │   ├── src/
-│   │   ├── app/                  # Application entry point
-│   │   ├── game/                 # Core, turns, cards, history, stats
-│   │   ├── model/                # Players, pieces, cards, rooms
-│   │   ├── ui/                   # Board and game screens
-│   │   └── activation/Screen/    # Main menu and lobby UI
-│   ├── networking/src/          # Networking module
-│   └── ressources/              # UI assets (folder name as in repo)
-├── docs/assets/noir/           # README visual system
+│   │   ├── app/                  # Punto de entrada de la aplicación
+│   │   ├── game/                 # Lógica, turnos, cartas, historial y estadísticas
+│   │   ├── model/                # Jugadores, fichas, cartas y habitaciones
+│   │   ├── ui/                   # Tablero y pantallas del juego
+│   │   └── activation/Screen/    # Menú principal y sala de espera
+│   ├── networking/src/          # Módulo de comunicación en red
+│   └── ressources/              # Recursos gráficos de la interfaz
+├── docs/assets/noir/           # Recursos visuales del README
 └── README.md
 ```
 
-This is a selective directory map, not a complete file inventory.
+*Esta estructura muestra únicamente los directorios más relevantes del proyecto y no constituye un inventario completo de sus archivos.*
 
 </details>
 
 <a id="installation"></a>
 <div align="center">
-  <img src="docs/assets/noir/headers/install.svg" alt="05 — Enter the Manor" width="100%" />
+  <img src="docs/assets/noir/headers/install.svg" alt="05 — Entra en la mansión" width="100%" />
 </div>
 
-### Prerequisites
+### Requisitos previos
 
-- Java Development Kit (**JDK**) compatible with the checked-out sources.
-- **IntelliJ IDEA** (recommended), with an SDK configured.
-- Git, to obtain the repository.
+Antes de ejecutar DeustoMurder, asegúrate de disponer de las siguientes herramientas:
 
-### 01 — Clone
+- **Java Development Kit (JDK):** una versión compatible con el código fuente del proyecto.
+- **IntelliJ IDEA:** entorno de desarrollo recomendado, con un SDK correctamente configurado.
+- **Git:** necesario para clonar y descargar el repositorio.
+
+### 01 — Clonar el repositorio
+
+Abre una terminal y ejecuta los siguientes comandos:
 
 ```bash
 git clone https://github.com/Finse2/DeustoMurder.git
 cd DeustoMurder
 ```
 
-### 02 — Open in IntelliJ IDEA
+### 02 — Abrir el proyecto en IntelliJ IDEA
 
-1. Open the cloned repository in IntelliJ IDEA.
-2. Select a compatible JDK under **File → Project Structure → Project SDK**.
-3. If IntelliJ does not detect source directories automatically, mark `innerProy/src` as **Sources Root** and configure the separate networking module as needed.
-4. Run **`app.Main`** (`innerProy/src/app/Main.java`). The entry point creates the main Swing menu.
+1. Inicia **IntelliJ IDEA** y abre el repositorio que acabas de clonar.
+2. Accede a **File → Project Structure → Project SDK** y selecciona una versión compatible del JDK.
+3. Si IntelliJ no reconoce automáticamente los directorios del código fuente, marca `innerProy/src` como **Sources Root** y configura las dependencias del módulo de red cuando sea necesario.
+4. Localiza y ejecuta la clase **`app.Main`**, situada en `innerProy/src/app/Main.java`.
 
-> **Note:** The project's exact JDK level and multiplayer runtime configuration should be checked against your local setup. This README does not claim a tested one-command build or a published binary release.
+Al ejecutar correctamente el punto de entrada, se iniciará la interfaz principal del juego, desarrollada con Java Swing.
+
+> **Importante:** La versión exacta del JDK y la configuración necesaria para el sistema multijugador deben comprobarse en el entorno local. Actualmente, este README no garantiza una compilación mediante un único comando ni la disponibilidad de una versión ejecutable publicada.
 
 <details>
-<summary><strong>Troubleshooting</strong></summary>
+<summary><strong>🔧 Solución de problemas frecuentes</strong></summary>
 
-| Symptom | Check |
+| Problema | Posibles comprobaciones |
 |:--|:--|
-| Classes are not found | Project SDK, Sources Root, module dependencies |
-| Interface resources are missing | Working directory and `innerProy/ressources` paths |
-| Multiplayer connection fails | Host availability, IP/port, firewall and current network integration |
+| No se encuentran determinadas clases | Revisar el SDK, los directorios Sources Root y las dependencias entre módulos. |
+| No aparecen imágenes o recursos de la interfaz | Comprobar el directorio de trabajo y las rutas de `innerProy/ressources`. |
+| La conexión multijugador falla | Verificar la disponibilidad del anfitrión, la dirección IP, el puerto, el cortafuegos y la integración actual del sistema de red. |
 
 </details>
 
 <a id="development"></a>
 <div align="center">
-  <img src="docs/assets/noir/headers/roadmap.svg" alt="06 — Unfinished Business" width="100%" />
+  <img src="docs/assets/noir/headers/roadmap.svg" alt="06 — Asuntos pendientes" width="100%" />
 </div>
 
-| Stage | Status |
-|:--|:--|
-| Core game state, decks, turns, and accusation logic | Implemented components |
-| Swing screens, visual board, lobby and TCP network layer | Implemented components |
-| Synchronization of full multiplayer game state | Integration in progress |
-| Game rules and interface end-to-end validation | Integration in progress |
-| Achievements, persistence and reliable save/load | Planned / undergoing consolidation |
-| Test coverage, stability and release packaging | Ongoing |
+DeustoMurder continúa evolucionando mediante la incorporación de nuevas funcionalidades, mejoras en su arquitectura y pruebas de integración.
 
-*Component existence is distinct from complete, tested end-to-end functionality.*
+El objetivo es conseguir una experiencia multijugador estable, coherente y completamente funcional.
+
+| Etapa del desarrollo | Estado |
+|:--|:--|
+| Estado del juego, barajas, turnos y lógica de acusaciones | Componentes implementados |
+| Pantallas Swing, tablero visual, sala de espera y comunicación TCP | Componentes implementados |
+| Sincronización completa del estado de la partida entre jugadores | Integración en desarrollo |
+| Validación integral de las reglas y la interfaz del juego | Integración en desarrollo |
+| Sistema de logros, persistencia y guardado/carga de partidas | Planificado / En proceso de consolidación |
+| Cobertura de pruebas, estabilidad y preparación de una versión distribuible | En desarrollo continuo |
+
+*La existencia de un componente no implica necesariamente que todas sus funcionalidades estén completamente integradas, verificadas y preparadas para su uso final.*
 
 <a id="the-team"></a>
 <div align="center">
-  <img src="docs/assets/noir/headers/team.svg" alt="07 — The Investigators" width="100%" />
+  <img src="docs/assets/noir/headers/team.svg" alt="07 — Los investigadores" width="100%" />
 </div>
 
-DeustoMurder is a collaborative student project developed at the **University of Deusto**.
+**DeustoMurder** es un proyecto universitario desarrollado de forma colaborativa en la **Universidad de Deusto**.
 
-| Developer | Project focus |
+Su desarrollo combina diferentes áreas de la ingeniería del software, desde la programación de la lógica interna hasta el diseño de interfaces y la comunicación en red.
+
+| Desarrollador | Área principal de contribución |
 |:--|:--|
-| **David** | Game logic, backend and gameplay systems |
-| **Andrada** | Multiplayer lobby and player experience |
-| **Antal** | Board and interface components |
-| **Luka** | Main interface and board visualization |
+| **David** | Lógica del juego, backend y sistemas de funcionamiento de las partidas |
+| **Andrada** | Sala de espera multijugador y experiencia de los jugadores |
+| **Antal** | Tablero y componentes de la interfaz |
+| **Luka** | Interfaz principal y representación visual del tablero |
 
 <div align="center">
 
-[**View the contributors**](https://github.com/Finse2/DeustoMurder/graphs/contributors) · [**Browse source code**](https://github.com/Finse2/DeustoMurder) · [**Open an issue**](https://github.com/Finse2/DeustoMurder/issues)
+[**Ver colaboradores**](https://github.com/Finse2/DeustoMurder/graphs/contributors) · [**Explorar el código fuente**](https://github.com/Finse2/DeustoMurder) · [**Reportar una incidencia**](https://github.com/Finse2/DeustoMurder/issues)
 
 <br />
 
-<img src="docs/assets/noir/footer.svg" alt="The truth is still out there — end of dossier" width="100%" />
+<img src="docs/assets/noir/footer.svg" alt="La verdad sigue ahí fuera — Fin del expediente" width="100%" />
 
 </div>
