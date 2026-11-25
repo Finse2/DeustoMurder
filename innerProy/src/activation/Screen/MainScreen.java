@@ -380,15 +380,14 @@ public class MainScreen extends JFrame {
         connectionValues connection = ClientConnection();
 
         if (connection == null) {
-            String username = CustomOptionPane.showInputDialog(
-                    this, null,
-                    "What is your username?",
-                    CustomOptionPane.DEFAULT
-            );
             return;
         }
 
-        String username = JOptionPane.showInputDialog(this,"What is your username");
+        String username = CustomOptionPane.showInputDialog(
+                this, null,
+                "What is your username?",
+                CustomOptionPane.DEFAULT
+        );
 
         if (username == null || username.isBlank()) {
             return;
