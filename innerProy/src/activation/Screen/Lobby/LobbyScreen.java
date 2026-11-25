@@ -468,18 +468,28 @@ public class LobbyScreen extends JFrame {
 
             profileButton.setPicture(picture);
         } catch (IOException | IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(this,
+            CustomOptionPane.showMessageDialog(
+                    this, null,
                     "Could not update profile picture: " + ex.getMessage(),
-                    "Image Error", JOptionPane.ERROR_MESSAGE);
+                    CustomOptionPane.ERROR
+            );
         }
     }
 
     private void copy() {
             try {
                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(ServerCode.Encode(this.ServerIP,this.port,this.HostNAME)),null);
-                JOptionPane.showConfirmDialog(this, "Copied Code");
+                CustomOptionPane.showMessageDialog(
+                        this, null,
+                        "Copied Code",
+                        CustomOptionPane.SUCCESS
+                );
             } catch (IllegalStateException ex) {
-                JOptionPane.showMessageDialog(this, "Clipboard is unavailable", "Copy Error", JOptionPane.ERROR_MESSAGE);
+                CustomOptionPane.showMessageDialog(
+                        this, null,
+                        "Clipboard is unavailable",
+                        CustomOptionPane.ERROR
+                );
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

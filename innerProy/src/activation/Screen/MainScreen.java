@@ -183,18 +183,20 @@ public class MainScreen extends JFrame {
     private void HostGame() {
 
         if (isConnectionBusy()) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "A connection is already active or in progress."
+            CustomOptionPane.showMessageDialog(
+                    this, null,
+                    "A connection is already active or in progress.",
+                    CustomOptionPane.WARNING
             );
             return;
         }
 
         if (hostingServer || (hostedLobby != null && hostedLobby.isRunning())) {
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "You are already hosting a game."
+            CustomOptionPane.showMessageDialog(
+                    this, null,
+                    "You are already hosting a game.",
+                    CustomOptionPane.WARNING
             );
             return;
         }
@@ -205,9 +207,10 @@ public class MainScreen extends JFrame {
             return;
         }
 
-        String username = JOptionPane.showInputDialog(
-                this,
-                "What is your username?"
+        String username = CustomOptionPane.showInputDialog(
+                this, null,
+                "What is your username?",
+                CustomOptionPane.DEFAULT
         );
 
         if (username == null || username.isBlank()) {
@@ -322,11 +325,10 @@ public class MainScreen extends JFrame {
 
                             resetTransition();
 
-                            JOptionPane.showMessageDialog(
-                                    MainScreen.this,
+                            CustomOptionPane.showMessageDialog(
+                                    MainScreen.this, null,
                                     ex.getMessage(),
-                                    "Lobby Error",
-                                    JOptionPane.ERROR_MESSAGE
+                                    CustomOptionPane.ERROR
                             );
                         }
                     });
@@ -357,17 +359,19 @@ public class MainScreen extends JFrame {
      */
     private void JoinGame() {
         if (isConnectionBusy()) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "A connection is already active or in progress."
+            CustomOptionPane.showMessageDialog(
+                    this, null,
+                    "A connection is already active or in progress.",
+                    CustomOptionPane.WARNING
             );
             return;
         }
         if (joiningServer || (joinedClient != null && joinedClient.isConnected())) {
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "You are already joining or connected to a game."
+            CustomOptionPane.showMessageDialog(
+                    this, null,
+                    "You are already joining or connected to a game.",
+                    CustomOptionPane.WARNING
             );
             return;
         }
@@ -376,6 +380,11 @@ public class MainScreen extends JFrame {
         connectionValues connection = ClientConnection();
 
         if (connection == null) {
+            String username = CustomOptionPane.showInputDialog(
+                    this, null,
+                    "What is your username?",
+                    CustomOptionPane.DEFAULT
+            );
             return;
         }
 
@@ -667,21 +676,18 @@ public class MainScreen extends JFrame {
 
             } catch (NumberFormatException ex) {
 
-                JOptionPane.showMessageDialog(
-                        connectionDialog,
+                CustomOptionPane.showMessageDialog(
+                        connectionDialog, null,
                         "Please enter a valid numeric port.",
-                        "Invalid Port",
-                        JOptionPane.ERROR_MESSAGE
+                        CustomOptionPane.ERROR
                 );
 
             } catch (Exception ex) {
 
-                JOptionPane.showMessageDialog(
-                        connectionDialog,
-                        "Connection parameters error: "
-                                + ex.getMessage(),
-                        "Connection Error",
-                        JOptionPane.ERROR_MESSAGE
+                CustomOptionPane.showMessageDialog(
+                        connectionDialog, null,
+                        "Connection parameters error: " + ex.getMessage(),
+                        CustomOptionPane.ERROR
                 );
             }
         });
@@ -765,27 +771,24 @@ public class MainScreen extends JFrame {
                 connectionDialog.dispose();
 
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(
-                        connectionDialog,
+                CustomOptionPane.showMessageDialog(
+                        connectionDialog, null,
                         "Please enter a valid numeric port.",
-                        "Invalid Port",
-                        JOptionPane.ERROR_MESSAGE
+                        CustomOptionPane.ERROR
                 );
 
             } catch (IllegalArgumentException ex) {
-                JOptionPane.showMessageDialog(
-                        connectionDialog,
+                CustomOptionPane.showMessageDialog(
+                        connectionDialog, null,
                         ex.getMessage(),
-                        "Invalid Connection Parameters",
-                        JOptionPane.ERROR_MESSAGE
+                        CustomOptionPane.ERROR
                 );
 
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(
-                        connectionDialog,
+                CustomOptionPane.showMessageDialog(
+                        connectionDialog, null,
                         "Unable to generate server code: " + ex.getMessage(),
-                        "Connection Error",
-                        JOptionPane.ERROR_MESSAGE
+                        CustomOptionPane.ERROR
                 );
             }
         });
@@ -927,9 +930,11 @@ public class MainScreen extends JFrame {
 
             profileButton.setPicture(picture);
         } catch (IOException | IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(this,
+            CustomOptionPane.showMessageDialog(
+                    this, null,
                     "Could not update profile picture: " + ex.getMessage(),
-                    "Image Error", JOptionPane.ERROR_MESSAGE);
+                    CustomOptionPane.ERROR
+            );
         }
     }
     /**
@@ -1086,11 +1091,10 @@ public class MainScreen extends JFrame {
         setCursor(Cursor.getDefaultCursor());
         resetTransition();
 
-        JOptionPane.showMessageDialog(
-                this,
+        CustomOptionPane.showMessageDialog(
+                this, null,
                 message,
-                "Connection Error",
-                JOptionPane.ERROR_MESSAGE
+                CustomOptionPane.ERROR
         );
     }
 
