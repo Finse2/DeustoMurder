@@ -98,12 +98,50 @@ public final class GameHistoryPanel extends JPanel {
         actions.add(exportOption);
         actions.addSeparator();
         actions.add(summaryOption);
-        JButton optionsButton = miniButton("Opciones ▾");
-        optionsButton.addActionListener(event -> actions.show(optionsButton, 0, optionsButton.getHeight()));
+        JButton optionsButton = miniButton("...");
 
-        JPanel titleRow = new JPanel(new BorderLayout(4, 0));
+        optionsButton.setToolTipText("Journal options");
+
+        optionsButton.addActionListener(event ->
+                actions.show(
+                        optionsButton,
+                        optionsButton.getWidth() - actions.getPreferredSize().width,
+                        optionsButton.getHeight()
+                )
+        );
+
+        // TITLE AND SUBTITLE
+        JPanel titleContent = new JPanel();
+
+        titleContent.setLayout(
+                new BoxLayout(titleContent, BoxLayout.Y_AXIS)
+        );
+
+        titleContent.setOpaque(false);
+
+        titleContent.add(Box.createVerticalGlue());
+        titleContent.add(title);
+        titleContent.add(Box.createVerticalStrut(3));
+        titleContent.add(subtitle);
+        titleContent.add(Box.createVerticalGlue());
+
+        // JOURNAL ICON
+        JLabel journalIcon = new JLabel(new RegistryIcon());
+
+        journalIcon.setPreferredSize(new Dimension(30, 36));
+        journalIcon.setHorizontalAlignment(SwingConstants.CENTER);
+
+        // TITLE ROW
+        JPanel titleRow = new JPanel(new BorderLayout(8, 0));
+
         titleRow.setOpaque(false);
-        titleRow.add(title, BorderLayout.CENTER);
+
+        titleRow.setBorder(
+                BorderFactory.createEmptyBorder(5, 3, 5, 3)
+        );
+
+        titleRow.add(journalIcon, BorderLayout.WEST);
+        titleRow.add(titleContent, BorderLayout.CENTER);
         titleRow.add(optionsButton, BorderLayout.EAST);
 
         searchField.setToolTipText("Buscar por jugador, tipo o descripción");
