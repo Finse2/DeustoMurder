@@ -385,11 +385,110 @@ public final class InGameScreen extends JFrame {
         profileButton.setPreferredSize(new Dimension(54, 54));
         profileButton.addActionListener(e -> openProfileStats());
 
-        // SETTINGS BUTTON
-        JButton settingsButton = createImageButton(
-                "innerProy/ressources/settings.png",
-                54, 54,
-                36, 36
+// SETTINGS BUTTON
+        JButton settingsButton = new JButton() {
+
+            @Override
+            protected void paintComponent(Graphics g) {
+
+                Graphics2D g2 = (Graphics2D) g.create();
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON
+                );
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_RENDERING,
+                        RenderingHints.VALUE_RENDER_QUALITY
+                );
+
+                int centerX = getWidth() / 2;
+                int centerY = getHeight() / 2;
+
+                g2.translate(centerX, centerY);
+
+                // Gear dimensions
+                int teeth = 8;
+                double outerRadius = 18;
+                double innerRadius = 14;
+
+                Polygon gear = new Polygon();
+
+                double step = 2 * Math.PI / teeth;
+
+                // Draw gear teeth
+                for (int i = 0; i < teeth; i++) {
+
+                    double angle = i * step;
+
+                    double[] angles = {
+                            angle - step * 0.30,
+                            angle - step * 0.18,
+                            angle + step * 0.18,
+                            angle + step * 0.30
+                    };
+
+                    double[] radii = {
+                            innerRadius,
+                            outerRadius,
+                            outerRadius,
+                            innerRadius
+                    };
+
+                    for (int j = 0; j < 4; j++) {
+
+                        gear.addPoint(
+                                (int) Math.round(
+                                        Math.cos(angles[j]) * radii[j]
+                                ),
+                                (int) Math.round(
+                                        Math.sin(angles[j]) * radii[j]
+                                )
+                        );
+                    }
+                }
+
+                // Gear with a transparent central hole
+                java.awt.geom.Area shape =
+                        new java.awt.geom.Area(gear);
+
+                shape.subtract(
+                        new java.awt.geom.Area(
+                                new java.awt.geom.Ellipse2D.Double(
+                                        -6, -6, 12, 12
+                                )
+                        )
+                );
+
+                // Hover effect
+                if (getModel().isPressed()) {
+
+                    g2.setColor(AllThemes.AzulClaroDM);
+
+                } else if (getModel().isRollover()) {
+
+                    g2.setColor(AllThemes.DoradorDM);
+
+                } else {
+
+                    g2.setColor(AllThemes.CremaDM);
+                }
+
+                g2.fill(shape);
+                g2.dispose();
+            }
+        };
+
+        settingsButton.setPreferredSize(new Dimension(54, 54));
+        settingsButton.setOpaque(false);
+        settingsButton.setBorderPainted(false);
+        settingsButton.setContentAreaFilled(false);
+        settingsButton.setFocusPainted(false);
+        settingsButton.setRolloverEnabled(true);
+
+        settingsButton.setCursor(
+                Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
         );
 
         settingsButton.setToolTipText("Settings");
