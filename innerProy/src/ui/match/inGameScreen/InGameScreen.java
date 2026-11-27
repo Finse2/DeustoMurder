@@ -275,7 +275,7 @@ public final class InGameScreen extends JFrame {
 
     /** The top-right control area: profile, settings and quit. */
     private JPanel createHeaderControlsPanel() {
-        JPanel header = new JPanel(new BorderLayout());
+        JPanel header = new JPanel(new GridLayout(1,3,10,10));
         JPanel topButtons = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 3));
         topButtons.setOpaque(false);
 
@@ -309,7 +309,27 @@ public final class InGameScreen extends JFrame {
         settingsButton.addActionListener(e -> openSettings());
 
         // Quit button
-        JButton exitButton = new HeaderButton("Quit", 98, true);
+        ImageIcon quitIcon = new ImageIcon(
+                "innerProy/ressources/quit.png"
+        );
+
+        Image quitImage = quitIcon.getImage().getScaledInstance(
+                110, 55, Image.SCALE_SMOOTH
+        );
+
+        JButton exitButton = new JButton(new ImageIcon(quitImage));
+
+        exitButton.setPreferredSize(new Dimension(150, 55));
+        exitButton.setOpaque(false);
+        exitButton.setBorderPainted(false);
+        exitButton.setContentAreaFilled(false);
+        exitButton.setFocusPainted(false);
+
+        exitButton.setCursor(
+                Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+        );
+
+        exitButton.setToolTipText("Quit Game");
         exitButton.addActionListener(e -> exitGame());
 
         topButtons.add(profileButton);
