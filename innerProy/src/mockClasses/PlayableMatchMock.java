@@ -30,6 +30,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -225,8 +226,17 @@ public final class PlayableMatchMock {
                 if (destination != null) selectDestination(destination);
             }
         };
-        board.addMouseListener(click);
-        for (Component component : board.getComponents()) component.addMouseListener(click);
+        installClickRecursively(board, click);
+    }
+
+    private void installClickRecursively(Component component, MouseAdapter click) {
+        component.addMouseListener(click);
+
+        if (component instanceof Container container) {
+            for (Component child : container.getComponents()) {
+                installClickRecursively(child, click);
+            }
+        }
     }
 
     private void selectDestination(Point destination) {
@@ -254,7 +264,7 @@ public final class PlayableMatchMock {
                         + " de " + rolledTotal + " pasos");
         chat.getHistory().add("Sistema", current.getName() + " se ha movido " + pathLength
                 + " casillas" + (enteredRoomThisMove != null ? " y esta dentro de "
-                + enteredRoomThisMove.getName() : "") + ". Ahora pulsa Pasar turno.");
+                                                               + enteredRoomThisMove.getName() : "") + ". Ahora pulsa Pasar turno.");
     }
 
     private void nextTurn() {

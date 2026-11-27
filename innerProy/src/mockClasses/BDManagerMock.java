@@ -8,8 +8,7 @@ public class BDManagerMock {
 
     public static void main(String[] args) {
 
-        try (DBManager db = new DBManager(
-                "jdbc:rqlite:http://localhost:4001")) {
+        try (DBManager db = new DBManager("jdbc:rqlite:http://localhost:4001")) {
 
             db.execute("DROP TABLE IF EXISTS person");
 
@@ -20,23 +19,17 @@ public class BDManagerMock {
                 )
                 """);
 
-            db.executeUpdate(
-                    "INSERT INTO person VALUES (15, 'Antal')");
+            db.executeUpdate("INSERT INTO person VALUES (15, 'Antal')");
 
-            db.executeUpdate(
-                    "INSERT INTO person VALUES (20, 'Luka')");
+            db.executeUpdate("INSERT INTO person VALUES (20, 'Luka')");
 
-            db.executeUpdate(
-                    "INSERT INTO person VALUES (30, 'Antonio')");
+            db.executeUpdate("INSERT INTO person VALUES (30, 'Antonio')");
 
-            db.executeUpdate(
-                    "INSERT INTO person VALUES (19, 'Andrada')");
+            db.executeUpdate("INSERT INTO person VALUES (19, 'Andrada')");
 
-            db.executeUpdate(
-                    "INSERT INTO person VALUES (19, 'David')");
+            db.executeUpdate("INSERT INTO person VALUES (19, 'David')");
 
-            try (ResultSet rs = db.executeQuery(
-                    "SELECT * FROM person")) {
+            try (ResultSet rs = db.executeQuery("SELECT * FROM person")) {
 
                 while (rs.next()) {
                     String name = rs.getString("name");
