@@ -1,4 +1,3 @@
-
 package ui.match;
 
 import javax.imageio.ImageIO;
@@ -9,6 +8,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Random;
+import java.io.File;
 
 public final class MarbleTilePanel extends JPanel {
 
@@ -17,25 +17,32 @@ public final class MarbleTilePanel extends JPanel {
 
     private final TileAspect tileAspect;
     private final int style;
-    private BufferedImage texture;
+    private final BufferedImage texture;
 
     public MarbleTilePanel(TileAspect tileAspect) {
         this(tileAspect, RANDOM.nextInt(6) + 1);
     }
 
     public MarbleTilePanel(TileAspect tileAspect, int style) {
+
         if (tileAspect == null) {
-            throw new IllegalArgumentException("TileAspect cannot be null");
+            throw new IllegalArgumentException(
+                    "TileAspect cannot be null"
+            );
         }
 
-        if (style < 1 || style > 6) {
-            throw new IllegalArgumentException("Style must be between 1 and 6");
+        if (style < 1 || style > TEXTURES.length) {
+            throw new IllegalArgumentException(
+                    "Invalid marble style: " + style
+            );
         }
 
         this.tileAspect = tileAspect;
         this.style = style;
+        this.texture = TEXTURES[style - 1];
 
         setLayout(new BorderLayout());
+
         setPreferredSize(
                 new Dimension(TileAspect.SIZE, TileAspect.SIZE)
         );
@@ -45,21 +52,27 @@ public final class MarbleTilePanel extends JPanel {
     }
 
     private static BufferedImage[] loadTextures() {
+
         BufferedImage[] result = new BufferedImage[6];
 
         for (int i = 0; i < result.length; i++) {
-            String path = "/tiles/marble/marble_" + (i + 1) + ".png";
 
-            try (var input =
-                         MarbleTilePanel.class.getResourceAsStream(path)) {
+            String path = "innerProy/ressources/hallwayTileAspects/marble_"
+                    + (i + 1) + ".png";
 
-                if (input == null) {
-                    throw new IllegalStateException(
-                            "Missing marble texture: " + path
+            File file = new File(path);
+
+            System.out.println("Loading: " + file.getAbsolutePath());
+
+            try {
+
+                if (!file.exists()) {
+                    throw new IOException(
+                            "Missing texture: " + file.getAbsolutePath()
                     );
                 }
 
-                result[i] = ImageIO.read(input);
+                result[i] = ImageIO.read(file);
 
                 if (result[i] == null) {
                     throw new IOException("Invalid image: " + path);
@@ -74,36 +87,17 @@ public final class MarbleTilePanel extends JPanel {
     }
 
     @Override
-    public void doLayout() {
-        switch (style) {
-            case 1 -> texture = TEXTURES[0];
-            case 2 -> texture = TEXTURES[1];
-            case 3 -> texture = TEXTURES[2];
-            case 4 -> texture = TEXTURES[3];
-            case 5 -> texture = TEXTURES[4];
-            case 6 -> texture = TEXTURES[5];
-            default -> throw new IllegalStateException(
-                    "Unknown marble style"
-            );
-        }
-
-        super.doLayout();
-    }
-
-    @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        if (texture != null) {
-            g.drawImage(
-                    texture,
-                    0,
-                    0,
-                    getWidth(),
-                    getHeight(),
-                    this
-            );
-        }
+        g.drawImage(
+                texture,
+                0,
+                0,
+                getWidth(),
+                getHeight(),
+                this
+        );
     }
 
     public TileAspect getTileAspect() {
