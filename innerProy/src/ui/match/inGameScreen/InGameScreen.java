@@ -698,29 +698,16 @@ public final class InGameScreen extends JFrame {
 
     private static Image loadDeustoLogo() {
 
-        String resource =
-                "/ui/match/inGameScreen/deustomurder_logo.png";
+        try {
+            return ImageIO.read(
+                    Path.of("innerProy/ressources/deustomurder_logo.png").toFile()
+            );
 
-        URL url = InGameScreen.class.getResource(resource);
-
-        if (url != null) {
-            return new ImageIcon(url).getImage();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
-
-        for (Path path : List.of(
-                Path.of("src/ui/match/inGameScreen/deustomurder_logo.png"),
-                Path.of("innerProy/src/ui/match/inGameScreen/deustomurder_logo.png"),
-                Path.of("DeustoMurder/innerProy/src/ui/match/inGameScreen/deustomurder_logo.png")
-        )) {
-
-            if (Files.isRegularFile(path)) {
-                return new ImageIcon(path.toString()).getImage();
-            }
-        }
-
-        return null;
     }
-
     /** Botones de cabecera: esquinas redondeadas y contorno contrastado. */
     private static final class HeaderButton extends JButton {
 
