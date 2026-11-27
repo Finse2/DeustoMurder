@@ -121,6 +121,7 @@ public final class InGameScreen extends JFrame {
 
         this.chatRenderer = new ChatRenderer(chat, playerColors);
         this.historyPanel = new GameHistoryPanel(history, actors);
+        this.historyPanel.bindTurnHUD(turnHUD, 3600);
         this.actionsPanel = new GameActionsPanel();
 
         this.diceRollPanel = actionsPanel.getDiceRollPanel();

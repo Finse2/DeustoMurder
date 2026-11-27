@@ -60,6 +60,10 @@ public final class GameHistoryPanel extends JPanel {
     private final Consumer<Integer> timerChanged = this::updateRemainingTime;
 
     private Game boundGame;
+
+    private TurnHUD turnHUD;
+    private int totalTurnSeconds;
+
     private boolean updatingPlayers;
 
     public GameHistoryPanel() {
@@ -274,7 +278,6 @@ public final class GameHistoryPanel extends JPanel {
         turnBox.add(turnIcon, BorderLayout.WEST);
         turnBox.add(turnLabel, BorderLayout.CENTER);
         turnBox.add(timerLabel, BorderLayout.EAST);
-        add(turnBox, BorderLayout.SOUTH);
 
         history.addChangeListener(historyChanged);
         refreshFromHistory();
@@ -805,6 +808,11 @@ public final class GameHistoryPanel extends JPanel {
         });
     }
 
+    public void bindTurnHUD(TurnHUD turnHUD, int totalSeconds) {
+        this.turnHUD = Objects.requireNonNull(turnHUD);
+        this.totalTurnSeconds = Math.max(1, totalSeconds);
+    }
+
     /** Vincular solo si este panel visualiza game.getGameHistory(). */
     public void bindTimer(Game game) {
         if (boundGame != null) boundGame.removeTurnTimeListener(timerChanged);
@@ -817,11 +825,19 @@ public final class GameHistoryPanel extends JPanel {
     }
 
     private void updateRemainingTime(int seconds) {
+
         if (!SwingUtilities.isEventDispatchThread()) {
-            SwingUtilities.invokeLater(() -> updateRemainingTime(seconds));
+
+            SwingUtilities.invokeLater(
+                    () -> updateRemainingTime(seconds)
+            );
+
             return;
         }
-        timerLabel.setText(seconds > 0 ? String.format("%02d:%02d", seconds / 60, seconds % 60) : "00:00");
+
+        if (turnHUD != null) {
+            turnHUD.updateTimer(seconds, totalTurnSeconds);
+        }
     }
 
     private void refreshFromHistory() {

@@ -29,6 +29,12 @@ public final class TurnHUD extends JPanel {
     private final JProgressBar movesBar =
             new JProgressBar(0, 12);
 
+    private final JLabel timerLabel =
+            new JLabel("Time remaining: --:--");
+
+    private final JProgressBar timerBar =
+            new JProgressBar();
+
     public TurnHUD() {
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -84,6 +90,31 @@ public final class TurnHUD extends JPanel {
         add(Box.createVerticalStrut(6));
 
         add(movesBar);
+
+        // TURN TIMER
+
+        timerLabel.setFont(
+                new Font("Arial", Font.BOLD, 12)
+        );
+
+        timerLabel.setForeground(SECONDARY_TEXT);
+        timerLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+        timerBar.setBackground(new Color(41, 67, 75));
+        timerBar.setForeground(new Color(101, 187, 135));
+
+        timerBar.setBorderPainted(false);
+        timerBar.setStringPainted(false);
+        timerBar.setAlignmentX(LEFT_ALIGNMENT);
+
+        timerBar.setMaximumSize(
+                new Dimension(Integer.MAX_VALUE, 8)
+        );
+
+        add(Box.createVerticalStrut(12));
+        add(timerLabel);
+        add(Box.createVerticalStrut(6));
+        add(timerBar);
     }
 
     public void startTurn(String playerName) {
@@ -127,4 +158,39 @@ public final class TurnHUD extends JPanel {
 
         movesBar.setValue(value);
     }
+
+    public void updateTimer(int remainingSeconds, int totalSeconds) {
+
+        int total = Math.max(1, totalSeconds);
+        int remaining = Math.max(0, Math.min(remainingSeconds, total));
+
+        int minutes = remaining / 60;
+        int seconds = remaining % 60;
+
+        timerLabel.setText(
+                String.format(
+                        "Time remaining: %02d:%02d",
+                        minutes, seconds
+                )
+        );
+
+        timerBar.setMaximum(total);
+        timerBar.setValue(remaining);
+
+        double progress = (double) remaining / total;
+
+        Color color;
+
+        if (progress <= 0.15) {
+            color = new Color(219, 119, 112);
+        } else if (progress <= 0.35) {
+            color = GOLD;
+        } else {
+            color = new Color(101, 187, 135);
+        }
+
+        timerLabel.setForeground(color);
+        timerBar.setForeground(color);
+    }
+
 }
