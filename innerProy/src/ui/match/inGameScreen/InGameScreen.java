@@ -1379,41 +1379,44 @@ public final class InGameScreen extends JFrame {
     }
 
     /** Vista del roster local para mocks: 4 jugadores, resaltando el turno activo. */
-    public void updateMockPlayers(List<Player> joined, Player active) {
+    public void updateMockPlayers(
+            List<Player> joined,
+            Player active
+    ) {
+
         if (!SwingUtilities.isEventDispatchThread()) {
-            SwingUtilities.invokeLater(() -> updateMockPlayers(joined, active));
+
+            SwingUtilities.invokeLater(
+                    () -> updateMockPlayers(joined, active)
+            );
+
             return;
         }
-        panelJugadores.removeAll();
-        playerCountLabel.setText("Connected Players (" + joined.size() + ")");
-        panelJugadores.add(playerCountLabel);
-        panelJugadores.add(playersTitleLabel);
+
+        playerListPanel.removeAll();
+
+        connectedPlayers = joined.size();
+
+        playerCountLabel.setText(
+                connectedPlayers + " Connected Players"
+        );
 
         for (Player player : joined) {
+
             boolean current = player == active;
-            JPanel entry = new JPanel(new BorderLayout(10, 0));
-            entry.setOpaque(true);
-            entry.setBackground(current ? AllThemes.VerdeTierraDM : AllThemes.AzulVerdosoDM);
-            entry.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(current ? AllThemes.DoradorDM : AllThemes.MarronDM, current ? 2 : 1),
-                    BorderFactory.createEmptyBorder(8, 10, 8, 10)));
-            entry.setMaximumSize(new Dimension(Integer.MAX_VALUE, 55));
-            entry.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-            JLabel color = new JLabel("●");
-            color.setFont(AllFonts.ARIAL_BOLD_12);
-            color.setForeground(player.getPiece().getColor());
-            entry.add(color, BorderLayout.WEST);
+            JPanel card = createPlayerCard(
+                    player.getName(),
+                    player.getPiece().getColor(),
+                    current
+            );
 
-            JLabel name = new JLabel(player.getName() + (current ? " ◀ " : ""));
-            name.setFont(AllFonts.GEORGIA_BOLD_15);
-            name.setForeground(AllThemes.CremaDM);
-            entry.add(name, BorderLayout.CENTER);
-            panelJugadores.add(entry);
-            panelJugadores.add(Box.createVerticalStrut(5));
+            playerListPanel.add(card);
+            playerListPanel.add(Box.createVerticalStrut(8));
         }
-        panelJugadores.revalidate();
-        panelJugadores.repaint();
+
+        playerListPanel.revalidate();
+        playerListPanel.repaint();
     }
 
     private void refreshPlayers() {
