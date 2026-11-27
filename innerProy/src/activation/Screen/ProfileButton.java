@@ -45,9 +45,13 @@ public class ProfileButton extends JButton {
      */
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
 
         Graphics2D g2 = (Graphics2D) g.create();
+
+        g2.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON
+        );
 
         g2.setRenderingHint(
                 RenderingHints.KEY_INTERPOLATION,
@@ -67,52 +71,66 @@ public class ProfileButton extends JButton {
                 x, y, size, size
         );
 
-        // Dark background behind the picture
+        // Background
         g2.setColor(new Color(25, 20, 20));
         g2.fill(circle);
 
+        // Profile picture
         if (picture != null) {
 
-            Shape originalClip = g2.getClip();
-            g2.setClip(circle);
-
-            // Scale image while preserving aspect ratio
             double scale = Math.max(
                     (double) size / picture.getWidth(),
                     (double) size / picture.getHeight()
             );
 
-            int width = (int) Math.ceil(picture.getWidth() * scale);
-            int height = (int) Math.ceil(picture.getHeight() * scale);
+            int width = (int) Math.ceil(
+                    picture.getWidth() * scale
+            );
 
-            g2.drawImage(
+            int height = (int) Math.ceil(
+                    picture.getHeight() * scale
+            );
+
+            BufferedImage scaled = new BufferedImage(
+                    size, size, BufferedImage.TYPE_INT_ARGB
+            );
+
+            Graphics2D imageGraphics = scaled.createGraphics();
+
+            imageGraphics.setRenderingHint(
+                    RenderingHints.KEY_INTERPOLATION,
+                    RenderingHints.VALUE_INTERPOLATION_BICUBIC
+            );
+
+            imageGraphics.drawImage(
                     picture,
-                    x + (size - width) / 2,
-                    y + (size - height) / 2,
+                    (size - width) / 2,
+                    (size - height) / 2,
                     width,
                     height,
                     null
             );
 
-            g2.setClip(originalClip);
+            imageGraphics.dispose();
+
+            g2.setPaint(new TexturePaint(
+                    scaled,
+                    new Rectangle(x, y, size, size)
+            ));
+
+            g2.fill(circle);
         }
 
-        // Antique gold border
+        // Gold border
         boolean hovered = getModel().isRollover();
 
         g2.setColor(hovered
                 ? new Color(255, 220, 150)
-                : new Color(185, 150, 95));
+                : new Color(185, 150, 95)
+        );
 
-        g2.setStroke(new BasicStroke(hovered ? 3f : 2f));
+        g2.setStroke(new BasicStroke(hovered ? 2.5f : 1.5f));
         g2.draw(circle);
-
-        // Outer focus indicator
-        if (hasFocus()) {
-            g2.setColor(new Color(255, 230, 175));
-            g2.setStroke(new BasicStroke(1f));
-            g2.drawOval(1, 1, getWidth() - 3, getHeight() - 3);
-        }
 
         g2.dispose();
     }
