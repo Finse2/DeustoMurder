@@ -171,7 +171,8 @@ public final class GameHistoryPanel extends JPanel {
             styleComboBox(combo);
         }
 
-        JPanel filters = new JPanel(new GridLayout(1, 4, 4, 0));
+        JPanel filters = new JPanel(new GridLayout(2, 2, 6, 5));
+
         filters.setOpaque(false);
         filters.add(typeFilter);
         filters.add(playerFilter);
@@ -187,7 +188,11 @@ public final class GameHistoryPanel extends JPanel {
         titleRow.setAlignmentX(LEFT_ALIGNMENT);
         searchField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 23));
         searchField.setAlignmentX(LEFT_ALIGNMENT);
-        filters.setMaximumSize(new Dimension(Integer.MAX_VALUE, 23));
+        filters.setPreferredSize(new Dimension(280, 59));
+        filters.setMaximumSize(
+                new Dimension(Integer.MAX_VALUE, 59)
+        );
+
         filters.setAlignmentX(LEFT_ALIGNMENT);
         resultCount.setAlignmentX(LEFT_ALIGNMENT);
         // HEADER
