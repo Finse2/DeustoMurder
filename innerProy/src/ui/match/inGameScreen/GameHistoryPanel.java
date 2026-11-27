@@ -1,5 +1,6 @@
 package ui.match.inGameScreen;
 
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import game.core.Game;
 import game.history.GameEvent;
 import game.history.GameHistory;
@@ -667,6 +668,133 @@ public final class GameHistoryPanel extends JPanel {
         });
 
         return field;
+    }
+
+    private void styleScrollBar(JScrollBar scrollBar) {
+
+        scrollBar.setPreferredSize(new Dimension(9, 9));
+        scrollBar.setOpaque(false);
+        scrollBar.setUnitIncrement(16);
+
+        scrollBar.setUI(new BasicScrollBarUI() {
+
+            @Override
+            protected void configureScrollBarColors() {
+
+                this.thumbColor = GOLD;
+                this.trackColor = BUTTON_BACKGROUND;
+            }
+
+            // REMOVE UPPER ARROW
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return createInvisibleButton();
+            }
+
+            // REMOVE LOWER ARROW
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return createInvisibleButton();
+            }
+
+            // INVISIBLE BUTTON
+            private JButton createInvisibleButton() {
+
+                JButton button = new JButton();
+
+                Dimension size = new Dimension(0, 0);
+
+                button.setPreferredSize(size);
+                button.setMinimumSize(size);
+                button.setMaximumSize(size);
+
+                button.setOpaque(false);
+                button.setBorderPainted(false);
+                button.setContentAreaFilled(false);
+
+                return button;
+            }
+
+            // SCROLLBAR TRACK
+            @Override
+            protected void paintTrack(
+                    Graphics g,
+                    JComponent c,
+                    Rectangle trackBounds
+            ) {
+
+                Graphics2D g2 = (Graphics2D) g.create();
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON
+                );
+
+                g2.setColor(BUTTON_BACKGROUND);
+
+                g2.fillRoundRect(
+                        trackBounds.x,
+                        trackBounds.y,
+                        trackBounds.width,
+                        trackBounds.height,
+                        8, 8
+                );
+
+                g2.dispose();
+            }
+
+            // SCROLLBAR THUMB
+            @Override
+            protected void paintThumb(
+                    Graphics g,
+                    JComponent c,
+                    Rectangle thumbBounds
+            ) {
+
+                if (thumbBounds.isEmpty() || !scrollbar.isEnabled()) {
+                    return;
+                }
+
+                Graphics2D g2 = (Graphics2D) g.create();
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON
+                );
+
+                // HOVER AND DRAG EFFECTS
+                if (isDragging) {
+
+                    g2.setColor(GOLD);
+
+                } else if (isThumbRollover()) {
+
+                    g2.setColor(new Color(225, 195, 135));
+
+                } else {
+
+                    g2.setColor(new Color(160, 133, 87));
+                }
+
+                int padding = 2;
+
+                g2.fillRoundRect(
+                        thumbBounds.x + padding,
+                        thumbBounds.y + padding,
+                        Math.max(1, thumbBounds.width - padding * 2),
+                        Math.max(1, thumbBounds.height - padding * 2),
+                        8, 8
+                );
+
+                g2.dispose();
+            }
+
+            // MINIMUM THUMB SIZE
+            @Override
+            protected Dimension getMinimumThumbSize() {
+                return new Dimension(9, 30);
+            }
+        });
     }
 
     /** Vincular solo si este panel visualiza game.getGameHistory(). */
