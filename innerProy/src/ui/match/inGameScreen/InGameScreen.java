@@ -396,11 +396,117 @@ public final class InGameScreen extends JFrame {
         settingsButton.addActionListener(e -> openSettings());
 
         // QUIT BUTTON
-        JButton exitButton = createImageButton(
-                "innerProy/ressources/quit.png",
-                114, 54,
-                114, 44
+        JButton exitButton = new JButton("Quit") {
+
+            @Override
+            protected void paintComponent(Graphics g) {
+
+                Graphics2D g2 = (Graphics2D) g.create();
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON
+                );
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_TEXT_ANTIALIASING,
+                        RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+                );
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_RENDERING,
+                        RenderingHints.VALUE_RENDER_QUALITY
+                );
+
+                // Dimensions
+                int width = getWidth() - 4;
+                int height = 42;
+                int x = 2;
+                int y = (getHeight() - height) / 2;
+
+                // Background
+                if (getModel().isPressed()) {
+                    g2.setColor(AllThemes.NegroDM);
+                } else if (getModel().isRollover()) {
+                    g2.setColor(AllThemes.AzulVerdosoDM);
+                } else {
+                    g2.setColor(AllThemes.AzulOscuro2DM);
+                }
+
+                g2.fillRoundRect(x, y, width, height, 16, 16);
+
+                // Border
+                g2.setColor(AllThemes.AzulClaroDM);
+                g2.setStroke(new BasicStroke(1.5f));
+                g2.drawRoundRect(x, y, width, height, 16, 16);
+
+                // Icon and text
+                g2.setColor(AllThemes.CremaDM);
+                g2.setFont(AllFonts.GEORGIA_BOLD_18);
+
+                FontMetrics fm = g2.getFontMetrics();
+
+                int iconSize = 18;
+                int iconGap = 9;
+                int textWidth = fm.stringWidth(getText());
+
+                int totalWidth = iconSize + iconGap + textWidth;
+                int startX = (getWidth() - totalWidth) / 2;
+
+                int iconX = startX + iconSize / 2;
+                int iconY = getHeight() / 2;
+
+                // Circle
+                g2.drawOval(
+                        iconX - 9,
+                        iconY - 9,
+                        iconSize,
+                        iconSize
+                );
+
+                // X icon
+                g2.setStroke(new BasicStroke(
+                        2f,
+                        BasicStroke.CAP_ROUND,
+                        BasicStroke.JOIN_ROUND
+                ));
+
+                g2.drawLine(
+                        iconX - 4, iconY - 4,
+                        iconX + 4, iconY + 4
+                );
+
+                g2.drawLine(
+                        iconX + 4, iconY - 4,
+                        iconX - 4, iconY + 4
+                );
+
+                // Quit text
+                int textX = startX + iconSize + iconGap;
+
+                int textY = (getHeight() - fm.getHeight()) / 2
+                        + fm.getAscent();
+
+                g2.drawString(getText(), textX, textY);
+
+                g2.dispose();
+            }
+        };
+
+        exitButton.setPreferredSize(new Dimension(114, 54));
+        exitButton.setMargin(new Insets(0, 0, 0, 0));
+        exitButton.setOpaque(false);
+        exitButton.setBorderPainted(false);
+        exitButton.setContentAreaFilled(false);
+        exitButton.setFocusPainted(false);
+        exitButton.setRolloverEnabled(true);
+
+        exitButton.setCursor(
+                Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
         );
+
+        exitButton.setToolTipText("Quit Game");
+        exitButton.addActionListener(e -> exitGame());
 
         exitButton.setToolTipText("Quit Game");
         exitButton.addActionListener(e -> exitGame());

@@ -59,7 +59,7 @@ public class ProfileButton extends JButton {
                 RenderingHints.VALUE_RENDER_QUALITY
         );
 
-        int size = Math.min(getWidth(), getHeight()) - 8;
+        int size = Math.min(getWidth(), getHeight()) - 6;
         int x = (getWidth() - size) / 2;
         int y = (getHeight() - size) / 2;
 
