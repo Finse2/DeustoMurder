@@ -72,7 +72,7 @@ public final class InGameScreen extends JFrame {
     private static final int HEADER_HEIGHT = 125;
     private static final int CONTROL_HEIGHT = 70;
     private static final int CONTROL_WIDTH = 295;
-    private static final int HAND_HEIGHT = 300;
+    private static final int HAND_HEIGHT = 190;
 
     private double zoom = 1.0;
     private int baseTileSize = 25;
@@ -84,6 +84,7 @@ public final class InGameScreen extends JFrame {
     private String activePlayerName;
 
     private JPanel playerListPanel;
+    private final TurnHUD turnHUD = new TurnHUD();
 
 
     public InGameScreen(BoardLayout board, List<Actor> actors,
@@ -212,7 +213,9 @@ public final class InGameScreen extends JFrame {
         controlsPanel.setBackground(AllThemes.AzulOscuroDM);
         controlsPanel.setPreferredSize(new Dimension(CONTROL_WIDTH, CONTROL_HEIGHT));
 
-        historyChatPanel = new JPanel(new GridLayout(2, 1, 0, 8));
+        historyChatPanel = new JPanel(
+                new GridBagLayout()
+        );
         historyChatPanel.setName("area.historyAndChat");
         historyChatPanel.setOpaque(false);
         historyPanel.setName("area.history");
@@ -231,11 +234,11 @@ public final class InGameScreen extends JFrame {
 
         actionsPanel.setName("area.actions");
         actionsPanel.setPreferredSize(
-                new Dimension(RIGHT_COLUMN_WIDTH, HAND_HEIGHT)
+                new Dimension(RIGHT_COLUMN_WIDTH, 235)
         );
 
         actionsPanel.setMinimumSize(
-                new Dimension(280, 290)
+                new Dimension(280, 235)
         );
 
         styleSectionPanel(logoPanel);
@@ -255,28 +258,59 @@ public final class InGameScreen extends JFrame {
         playersColumnPanel.add(playersPanel, BorderLayout.CENTER);
 
         // RIGHT COLUMN
-        historyChatPanel.add(historyPanel);
-        historyChatPanel.add(chatRenderer);
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        gbc.gridx = 0;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+
+        // CASE JOURNAL
+        gbc.gridy = 0;
+        gbc.weighty = 0.45;
+        gbc.insets = new Insets(0, 0, 5, 0);
+
+        historyChatPanel.add(historyPanel, gbc);
+
+        // COMMUNICATIONS
+        gbc.gridy = 1;
+        gbc.weighty = 0.55;
+        gbc.insets = new Insets(5, 0, 0, 0);
+
+        historyChatPanel.add(chatRenderer, gbc);
 
         JPanel compactHeader = new JPanel(new BorderLayout());
         compactHeader.setOpaque(false);
         compactHeader.add(controlsPanel, BorderLayout.EAST);
         rightColumnPanel.add(compactHeader, BorderLayout.NORTH);
         rightColumnPanel.add(historyChatPanel, BorderLayout.CENTER);
+        rightColumnPanel.add(actionsPanel, BorderLayout.SOUTH);
 
         // MAIN ROW
         gameRowPanel.add(playersColumnPanel, BorderLayout.WEST);
         gameRowPanel.add(boardLayer, BorderLayout.CENTER);
-        gameRowPanel.add(rightColumnPanel, BorderLayout.EAST);
 
         // BOTTOM ROW
         footerPanel.add(handPanel, BorderLayout.CENTER);
-        footerPanel.add(actionsPanel, BorderLayout.EAST);
 
         // WHOLE SCREEN
         rootPanel.add(gameRowPanel, BorderLayout.CENTER);
         rootPanel.add(footerPanel, BorderLayout.SOUTH);
         setContentPane(rootPanel);
+
+        JPanel mainContent = new JPanel(
+                new BorderLayout(0, GAP)
+        );
+
+        mainContent.setOpaque(false);
+
+        mainContent.add(gameRowPanel, BorderLayout.CENTER);
+        mainContent.add(footerPanel, BorderLayout.SOUTH);
+
+        rootPanel.add(mainContent, BorderLayout.CENTER);
+        rootPanel.add(rightColumnPanel, BorderLayout.EAST);
+
+        setContentPane(rootPanel);
+
     }
 
     private JButton createImageButton(
@@ -1038,13 +1072,24 @@ public final class InGameScreen extends JFrame {
         // ADD COMPONENTS
         panelJugadores.add(header, BorderLayout.NORTH);
         panelJugadores.add(scrollPane, BorderLayout.CENTER);
-        panelJugadores.add(footer, BorderLayout.SOUTH);
+        JPanel bottomPanel = new JPanel(new BorderLayout(0, 8));
+
+        bottomPanel.setOpaque(false);
+
+        bottomPanel.add(turnHUD, BorderLayout.CENTER);
+        bottomPanel.add(footer, BorderLayout.SOUTH);
+
+        panelJugadores.add(bottomPanel, BorderLayout.SOUTH);
 
         roster.setOnChanged(this::refreshPlayers);
 
         refreshPlayers();
 
         return panelJugadores;
+    }
+
+    public TurnHUD getTurnHUD() {
+        return turnHUD;
     }
 
     private JComponent createPlayerAvatar(

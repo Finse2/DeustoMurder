@@ -154,6 +154,9 @@ public final class PlayableMatchMock {
         board.setReachableTiles(reachable.keySet());
         hand.setCards(current.getCards().toArray());
         screen.updateMockPlayers(connected, current);
+        screen.getTurnHUD().startTurn(
+                current != null ? current.getName() : null
+        );
         screen.setTitle("DeustoMurder | Turno de " + current.getName());
         actions.getEndTurnButton().setEnabled(false);
         actions.getDiceButton().setEnabled(true);
@@ -182,6 +185,7 @@ public final class PlayableMatchMock {
     private void diceFinished(int first, int second) {
         if (step != Step.ANIMATING) return;
         rolledTotal = first + second;
+        screen.getTurnHUD().setDiceResult(first, second);
         Player current = game.getCurrentPlayer();
         Piece piece = current.getPiece();
         reachable = DicePathfinder.distances(board, piece, rolledTotal);
@@ -190,6 +194,7 @@ public final class PlayableMatchMock {
                 + " + " + second + " = " + rolledTotal + ". Haz clic en una casilla verde para moverte.");
         step = Step.MOVING;
         if (reachable.isEmpty()) {
+            screen.getTurnHUD().setRemainingMoves(0);
             chat.getHistory().add("Sistema", "No hay casillas libres alcanzables. Puedes pasar turno.");
             step = Step.FINISHED;
             actions.getEndTurnButton().setEnabled(true);
@@ -260,6 +265,7 @@ public final class PlayableMatchMock {
         reachable = Map.of();
         step = Step.FINISHED;
         actions.getEndTurnButton().setEnabled(true);
+        screen.getTurnHUD().setRemainingMoves(0);
         game.getGameHistory().record(GameEvent.Type.PLAYER_MOVED, current.getPlayerID(),
                 current.getName(), "De (" + origin.x + "," + origin.y + ") a ("
                         + destination.x + "," + destination.y + ") usando " + pathLength

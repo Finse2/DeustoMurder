@@ -160,8 +160,6 @@ public final class GameActionsPanel extends JPanel {
 
         buttonsPanel.add(Box.createVerticalStrut(4));
 
-        buttonsPanel.add(diceResultPanel);
-
         add(buttonsPanel, BorderLayout.CENTER);
     }
 
