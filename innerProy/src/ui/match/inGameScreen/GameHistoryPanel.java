@@ -26,10 +26,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /** Vista del historial real: búsqueda, filtros, contador, CSV y turno actual. */
 public final class GameHistoryPanel extends JPanel {
 
-    private static final Color BACKGROUND = new Color(9, 31, 45);
-    private static final Color GOLD = new Color(194, 150, 92);
-    private static final Color TEXT = new Color(222, 229, 232);
+    private static final Color BACKGROUND = new Color(12, 34, 46);
+    private static final Color GOLD = new Color(214, 179, 113);
+    private static final Color TEXT = new Color(232, 214, 181);
     private static final Color BLUE = new Color(44, 151, 204);
+
+    private static final Color SECONDARY_TEXT = new Color(145, 169, 176);
+    private static final Color BUTTON_BACKGROUND = new Color(16, 38, 49);
+    private static final Color HOVER_BACKGROUND = new Color(41, 67, 75);
+    private static final Color BORDER_COLOR = new Color(85, 112, 122);
+
     private static final DateTimeFormatter HOUR = DateTimeFormatter.ofPattern("HH:mm:ss")
             .withZone(ZoneId.systemDefault());
 
@@ -66,10 +72,19 @@ public final class GameHistoryPanel extends JPanel {
         setBackground(BACKGROUND);
         setBorder(BorderFactory.createEmptyBorder(5, 7, 5, 7));
 
-        JLabel title = new JLabel("Registro de partida", new RegistryIcon(), SwingConstants.LEFT);
-        title.setIconTextGap(9);
-        title.setForeground(new Color(232, 204, 157));
-        title.setFont(new Font("Georgia", Font.PLAIN, 17));
+        // JOURNAL TITLE
+        JLabel title = new JLabel("CASE JOURNAL");
+
+        title.setFont(new Font("Georgia", Font.BOLD, 18));
+        title.setForeground(GOLD);
+        title.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // JOURNAL SUBTITLE
+        JLabel subtitle = new JLabel("Investigation records");
+
+        subtitle.setFont(new Font("Arial", Font.PLAIN, 11));
+        subtitle.setForeground(SECONDARY_TEXT);
+        subtitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JMenuItem exportOption = new JMenuItem("Exportar CSV...");
         JMenuItem importOption = new JMenuItem("Importar CSV...");
