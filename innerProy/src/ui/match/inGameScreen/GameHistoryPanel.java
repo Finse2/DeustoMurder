@@ -905,6 +905,160 @@ public final class GameHistoryPanel extends JPanel {
         return row;
     }
 
+    private Color getEventColor(GameEvent.Type type) {
+
+        return switch (type) {
+
+            case GAME_STARTED, GAME_FINISHED ->
+                    GOLD;
+
+            case PLAYER_JOINED, SUGGESTION_REFUTED,
+                 ACCUSATION_CORRECT ->
+                    new Color(101, 187, 135);
+
+            case PLAYER_LEFT, PLAYER_DISCONNECTED,
+                 ACCUSATION_INCORRECT ->
+                    new Color(215, 123, 112);
+
+            case PLAYER_MOVED ->
+                    new Color(181, 138, 209);
+
+            case TURN_STARTED, TURN_ENDED ->
+                    new Color(131, 182, 206);
+
+            case SUGGESTION_MADE ->
+                    new Color(217, 162, 92);
+
+            case ACCUSATION_MADE ->
+                    new Color(224, 108, 101);
+
+            case CUSTOM ->
+                    SECONDARY_TEXT;
+        };
+    }
+
+    private JComponent createEventIcon(GameEvent.Type type) {
+
+        JComponent icon = new JComponent() {
+
+            @Override
+            protected void paintComponent(Graphics g) {
+
+                Graphics2D g2 = (Graphics2D) g.create();
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON
+                );
+
+                int x = (getWidth() - 32) / 2;
+                int y = (getHeight() - 32) / 2;
+
+                g2.translate(x, y);
+
+                // ICON BACKGROUND
+                g2.setColor(HOVER_BACKGROUND);
+                g2.fillRoundRect(0, 0, 32, 32, 9, 9);
+
+                // ICON COLOR
+                g2.setColor(getEventColor(type));
+
+                g2.setStroke(new BasicStroke(
+                        1.8f,
+                        BasicStroke.CAP_ROUND,
+                        BasicStroke.JOIN_ROUND
+                ));
+
+                switch (type) {
+
+                    case GAME_STARTED, GAME_FINISHED -> {
+
+                        // Flag
+                        g2.drawLine(9, 7, 9, 25);
+                        g2.drawRect(9, 7, 14, 10);
+                    }
+
+                    case PLAYER_JOINED -> {
+
+                        // Plus
+                        g2.drawLine(16, 8, 16, 24);
+                        g2.drawLine(8, 16, 24, 16);
+                    }
+
+                    case PLAYER_LEFT, PLAYER_DISCONNECTED,
+                         ACCUSATION_INCORRECT -> {
+
+                        // Cross
+                        g2.drawOval(6, 6, 20, 20);
+                        g2.drawLine(12, 12, 20, 20);
+                        g2.drawLine(20, 12, 12, 20);
+                    }
+
+                    case PLAYER_MOVED -> {
+
+                        // Direction arrow
+                        g2.drawLine(7, 16, 24, 16);
+                        g2.drawLine(18, 10, 24, 16);
+                        g2.drawLine(18, 22, 24, 16);
+                    }
+
+                    case TURN_STARTED, TURN_ENDED -> {
+
+                        // Turn clock
+                        g2.drawOval(6, 6, 20, 20);
+                        g2.drawLine(16, 10, 16, 16);
+                        g2.drawLine(16, 16, 21, 19);
+                    }
+
+                    case SUGGESTION_MADE -> {
+
+                        // Magnifying glass
+                        g2.drawOval(7, 7, 13, 13);
+                        g2.drawLine(18, 18, 25, 25);
+                    }
+
+                    case SUGGESTION_REFUTED,
+                         ACCUSATION_CORRECT -> {
+
+                        // Check
+                        g2.drawOval(6, 6, 20, 20);
+                        g2.drawLine(10, 16, 14, 20);
+                        g2.drawLine(14, 20, 23, 11);
+                    }
+
+                    case ACCUSATION_MADE -> {
+
+                        // Warning triangle
+                        Polygon triangle = new Polygon();
+
+                        triangle.addPoint(16, 5);
+                        triangle.addPoint(28, 26);
+                        triangle.addPoint(4, 26);
+
+                        g2.drawPolygon(triangle);
+
+                        g2.drawLine(16, 12, 16, 18);
+                        g2.fillOval(15, 21, 2, 2);
+                    }
+
+                    case CUSTOM -> {
+
+                        // Information
+                        g2.drawOval(6, 6, 20, 20);
+                        g2.fillOval(15, 10, 2, 2);
+                        g2.drawLine(16, 14, 16, 22);
+                    }
+                }
+
+                g2.dispose();
+            }
+        };
+
+        icon.setPreferredSize(new Dimension(32, 32));
+
+        return icon;
+    }
+
     private void exportHistory() {
         JFileChooser chooser = new JFileChooser();
         chooser.setSelectedFile(new java.io.File("game-history.csv"));
