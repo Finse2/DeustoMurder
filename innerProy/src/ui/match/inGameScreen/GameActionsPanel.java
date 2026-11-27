@@ -3,9 +3,9 @@ package ui.match.inGameScreen;
 
 import game.core.GameSetup;
 import game.dice.Dice;
-import ui.DetectiveButton;
 import ui.match.DetectiveCard;
 import ui.match.AccusationCard;
+import ui.NoirActionButton;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,6 +19,24 @@ import java.util.function.BiConsumer;
  */
 public final class GameActionsPanel extends JPanel {
 
+    private static final Color BACKGROUND =
+            new Color(23, 49, 62);
+
+    private static final Color GOLD =
+            new Color(214, 179, 113);
+
+    private static final Color TEXT =
+            new Color(232, 214, 181);
+
+    private static final Color SECONDARY_TEXT =
+            new Color(145, 169, 176);
+
+    private static final Color BUTTON_BACKGROUND =
+            new Color(12, 34, 46);
+
+    private static final Color BORDER_COLOR =
+            new Color(85, 112, 122);
+
     private JDialog detectiveDialog;
     private JDialog accusationDialog;
     private final DiceRollPanel diceRollPanel;
@@ -26,10 +44,32 @@ public final class GameActionsPanel extends JPanel {
     private final Dice diceModel;
     private BiConsumer<Integer, Integer> onDiceRolled;
 
-    private final DetectiveButton detectiveButton = new DetectiveButton();
-    private final JButton accusationButton = new JButton("Accusation Card");
-    private final JButton diceButton = new JButton("Tirar dados");
-    private final JButton endTurnButton = new JButton("<html><center>Pasar<br>turno</center></html>");
+    private final JButton detectiveButton =
+            new NoirActionButton(
+                    "Detective Notebook",
+                    "Review your evidence",
+                    NoirActionButton.Style.SECONDARY
+            );
+
+    private final JButton accusationButton =
+            new NoirActionButton(
+                    "Make an Accusation",
+                    "Reveal your final theory",
+                    NoirActionButton.Style.DANGER
+            );
+
+    private final JButton diceButton =
+            new NoirActionButton(
+                    "Roll Dice",
+                    "Make your next move",
+                    NoirActionButton.Style.PRIMARY
+            );
+    private final JButton endTurnButton =
+            new NoirActionButton(
+                    "End Turn",
+                    "Finish your investigation turn",
+                    NoirActionButton.Style.SECONDARY
+            );
     private final JPanel diceResultPanel = new JPanel(new BorderLayout());
     private final JLabel diceResultLabel = new JLabel("", SwingConstants.CENTER);
     private final JLabel diceResultHint = new JLabel("", SwingConstants.CENTER);
@@ -40,92 +80,191 @@ public final class GameActionsPanel extends JPanel {
     }
 
     public GameActionsPanel(Dice dice) {
-        super(new BorderLayout());
-        this.diceModel = java.util.Objects.requireNonNull(dice, "Dice model cannot be null");
-        this.diceRollPanel = new DiceRollPanel(diceModel, new Random());
+
+        super(new BorderLayout(0, 6));
+
+        this.diceModel = java.util.Objects.requireNonNull(
+                dice, "Dice model cannot be null"
+        );
+
+        this.diceRollPanel = new DiceRollPanel(
+                diceModel, new Random()
+        );
+
         diceRollPanel.setVisible(false);
+
         diceRollPanel.setOnRollComplete((first, second) -> {
+
             showDiceResult(first, second);
-            if (onDiceRolled != null) onDiceRolled.accept(first, second);
+
+            if (onDiceRolled != null) {
+                onDiceRolled.accept(first, second);
+            }
         });
 
-        setBackground(new Color(25, 55, 75));
-        setBorder(BorderFactory.createEmptyBorder(5, 9, 5, 9));
+        // PANEL STYLE
 
-        // Botón de la tarjeta del detective.
-        detectiveButton.addActionListener(event -> toggleDetectiveCard());
+        setBackground(BACKGROUND);
 
-        // Botón de la tarjeta de acusación.
-        accusationButton.setFont(new Font("Georgia", Font.BOLD, 17));
-        accusationButton.setForeground(new Color(25, 25, 25));
-        accusationButton.setBackground(new Color(238, 207, 105));
-        accusationButton.setFocusPainted(false);
-        accusationButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        accusationButton.setPreferredSize(new Dimension(0, 35));
+        setBorder(
+                BorderFactory.createEmptyBorder(8, 10, 8, 10)
+        );
 
-        accusationButton.addActionListener(event -> showAccusationCard());
+        // HEADER
 
-        // Colocamos los botones uno debajo del otro.
+        add(createActionsHeader(), BorderLayout.NORTH);
+
+        // ACTION LISTENERS
+
+        detectiveButton.addActionListener(
+                event -> toggleDetectiveCard()
+        );
+
+        accusationButton.addActionListener(
+                event -> showAccusationCard()
+        );
+
+        diceButton.addActionListener(
+                event -> showDiceOnTable()
+        );
+
+        // BUTTON CONTAINER
+
         JPanel buttonsPanel = new JPanel();
-        buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS));
-        buttonsPanel.setBackground(new Color(25, 55, 75));
 
-        accusationButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        detectiveButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        detectiveButton.setPreferredSize(new Dimension(310, 35));
+        buttonsPanel.setLayout(
+                new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS)
+        );
 
-        // Boton de pasar turno, situado en la esquina superior izquierda del panel.
-        endTurnButton.setFont(new Font("Georgia", Font.BOLD, 15));
-        endTurnButton.setForeground(new Color(240, 220, 180));
-        endTurnButton.setBackground(new Color(129, 74, 39));
-        endTurnButton.setBorder(BorderFactory.createLineBorder(new Color(205, 165, 105), 2));
-        endTurnButton.setFocusPainted(false);
-        endTurnButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        endTurnButton.setPreferredSize(new Dimension(95, 45));
-        endTurnButton.setVisible(false); // unicamente aparece en el mock jugable.
-        endTurnButton.setEnabled(false); // solo se activa al completar el movimiento.
+        buttonsPanel.setOpaque(false);
 
-        accusationButton.setPreferredSize(new Dimension(200, 35));
-        JPanel topRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-        topRow.setBackground(new Color(25, 55, 75));
-        topRow.setAlignmentX(Component.CENTER_ALIGNMENT);
-        topRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
-        topRow.add(endTurnButton);
-        topRow.add(accusationButton);
-        buttonsPanel.add(topRow);
-        buttonsPanel.add(Box.createVerticalStrut(3));
-        buttonsPanel.add(detectiveButton);
-        buttonsPanel.add(Box.createVerticalStrut(3));
+        // MAIN ACTIONS
 
-        // Los dados aparecen encima de la mesa, no en un JDialog.
-        diceButton.setFont(new Font("Georgia", Font.BOLD, 17));
-        diceButton.setForeground(new Color(229, 211, 177));
-        diceButton.setBackground(new Color(64, 38, 28));
-        diceButton.setFocusPainted(false);
-        diceButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        diceButton.setPreferredSize(new Dimension(0, 35));
-        diceButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        diceButton.addActionListener(event -> showDiceOnTable());
         buttonsPanel.add(diceButton);
+        buttonsPanel.add(Box.createVerticalStrut(4));
 
-        // Espacio fijo bajo el boton: el resto de controles no se mueve al aparecer el resultado.
-        diceResultPanel.setOpaque(false);
-        diceResultPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        diceResultPanel.setPreferredSize(new Dimension(240, 50));
-        diceResultPanel.setMinimumSize(new Dimension(170, 50));
-        diceResultPanel.setMaximumSize(new Dimension(240, 50));
+        buttonsPanel.add(detectiveButton);
+        buttonsPanel.add(Box.createVerticalStrut(4));
 
-        diceResultLabel.setFont(new Font("Georgia", Font.BOLD, 21));
-        diceResultLabel.setForeground(new Color(240, 220, 180));
-        diceResultHint.setFont(new Font("Arial", Font.PLAIN, 11));
-        diceResultHint.setForeground(new Color(205, 180, 143));
+        buttonsPanel.add(accusationButton);
 
-        diceResultPanel.add(diceResultLabel, BorderLayout.CENTER);
-        diceResultPanel.add(diceResultHint, BorderLayout.SOUTH);
-        buttonsPanel.add(Box.createVerticalStrut(6));
+        // END TURN BUTTON
+
+        configureEndTurnButton();
+
+        buttonsPanel.add(endTurnButton);
+
+        // DICE RESULT
+
+        configureDiceResultPanel();
+
+        buttonsPanel.add(Box.createVerticalStrut(4));
+
         buttonsPanel.add(diceResultPanel);
 
-        add(buttonsPanel, BorderLayout.SOUTH);
+        add(buttonsPanel, BorderLayout.CENTER);
+    }
+
+    private JPanel createActionsHeader() {
+
+        JPanel header = new JPanel(
+                new BorderLayout(0, 5)
+        );
+
+        header.setOpaque(false);
+
+        JLabel title = new JLabel("DETECTIVE ACTIONS");
+
+        title.setFont(
+                new Font("Georgia", Font.BOLD, 17)
+        );
+
+        title.setForeground(GOLD);
+
+        JLabel subtitle = new JLabel(
+                "Your investigation tools"
+        );
+
+        subtitle.setFont(
+                new Font("Arial", Font.PLAIN, 10)
+        );
+
+        subtitle.setForeground(SECONDARY_TEXT);
+
+        JPanel titlePanel = new JPanel();
+
+        titlePanel.setLayout(
+                new BoxLayout(titlePanel, BoxLayout.Y_AXIS)
+        );
+
+        titlePanel.setOpaque(false);
+
+        titlePanel.add(title);
+        titlePanel.add(Box.createVerticalStrut(2));
+        titlePanel.add(subtitle);
+
+        JPanel titleRow = new JPanel(
+                new BorderLayout(8, 0)
+        );
+
+        titleRow.setOpaque(false);
+
+        titleRow.add(createActionsIcon(), BorderLayout.WEST);
+        titleRow.add(titlePanel, BorderLayout.CENTER);
+
+        JPanel separator = new JPanel();
+
+        separator.setBackground(GOLD);
+        separator.setPreferredSize(new Dimension(1, 1));
+
+        header.add(titleRow, BorderLayout.CENTER);
+        header.add(separator, BorderLayout.SOUTH);
+
+        return header;
+    }
+
+    private JComponent createActionsIcon() {
+
+        JComponent icon = new JComponent() {
+
+            @Override
+            protected void paintComponent(Graphics g) {
+
+                Graphics2D g2 = (Graphics2D) g.create();
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON
+                );
+
+                g2.setColor(GOLD);
+
+                g2.setStroke(new BasicStroke(
+                        1.6f,
+                        BasicStroke.CAP_ROUND,
+                        BasicStroke.JOIN_ROUND
+                ));
+
+                int x = (getWidth() - 26) / 2;
+                int y = (getHeight() - 26) / 2;
+
+                g2.translate(x, y);
+
+                // MAGNIFYING GLASS
+
+                g2.drawOval(2, 2, 16, 16);
+
+                g2.drawLine(15, 15, 23, 23);
+
+                g2.drawArc(5, 5, 10, 10, 40, 100);
+
+                g2.dispose();
+            }
+        };
+
+        icon.setPreferredSize(new Dimension(30, 30));
+
+        return icon;
     }
 
     // TARJETA DEL DETECTIVE
@@ -144,6 +283,65 @@ public final class GameActionsPanel extends JPanel {
             detectiveDialog.toFront();
             detectiveButton.setSelected(true);
         }
+    }
+
+    private void configureEndTurnButton() {
+
+        endTurnButton.setAlignmentX(
+                Component.CENTER_ALIGNMENT
+        );
+
+        endTurnButton.setVisible(false);
+        endTurnButton.setEnabled(false);
+    }
+
+    private void configureDiceResultPanel() {
+
+        diceResultPanel.setOpaque(true);
+
+        diceResultPanel.setBackground(BUTTON_BACKGROUND);
+
+        diceResultPanel.setAlignmentX(
+                Component.CENTER_ALIGNMENT
+        );
+
+        diceResultPanel.setPreferredSize(
+                new Dimension(280, 38)
+        );
+
+        diceResultPanel.setMinimumSize(
+                new Dimension(160, 38)
+        );
+
+        diceResultPanel.setMaximumSize(
+                new Dimension(Integer.MAX_VALUE, 38)
+        );
+
+        diceResultPanel.setBorder(
+                BorderFactory.createLineBorder(BORDER_COLOR)
+        );
+
+        diceResultLabel.setFont(
+                new Font("Georgia", Font.BOLD, 17)
+        );
+
+        diceResultLabel.setForeground(GOLD);
+
+        diceResultHint.setFont(
+                new Font("Arial", Font.PLAIN, 10)
+        );
+
+        diceResultHint.setForeground(SECONDARY_TEXT);
+
+        diceResultPanel.add(
+                diceResultLabel, BorderLayout.CENTER
+        );
+
+        diceResultPanel.add(
+                diceResultHint, BorderLayout.SOUTH
+        );
+
+        clearDiceResult();
     }
 
     public void showDetectiveCard() {
@@ -270,22 +468,40 @@ public final class GameActionsPanel extends JPanel {
 
     /** El resultado queda visible en el panel derecho hasta la siguiente tirada. */
     private void showDiceResult(int first, int second) {
-        diceResultLabel.setText(first + " + " + second + " = " + (first + second));
-        diceResultHint.setText("Resultado final");
-        diceResultPanel.setBackground(new Color(29, 19, 13));
-        diceResultPanel.setOpaque(true);
-        diceResultPanel.setBorder(BorderFactory.createLineBorder(new Color(205, 165, 105), 2));
+
+        int total = first + second;
+
+        diceResultLabel.setText(
+                first + " + " + second + " = " + total
+        );
+
+        diceResultHint.setText("Dice roll result");
+
+        diceResultPanel.setBackground(BUTTON_BACKGROUND);
+
+        diceResultPanel.setBorder(
+                BorderFactory.createLineBorder(GOLD)
+        );
+
         diceResultVisible = true;
-        diceResultPanel.repaint();
+
+        diceResultPanel.setVisible(true);
+
+        revalidate();
+        repaint();
     }
 
     private void clearDiceResult() {
+
         diceResultLabel.setText("");
         diceResultHint.setText("");
-        diceResultPanel.setOpaque(false);
-        diceResultPanel.setBorder(null);
+
         diceResultVisible = false;
-        diceResultPanel.repaint();
+
+        diceResultPanel.setVisible(false);
+
+        revalidate();
+        repaint();
     }
 
     /** Permite comprobar el resultado sin acceder a componentes internos. */
