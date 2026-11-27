@@ -545,20 +545,54 @@ public final class GameHistoryPanel extends JPanel {
     }
 
     private static final class RegistryIcon implements Icon {
-        public int getIconWidth() { return 19; }
-        public int getIconHeight() { return 20; }
-        public void paintIcon(Component component, Graphics graphics, int x, int y) {
-            Graphics2D g = (Graphics2D) graphics.create();
-            g.translate(x, y);
-            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g.setColor(GOLD);
-            g.setStroke(new BasicStroke(1.3f));
-            g.drawRoundRect(3, 1, 13, 18, 2, 2);
-            g.drawLine(6, 1, 6, 19);
-            g.drawLine(9, 6, 13, 6);
-            g.drawLine(9, 10, 13, 10);
-            g.drawLine(9, 14, 13, 14);
-            g.dispose();
+
+        @Override
+        public int getIconWidth() {
+            return 24;
+        }
+
+        @Override
+        public int getIconHeight() {
+            return 26;
+        }
+
+        @Override
+        public void paintIcon(
+                Component component,
+                Graphics graphics,
+                int x,
+                int y
+        ) {
+
+            Graphics2D g2 = (Graphics2D) graphics.create();
+
+            g2.translate(x, y);
+
+            g2.setRenderingHint(
+                    RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON
+            );
+
+            g2.setColor(GOLD);
+
+            g2.setStroke(new BasicStroke(
+                    1.6f,
+                    BasicStroke.CAP_ROUND,
+                    BasicStroke.JOIN_ROUND
+            ));
+
+            // NOTEBOOK
+            g2.drawRoundRect(4, 2, 17, 22, 4, 4);
+
+            // BINDING
+            g2.drawLine(8, 3, 8, 23);
+
+            // TEXT LINES
+            g2.drawLine(12, 8, 17, 8);
+            g2.drawLine(12, 12, 17, 12);
+            g2.drawLine(12, 16, 17, 16);
+
+            g2.dispose();
         }
     }
 
