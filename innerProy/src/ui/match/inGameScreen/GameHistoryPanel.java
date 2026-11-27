@@ -4,7 +4,9 @@ import game.core.Game;
 import game.history.GameEvent;
 import game.history.GameHistory;
 import model.Actor;
-
+import javax.swing.plaf.basic.BasicComboBoxUI;
+import javax.swing.plaf.basic.BasicComboPopup;
+import javax.swing.plaf.basic.ComboPopup;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -164,8 +166,9 @@ public final class GameHistoryPanel extends JPanel {
         playerFilter.setToolTipText("Filtrar por jugador");
         dateFilter.setToolTipText("Filtrar por antigüedad del evento");
         limitFilter.setToolTipText("Número máximo de eventos visibles");
-        for (JComboBox<?> combo : List.of(typeFilter, playerFilter, dateFilter, limitFilter)) {
-            combo.setFont(new Font("SansSerif", Font.PLAIN, 10));
+        for (JComboBox<?> combo : List.of(
+                typeFilter, playerFilter, dateFilter, limitFilter)) {
+            styleComboBox(combo);
         }
 
         JPanel filters = new JPanel(new GridLayout(1, 4, 4, 0));
@@ -187,11 +190,11 @@ public final class GameHistoryPanel extends JPanel {
         filters.setMaximumSize(new Dimension(Integer.MAX_VALUE, 23));
         filters.setAlignmentX(LEFT_ALIGNMENT);
         resultCount.setAlignmentX(LEFT_ALIGNMENT);
-// HEADER
+        // HEADER
         heading.add(titleRow);
         heading.add(Box.createVerticalStrut(5));
 
-// GOLD SEPARATOR
+        // GOLD SEPARATOR
         JPanel goldSeparator = new JPanel();
 
         goldSeparator.setBackground(GOLD);
@@ -339,6 +342,179 @@ public final class GameHistoryPanel extends JPanel {
         );
 
         return button;
+    }
+
+    private void styleComboBox(JComboBox<?> combo) {
+
+        // GENERAL APPEARANCE
+        combo.setFont(new Font("Arial", Font.PLAIN, 11));
+        combo.setBackground(BUTTON_BACKGROUND);
+        combo.setForeground(TEXT);
+        combo.setOpaque(true);
+
+        combo.setBorder(
+                BorderFactory.createLineBorder(BORDER_COLOR, 1)
+        );
+
+        combo.setPreferredSize(new Dimension(140, 27));
+
+        combo.setCursor(
+                Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+        );
+
+        combo.setMaximumRowCount(8);
+
+        // CUSTOM COMBOBOX UI
+        combo.setUI(new BasicComboBoxUI() {
+
+            @Override
+            protected JButton createArrowButton() {
+
+                JButton arrowButton = new JButton() {
+
+                    @Override
+                    protected void paintComponent(Graphics g) {
+
+                        Graphics2D g2 = (Graphics2D) g.create();
+
+                        g2.setRenderingHint(
+                                RenderingHints.KEY_ANTIALIASING,
+                                RenderingHints.VALUE_ANTIALIAS_ON
+                        );
+
+                        // Background
+                        g2.setColor(getModel().isRollover()
+                                ? HOVER_BACKGROUND
+                                : BUTTON_BACKGROUND);
+
+                        g2.fillRect(
+                                0, 0,
+                                getWidth(), getHeight()
+                        );
+
+                        // Arrow
+                        g2.setColor(GOLD);
+
+                        g2.setStroke(new BasicStroke(
+                                1.7f,
+                                BasicStroke.CAP_ROUND,
+                                BasicStroke.JOIN_ROUND
+                        ));
+
+                        int x = getWidth() / 2;
+                        int y = getHeight() / 2;
+
+                        g2.drawLine(x - 4, y - 2, x, y + 2);
+                        g2.drawLine(x, y + 2, x + 4, y - 2);
+
+                        g2.dispose();
+                    }
+                };
+
+                arrowButton.setPreferredSize(
+                        new Dimension(24, 27)
+                );
+
+                arrowButton.setOpaque(false);
+                arrowButton.setBorderPainted(false);
+                arrowButton.setContentAreaFilled(false);
+                arrowButton.setFocusPainted(false);
+                arrowButton.setRolloverEnabled(true);
+
+                arrowButton.setCursor(
+                        Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+                );
+
+                return arrowButton;
+            }
+
+            // SELECTED ITEM BACKGROUND
+            @Override
+            public void paintCurrentValueBackground(
+                    Graphics g,
+                    Rectangle bounds,
+                    boolean hasFocus
+            ) {
+
+                g.setColor(BUTTON_BACKGROUND);
+
+                g.fillRect(
+                        bounds.x,
+                        bounds.y,
+                        bounds.width,
+                        bounds.height
+                );
+            }
+
+            // POPUP MENU
+            @Override
+            protected ComboPopup createPopup() {
+
+                BasicComboPopup popup =
+                        (BasicComboPopup) super.createPopup();
+
+                popup.setBackground(BUTTON_BACKGROUND);
+
+                popup.setBorder(
+                        BorderFactory.createLineBorder(BORDER_COLOR)
+                );
+
+                popup.getList().setBackground(BUTTON_BACKGROUND);
+                popup.getList().setForeground(TEXT);
+
+                popup.getList().setSelectionBackground(
+                        HOVER_BACKGROUND
+                );
+
+                popup.getList().setSelectionForeground(GOLD);
+
+                return popup;
+            }
+        });
+
+        // CUSTOM ITEM RENDERER
+        combo.setRenderer(new DefaultListCellRenderer() {
+
+            @Override
+            public Component getListCellRendererComponent(
+                    JList<?> list,
+                    Object value,
+                    int index,
+                    boolean isSelected,
+                    boolean cellHasFocus
+            ) {
+
+                JLabel label = (JLabel)
+                        super.getListCellRendererComponent(
+                                list,
+                                value,
+                                index,
+                                isSelected,
+                                cellHasFocus
+                        );
+
+                label.setFont(new Font("Arial", Font.PLAIN, 11));
+
+                label.setOpaque(true);
+
+                label.setBorder(
+                        BorderFactory.createEmptyBorder(3, 7, 3, 4)
+                );
+
+                if (index >= 0 && isSelected) {
+
+                    label.setBackground(HOVER_BACKGROUND);
+                    label.setForeground(GOLD);
+
+                } else {
+
+                    label.setBackground(BUTTON_BACKGROUND);
+                    label.setForeground(TEXT);
+                }
+
+                return label;
+            }
+        });
     }
 
     /** Vincular solo si este panel visualiza game.getGameHistory(). */
