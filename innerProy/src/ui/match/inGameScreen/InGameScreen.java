@@ -66,13 +66,13 @@ public final class InGameScreen extends JFrame {
     private final DiceRollPanel diceRollPanel;
     private JPanel boardCanvas;
 
-    private static final int GAP = 15;
+    private static final int GAP = 10;
     private static final int LEFT_COLUMN_WIDTH = 240;
-    private static final int RIGHT_COLUMN_WIDTH = 345;
+    private static final int RIGHT_COLUMN_WIDTH = 360;
     private static final int HEADER_HEIGHT = 125;
     private static final int CONTROL_HEIGHT = 70;
     private static final int CONTROL_WIDTH = 295;
-    private static final int HAND_HEIGHT = 210;
+    private static final int HAND_HEIGHT = 300;
 
     private double zoom = 1.0;
     private int baseTileSize = 25;
@@ -230,7 +230,13 @@ public final class InGameScreen extends JFrame {
         handPanel.add(hand, BorderLayout.CENTER);
 
         actionsPanel.setName("area.actions");
-        actionsPanel.setPreferredSize(new Dimension(RIGHT_COLUMN_WIDTH, 0));
+        actionsPanel.setPreferredSize(
+                new Dimension(RIGHT_COLUMN_WIDTH, HAND_HEIGHT)
+        );
+
+        actionsPanel.setMinimumSize(
+                new Dimension(280, 290)
+        );
 
         styleSectionPanel(logoPanel);
         styleSectionPanel(playersPanel);
