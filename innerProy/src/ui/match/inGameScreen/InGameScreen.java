@@ -622,43 +622,102 @@ public final class InGameScreen extends JFrame {
 
     /** Logo de Deusto en la esquina superior izquierda, adaptado al tamaño del panel. */
     private JPanel createDeustoLogoPanel() {
-        Image logo = loadDeustoLogo();
-        return new JPanel() {
-            @Override
-            protected void paintComponent(Graphics graphics) {
-                super.paintComponent(graphics);
-                if (logo == null) return;
 
+        Image logo = loadDeustoLogo();
+
+        return new JPanel() {
+
+            @Override
+            protected void paintComponent(Graphics g) {
+
+                super.paintComponent(g);
+
+                if (logo == null) {
+                    return;
+                }
+
+                Graphics2D g2 = (Graphics2D) g.create();
+
+                // Rendering quality
+                g2.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON
+                );
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_INTERPOLATION,
+                        RenderingHints.VALUE_INTERPOLATION_BICUBIC
+                );
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_RENDERING,
+                        RenderingHints.VALUE_RENDER_QUALITY
+                );
+
+                // Original image dimensions
                 int imageWidth = logo.getWidth(null);
                 int imageHeight = logo.getHeight(null);
-                if (imageWidth <= 0 || imageHeight <= 0) return;
 
-                int availableWidth = Math.max(1, getWidth() - 20);
-                int availableHeight = Math.max(1, getHeight() - 20);
-                double scale = Math.min(availableWidth / (double) imageWidth,
-                        availableHeight / (double) imageHeight);
-                int width = (int) Math.round(imageWidth * scale);
-                int height = (int) Math.round(imageHeight * scale);
-                Graphics2D g = (Graphics2D) graphics.create();
-                g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                        RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-                g.drawImage(logo, 10, (getHeight() - height) / 2, width, height, this);
-                g.dispose();
+                if (imageWidth <= 0 || imageHeight <= 0) {
+                    g2.dispose();
+                    return;
+                }
+
+                // Available space
+                Insets insets = getInsets();
+
+                int availableWidth = Math.max(1,
+                        getWidth() - insets.left - insets.right - 8);
+
+                int availableHeight = Math.max(1,
+                        getHeight() - insets.top - insets.bottom - 8);
+
+                // Preserve aspect ratio
+                double scale = Math.min(
+                        (double) availableWidth / imageWidth,
+                        (double) availableHeight / imageHeight
+                );
+
+                int width = Math.max(1,
+                        (int) Math.round(imageWidth * scale));
+
+                int height = Math.max(1,
+                        (int) Math.round(imageHeight * scale));
+
+                // Center image
+                int x = (getWidth() - width) / 2;
+                int y = (getHeight() - height) / 2;
+
+                // Draw logo
+                g2.drawImage(logo, x, y, width, height, this);
+
+                g2.dispose();
             }
         };
     }
 
     private static Image loadDeustoLogo() {
-        String resource = "/ui/match/inGameScreen/deusto_logo.png";
+
+        String resource =
+                "/ui/match/inGameScreen/deustomurder_logo.png";
+
         URL url = InGameScreen.class.getResource(resource);
-        if (url != null) return new ImageIcon(url).getImage();
+
+        if (url != null) {
+            return new ImageIcon(url).getImage();
+        }
 
         for (Path path : List.of(
-                Path.of("src/ui/match/inGameScreen/deusto_logo.png"),
-                Path.of("innerProy/src/ui/match/inGameScreen/deusto_logo.png"),
-                Path.of("DeustoMurder/innerProy/src/ui/match/inGameScreen/deusto_logo.png"))) {
-            if (Files.isRegularFile(path)) return new ImageIcon(path.toString()).getImage();
+                Path.of("src/ui/match/inGameScreen/deustomurder_logo.png"),
+                Path.of("innerProy/src/ui/match/inGameScreen/deustomurder_logo.png"),
+                Path.of("DeustoMurder/innerProy/src/ui/match/inGameScreen/deustomurder_logo.png")
+        )) {
+
+            if (Files.isRegularFile(path)) {
+                return new ImageIcon(path.toString()).getImage();
+            }
         }
+
         return null;
     }
 
