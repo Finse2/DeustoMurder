@@ -1,6 +1,6 @@
 package mockClasses;
 
-import activation.Screen.Lobby.LobbyRoster;
+import activation.Screen.lobby.LobbyRoster;
 import ui.chat.Chat;
 import game.core.Game;
 import game.core.GameSetup;

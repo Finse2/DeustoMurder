@@ -1,9 +1,9 @@
 package activation.Screen;
 
 import Networking.Client;
-import activation.Screen.Lobby.LobbyControl;
-import activation.Screen.Lobby.LobbyRoster;
-import activation.Screen.Lobby.LobbyScreen;
+import activation.Screen.lobby.LobbyControl;
+import activation.Screen.lobby.LobbyRoster;
+import activation.Screen.lobby.LobbyScreen;
 import activation.Screen.AnimatedBackGround.AnimatedBackGround;
 import game.statistics.ProfileMatchTracker;
 import Networking.packets.GameOverPacket;

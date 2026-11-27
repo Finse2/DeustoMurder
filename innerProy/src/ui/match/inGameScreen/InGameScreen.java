@@ -2,7 +2,7 @@
 package ui.match.inGameScreen;
 
 import activation.Screen.CluedoTableTheme;
-import activation.Screen.Lobby.LobbyRoster;
+import activation.Screen.lobby.LobbyRoster;
 import model.Player;
 import model.Room;
 import model.Weapon;

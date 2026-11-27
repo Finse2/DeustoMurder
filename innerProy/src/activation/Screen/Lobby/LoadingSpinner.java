@@ -1,4 +1,4 @@
-package activation.Screen.Lobby;
+package activation.Screen.lobby;
 import javax.swing.*;
 import java.awt.*;
 
