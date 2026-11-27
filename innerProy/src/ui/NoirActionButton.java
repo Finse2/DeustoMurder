@@ -2,6 +2,8 @@ package ui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public final class NoirActionButton extends JButton {
 
@@ -51,6 +53,19 @@ public final class NoirActionButton extends JButton {
         setAlignmentX(Component.CENTER_ALIGNMENT);
 
         setToolTipText(subtitle);
+
+        // SOUND EFFECTS
+        addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseEntered(MouseEvent event) {
+                if (isEnabled()) {
+                    SoundEffect.playHover();
+                }
+            }
+        });
+
+        addActionListener(event -> SoundEffect.playClick());
     }
 
     @Override

@@ -113,7 +113,9 @@ public final class PlayableMatchMock {
             Player player = players.get(index[0]);
             connected.add(player);
             chat.addParticipant(player.getName());
-            chat.getHistory().add("Sistema", player.getName() + " se ha unido a la partida.");
+            chat.addSystemMessage(
+                    player.getName() + " has joined the investigation."
+            );
             screen.updateMockPlayers(connected, null);
             index[0]++;
             if (index[0] == players.size()) {

@@ -5,12 +5,14 @@ import model.Player;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class RoundManager {
 
     private final List<Player> players;
     private int currentPlayerIndex;
     private boolean turnsActive;
+    private Consumer<Player> onTurnChanged;
 
     public RoundManager(List<Player> players) {
         if (players == null) {
@@ -29,7 +31,21 @@ public class RoundManager {
     public void startTurns() {
         currentPlayerIndex = 0;
         turnsActive = true;
+
+        notifyTurnChanged();
     }
+
+    public void setOnTurnChanged(Consumer<Player> listener) {
+        this.onTurnChanged = listener;
+        notifyTurnChanged();
+    }
+
+    private void notifyTurnChanged() {
+        if (onTurnChanged != null) {
+            onTurnChanged.accept(getCurrentPlayer());
+        }
+    }
+
 
     // OBTENER EL JUGADOR ACTUAL
 
@@ -58,15 +74,17 @@ public class RoundManager {
 
         currentPlayerIndex =
                 (currentPlayerIndex + 1) % players.size();
+
+        notifyTurnChanged();
     }
 
     // DETENER TURNOS
 
     public void stopTurns() {
-
         turnsActive = false;
-    }
 
+        notifyTurnChanged();
+    }
     // GETTERS
 
     public boolean areTurnsActive() {

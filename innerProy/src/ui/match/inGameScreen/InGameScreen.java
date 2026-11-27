@@ -34,6 +34,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import utils.AllThemes;
 import utils.AllFonts;
+import game.turns.RoundManager;
 
 /**
  * Contenedor principal de la partida. El tablero se muestra dentro de un
@@ -80,6 +81,7 @@ public final class InGameScreen extends JFrame {
     private JLabel playerCountLabel;
     private JLabel playersTitleLabel;
     private int connectedPlayers;
+    private String activePlayerName;
 
     private JPanel playerListPanel;
 
@@ -605,9 +607,6 @@ public final class InGameScreen extends JFrame {
         exitButton.setToolTipText("Quit Game");
         exitButton.addActionListener(e -> exitGame());
 
-        exitButton.setToolTipText("Quit Game");
-        exitButton.addActionListener(e -> exitGame());
-
         // ADD COMPONENTS
         topButtons.add(profileButton);
         topButtons.add(settingsButton);
@@ -960,10 +959,10 @@ public final class InGameScreen extends JFrame {
         playersTitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // CONNECTED PLAYERS
-        playerCountLabel = new JLabel("0 Connected Players");
+        playerCountLabel = new JLabel("\u25CF  0 Investigators");
 
         playerCountLabel.setFont(AllFonts.ARIAL_BOLD_12);
-        playerCountLabel.setForeground(AllThemes.CremaDM);
+        playerCountLabel.setForeground(new Color(101, 187, 135));
         playerCountLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         header.add(playersTitleLabel);
@@ -1008,6 +1007,14 @@ public final class InGameScreen extends JFrame {
         );
 
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+        scrollPane.getVerticalScrollBar().setUI(
+                new NoirScrollBarUI()
+        );
+
+        scrollPane.getVerticalScrollBar().setPreferredSize(
+                new Dimension(10, 10)
+        );
 
         // FOOTER
         JLabel footer = new JLabel(
@@ -1165,10 +1172,11 @@ public final class InGameScreen extends JFrame {
 
         card.setOpaque(false);
 
-        card.setPreferredSize(new Dimension(200, 66));
+        card.setPreferredSize(new Dimension(200, 74));
+        card.setMinimumSize(new Dimension(160, 74));
 
         card.setMaximumSize(
-                new Dimension(Integer.MAX_VALUE, 66)
+                new Dimension(Integer.MAX_VALUE, 74)
         );
 
         card.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -1435,6 +1443,32 @@ public final class InGameScreen extends JFrame {
         playerListPanel.repaint();
     }
 
+    public void setActivePlayer(String playerName) {
+
+        if (!SwingUtilities.isEventDispatchThread()) {
+            SwingUtilities.invokeLater(
+                    () -> setActivePlayer(playerName)
+            );
+            return;
+        }
+
+        activePlayerName = playerName;
+
+        refreshPlayers();
+    }
+
+    public void bindRoundManager(RoundManager roundManager) {
+
+        Objects.requireNonNull(roundManager);
+
+        roundManager.setOnTurnChanged(player -> {
+
+            setActivePlayer(
+                    player != null ? player.getName() : null
+            );
+        });
+    }
+
     private void refreshPlayers() {
 
         if (!SwingUtilities.isEventDispatchThread()) {
@@ -1450,7 +1484,7 @@ public final class InGameScreen extends JFrame {
         connectedPlayers = players.size();
 
         playerCountLabel.setText(
-                connectedPlayers + " Connected Players"
+                "\u25CF  " + connectedPlayers + " Investigators"
         );
 
         for (LobbyRoster.Entry player : players) {
@@ -1458,7 +1492,7 @@ public final class InGameScreen extends JFrame {
             JPanel card = createPlayerCard(
                     player.name(),
                     AllThemes.DoradorDM,
-                    false
+                    Objects.equals(player.name(), activePlayerName)
             );
 
             playerListPanel.add(card);

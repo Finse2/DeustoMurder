@@ -41,15 +41,15 @@ class TileAspect extends JPanel {
     }
 
     void setTileColor(Color color) {
+
         if (color == null) {
             throw new IllegalArgumentException(
                     "Tile color cannot be null"
             );
         }
-
         this.color = color;
-        setOpaque(true);
-        setBackground(color);
+        setOpaque(false);
+
         repaint();
     }
 
@@ -98,9 +98,57 @@ class TileAspect extends JPanel {
         root.repaint();
     }
 
+    private void paintTileIndicator(Graphics graphics) {
+
+        if (Color.WHITE.equals(color)) {
+            return;
+        }
+
+        Graphics2D g2 = (Graphics2D) graphics.create();
+
+        g2.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON
+        );
+
+        int width = Math.max(1, getWidth() - 4);
+        int height = Math.max(1, getHeight() - 4);
+
+        // Transparent background
+        g2.setColor(new Color(
+                color.getRed(),
+                color.getGreen(),
+                color.getBlue(),
+                65
+        ));
+
+        g2.fillRoundRect(2, 2, width, height, 6, 6);
+
+        // Colored border
+        g2.setColor(color);
+        g2.setStroke(new BasicStroke(1.3f));
+
+        g2.drawRoundRect(2, 2, width, height, 6, 6);
+
+        // Central indicator
+        int size = Math.max(
+                2, Math.min(getWidth(), getHeight()) / 5
+        );
+
+        g2.fillOval(
+                (getWidth() - size) / 2,
+                (getHeight() - size) / 2,
+                size,
+                size
+        );
+
+        g2.dispose();
+    }
+
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
+        paintTileIndicator(graphics);
 
         if (reachable) {
             Graphics2D overlay = (Graphics2D) graphics.create();

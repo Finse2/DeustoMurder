@@ -299,11 +299,10 @@ public final class BoardLayout extends JPanel {
                     JPanel container;
 
                     if (tile.givesAccessToRoom()) {
-                        tileLook.setTileColor(Color.RED);
-                        container = tileLook;
-                    } else {
-                        container = new MarbleTilePanel(tileLook);
+                        tileLook.setTileColor(new Color(150, 65, 60));
                     }
+
+                    container = new MarbleTilePanel(tileLook);
 
                     add(container);
 
@@ -320,7 +319,7 @@ public final class BoardLayout extends JPanel {
                 if (positionRoom != null) {
                     TileAspect tileLook = new TileAspect(tile);
 
-                    tileLook.setTileColor(Color.BLUE);
+                    tileLook.setTileColor(new Color(55, 105, 125));
 
                     roomPositionTiles.add(
                             new PlacedTile(
