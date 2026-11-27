@@ -13,11 +13,10 @@ import model.Actor;
 import ui.match.AccusationCard;
 import ui.match.BoardLayout;
 import activation.Screen.ProfileButton;
-
+import ui.NoirScrollBarUI;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.IOException;
-
 import javax.swing.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,9 +41,6 @@ import utils.AllFonts;
  */
 public final class InGameScreen extends JFrame {
 
-    // ================================================================
-    // SCREEN SEGMENTATION - a named panel for every visible area
-    // ================================================================
 
     private JPanel rootPanel;
     private JPanel gameRowPanel;
@@ -777,6 +773,26 @@ public final class InGameScreen extends JFrame {
         boardScrollPane.setWheelScrollingEnabled(false);
         boardScrollPane.getVerticalScrollBar().setUnitIncrement(30);
         boardScrollPane.getHorizontalScrollBar().setUnitIncrement(30);
+
+        // NOIR SCROLLBARS
+
+        boardScrollPane.getVerticalScrollBar().setUI(
+                new NoirScrollBarUI()
+        );
+
+        boardScrollPane.getVerticalScrollBar().setPreferredSize(
+                new Dimension(12, 12)
+        );
+
+        boardScrollPane.getHorizontalScrollBar().setUI(
+                new NoirScrollBarUI()
+        );
+
+        boardScrollPane.getHorizontalScrollBar().setPreferredSize(
+                new Dimension(12, 12)
+        );
+
+        boardScrollPane.setViewportBorder(null);
 
         MouseAdapter wheelAdapter = new MouseAdapter() {
             @Override
