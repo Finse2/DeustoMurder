@@ -23,7 +23,7 @@ import java.util.List;
 
 public class InGameScreenMock {
 
-    LobbyRoster roster= new LobbyRoster();
+    LobbyRoster roster = new LobbyRoster();
 
     public InGameScreenMock(BoardLayout board, List<Actor> actors) {
         this(board, actors, new GameHistory());

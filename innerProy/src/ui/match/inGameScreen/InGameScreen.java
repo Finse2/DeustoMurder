@@ -70,8 +70,7 @@ public final class InGameScreen extends JFrame {
     private static final int LEFT_COLUMN_WIDTH = 240;
     private static final int RIGHT_COLUMN_WIDTH = 360;
     private static final int HEADER_HEIGHT = 125;
-    private static final int CONTROL_HEIGHT = 70;
-    private static final int CONTROL_WIDTH = 295;
+    private static final int CONTROL_HEIGHT = 80;
     private static final int HAND_HEIGHT = 225;
 
     private double zoom = 1.0;
@@ -215,7 +214,7 @@ public final class InGameScreen extends JFrame {
         controlsPanel = createHeaderControlsPanel();
         controlsPanel.setName("area.headerControls");
         controlsPanel.setBackground(AllThemes.AzulOscuroDM);
-        controlsPanel.setPreferredSize(new Dimension(CONTROL_WIDTH, CONTROL_HEIGHT));
+        controlsPanel.setPreferredSize(new Dimension(RIGHT_COLUMN_WIDTH, CONTROL_HEIGHT));
 
         historyChatPanel = new JPanel(
                 new GridBagLayout()
@@ -337,10 +336,7 @@ public final class InGameScreen extends JFrame {
 
         historyChatPanel.add(chatRenderer, gbc);
 
-        JPanel compactHeader = new JPanel(new BorderLayout());
-        compactHeader.setOpaque(false);
-        compactHeader.add(controlsPanel, BorderLayout.EAST);
-        rightColumnPanel.add(compactHeader, BorderLayout.NORTH);
+        rightColumnPanel.add(controlsPanel, BorderLayout.NORTH);
         rightColumnPanel.add(historyChatPanel, BorderLayout.CENTER);
         rightColumnPanel.add(actionsPanel, BorderLayout.SOUTH);
 
@@ -486,10 +482,10 @@ public final class InGameScreen extends JFrame {
     /** The top-right control area: profile, settings and quit. */
     private JPanel createHeaderControlsPanel() {
 
-        JPanel header = new JPanel(new GridBagLayout());
+        JPanel header = new JPanel(new BorderLayout());
 
         JPanel topButtons = new JPanel(
-                new FlowLayout(FlowLayout.CENTER, 14, 0)
+                new FlowLayout(FlowLayout.CENTER, 18, 0)
         );
 
         topButtons.setOpaque(false);
@@ -741,7 +737,12 @@ public final class InGameScreen extends JFrame {
         topButtons.add(settingsButton);
         topButtons.add(exitButton);
 
-        header.add(topButtons);
+        JPanel centeredButtons = new JPanel(new GridBagLayout());
+
+        centeredButtons.setOpaque(false);
+        centeredButtons.add(topButtons);
+
+        header.add(centeredButtons, BorderLayout.CENTER);
 
         return header;
     }
