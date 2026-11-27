@@ -1,4 +1,4 @@
-package activation.Screen.Lobby;
+package activation.Screen.lobby;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -20,8 +20,8 @@ public class LobbyScreen extends JFrame {
     private static final Path PROFILE_PATH = Path.of(System.getProperty("user.home"), ".deustoCluedo", "profile.png");
     private static final Path DEFAULT_PROFILE_PATH = Path.of("innerProy", "ressources", "DefaultProfile.jpg");
     private ProfileButton profileButton;
-    private LoadingSpinner loadingSpinner;
-    private LobbyRoster roster;
+    private activation.Screen.Lobby.LoadingSpinner loadingSpinner;
+    private activation.Screen.Lobby.LobbyRoster roster;
     private JPanel playerListPanel;
     private JLabel playerCountLabel;
     private String ServerIP = connectionValues.getIpAddress();
@@ -30,11 +30,11 @@ public class LobbyScreen extends JFrame {
     private BackGround lobbyBackGround;
 
 
-    public LobbyScreen(LobbyRoster roster) throws Exception {
+    public LobbyScreen(activation.Screen.Lobby.LobbyRoster roster) throws Exception {
         this(roster, false,null);
 
     }
-    public LobbyScreen(LobbyRoster roster,boolean isHost,Runnable onStartGame) throws Exception {
+    public LobbyScreen(activation.Screen.Lobby.LobbyRoster roster, boolean isHost, Runnable onStartGame) throws Exception {
         this.roster = java.util.Objects.requireNonNull(roster, "roster required");
         setTitle("Lobby");
         setSize(1200, 900);
@@ -160,7 +160,7 @@ public class LobbyScreen extends JFrame {
         JLabel empty = new JLabel();
         loadingPanel.add(empty);
 
-       loadingSpinner = new LoadingSpinner();
+       loadingSpinner = new activation.Screen.Lobby.LoadingSpinner();
         loadingPanel.add(loadingSpinner);
         JPanel spinnerContainer = new JPanel(new BorderLayout());
         spinnerContainer.setOpaque(false);
@@ -288,7 +288,7 @@ public class LobbyScreen extends JFrame {
                 "Connected Players (" + connectedPlayers.size() + ")"
         );
 
-        for (LobbyRoster.Entry player : connectedPlayers) {
+        for (activation.Screen.Lobby.LobbyRoster.Entry player : connectedPlayers) {
 
             JPanel playerPanel = new JPanel(
                     new BorderLayout(10, 5)

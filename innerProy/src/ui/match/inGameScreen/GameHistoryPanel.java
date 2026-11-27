@@ -216,12 +216,63 @@ public final class GameHistoryPanel extends JPanel {
         heading.add(Box.createVerticalStrut(8));
 
         // SEARCH FIELD
-        heading.add(searchField);
+        JButton filterButton = new JButton("Filters");
+
+        filterButton.setFont(
+                new Font("Arial", Font.BOLD, 11)
+        );
+
+        filterButton.setForeground(GOLD);
+        filterButton.setBackground(BUTTON_BACKGROUND);
+        filterButton.setFocusPainted(false);
+
+        filterButton.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(BORDER_COLOR),
+                        BorderFactory.createEmptyBorder(5, 8, 5, 8)
+                )
+        );
+
+        filterButton.setCursor(
+                Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+        );
+
+        JPanel searchRow = new JPanel(new BorderLayout(6, 0));
+
+        searchRow.setOpaque(false);
+        searchRow.setAlignmentX(LEFT_ALIGNMENT);
+
+        searchRow.setMaximumSize(
+                new Dimension(Integer.MAX_VALUE, 34)
+        );
+
+        searchRow.add(searchField, BorderLayout.CENTER);
+        searchRow.add(filterButton, BorderLayout.EAST);
+
+        heading.add(searchRow);
         heading.add(Box.createVerticalStrut(4));
 
-        // FILTERS
+        // COLLAPSIBLE FILTERS
+        filters.setVisible(false);
+
         heading.add(filters);
-        heading.add(Box.createVerticalStrut(4));
+
+        filterButton.addActionListener(e -> {
+
+            boolean visible = !filters.isVisible();
+
+            filters.setVisible(visible);
+
+            filterButton.setText(
+                    visible ? "Hide filters" : "Filters"
+            );
+
+            heading.revalidate();
+            heading.repaint();
+
+            revalidate();
+            repaint();
+        });
 
         // EVENT COUNT
         heading.add(resultCount);

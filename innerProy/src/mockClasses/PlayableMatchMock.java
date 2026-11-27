@@ -24,8 +24,6 @@ import ui.match.inGameScreen.InGameScreen;
 import utils.AllPaths.DefaultCardModels.ActorsData;
 import utils.AllPaths.DefaultCardModels.RoomsData;
 import utils.AllPaths.DefaultCardModels.WeaponsData;
-
-import activation.Screen.Lobby.LobbyRoster;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import java.awt.Color;
@@ -63,6 +61,7 @@ public final class PlayableMatchMock {
     private int rolledTotal;
     private Map<Point, Integer> reachable = Map.of();
     private Room enteredRoomThisMove;
+
 
 
     public PlayableMatchMock() {
@@ -130,15 +129,14 @@ public final class PlayableMatchMock {
     private void startGame() {
         GameStartResult result = game.startGame();
         if (!result.isSuccessful()) {
-            chat.getHistory().add("Sistema", "Error al iniciar: " + result.getMessage());
-            throw new IllegalStateException(result.getMessage());
+            chat.addSystemMessage("Error al iniciar: " + result.getMessage());
         }
 
         // El modelo Game y DeckManager reparten 4 cartas al azar por jugador,
         // reservando antes la solucion. Solo agregamos imagenes para el renderer.
         decorateDealtCards();
         for (Player player : players) {
-            chat.getHistory().add("Sistema", "Se han repartido " + player.getCards().size()
+            chat.addSystemMessage("Se han repartido " + player.getCards().size()
                     + " cartas a " + player.getName() + ".");
         }
         screen.getHistoryPanel().bindTimer(game);
@@ -153,15 +151,17 @@ public final class PlayableMatchMock {
         reachable = Map.of();
         board.setReachableTiles(reachable.keySet());
         hand.setCards(current.getCards().toArray());
+        screen.updateEvidenceCount(current.getCards().size());
         screen.updateMockPlayers(connected, current);
         screen.getTurnHUD().startTurn(
-                current != null ? current.getName() : null
+                current.getName()
         );
-        screen.setTitle("DeustoMurder | Turno de " + current.getName());
+        screen.setTitle("DeustoMurder | " + current.getName() + "'s turn");
         actions.getEndTurnButton().setEnabled(false);
         actions.getDiceButton().setEnabled(true);
-        chat.getHistory().add("Sistema", "Turno de " + current.getName()
-                + ": agita los dados. Si no haces nada, se lanzan automaticamente en 5 s.");
+        chat.addSystemMessage("Turno de " + current.getName()
+                + ": agita los dados. Si no haces nada, "
+                + "se lanzan automáticamente en 5 s.");
 
         // Entra en la animacion al comenzar el turno; el propio DiceRollPanel
         // fuerza el lanzamiento con rebotes tras 5 segundos sin raton.
@@ -190,12 +190,13 @@ public final class PlayableMatchMock {
         Piece piece = current.getPiece();
         reachable = DicePathfinder.distances(board, piece, rolledTotal);
         board.setReachableTiles(reachable.keySet());
-        chat.getHistory().add("Sistema", current.getName() + " ha sacado " + first
-                + " + " + second + " = " + rolledTotal + ". Haz clic en una casilla verde para moverte.");
+        chat.addSystemMessage(current.getName() + " ha sacado " + first
+                + " + " + second + " = " + rolledTotal
+                + ". Haz clic en una casilla verde para moverte.");
         step = Step.MOVING;
         if (reachable.isEmpty()) {
             screen.getTurnHUD().setRemainingMoves(0);
-            chat.getHistory().add("Sistema", "No hay casillas libres alcanzables. Puedes pasar turno.");
+            chat.addSystemMessage("No hay casillas libres alcanzables. Puedes pasar turno.");
             step = Step.FINISHED;
             actions.getEndTurnButton().setEnabled(true);
         }
@@ -215,10 +216,10 @@ public final class PlayableMatchMock {
             try {
                 board.enterRoom(piece, room);
                 enteredRoomThisMove = room;
-                chat.getHistory().add("Sistema", piece.getOwner().getName()
-                        + " ha entrado automaticamente en " + room.getName() + ".");
+                chat.addSystemMessage(piece.getOwner().getName()
+                        + " ha entrado automáticamente en " + room.getName() + ".");
             } catch (IllegalStateException fullRoom) {
-                chat.getHistory().add("Sistema", "No quedan posiciones libres en "
+                chat.addSystemMessage("No quedan posiciones libres en "
                         + room.getName() + "; la ficha permanece en la entrada.");
             }
         });
@@ -250,7 +251,7 @@ public final class PlayableMatchMock {
         if (step != Step.MOVING) return;
         Integer pathLength = reachable.get(destination);
         if (pathLength == null) {
-            chat.getHistory().add("Sistema", "Movimiento rechazado: destino fuera de alcance, ocupado o bloqueado.");
+            chat.addSystemMessage("Movimiento rechazado: destino fuera de alcance, ocupado o bloqueado.");
             return;
         }
 
@@ -270,9 +271,9 @@ public final class PlayableMatchMock {
                 current.getName(), "De (" + origin.x + "," + origin.y + ") a ("
                         + destination.x + "," + destination.y + ") usando " + pathLength
                         + " de " + rolledTotal + " pasos");
-        chat.getHistory().add("Sistema", current.getName() + " se ha movido " + pathLength
+        chat.addSystemMessage(current.getName() + " se ha movido " + pathLength
                 + " casillas" + (enteredRoomThisMove != null ? " y esta dentro de "
-                                                               + enteredRoomThisMove.getName() : "") + ". Ahora pulsa Pasar turno.");
+                + enteredRoomThisMove.getName() : "") + ". Ahora pulsa Pasar turno.");
     }
 
     private void nextTurn() {

@@ -72,7 +72,7 @@ public final class InGameScreen extends JFrame {
     private static final int HEADER_HEIGHT = 125;
     private static final int CONTROL_HEIGHT = 70;
     private static final int CONTROL_WIDTH = 295;
-    private static final int HAND_HEIGHT = 190;
+    private static final int HAND_HEIGHT = 225;
 
     private double zoom = 1.0;
     private final JLabel zoomLabel = new JLabel("100%");
@@ -86,6 +86,8 @@ public final class InGameScreen extends JFrame {
 
     private JPanel playerListPanel;
     private final TurnHUD turnHUD = new TurnHUD();
+    private final JLabel evidenceCountLabel =
+            new JLabel("0 cards");
 
 
     public InGameScreen(BoardLayout board, List<Actor> actors,
@@ -233,6 +235,13 @@ public final class InGameScreen extends JFrame {
         handPanel.setOpaque(false);
         handPanel.setPreferredSize(new Dimension(0, HAND_HEIGHT));
         handPanel.add(hand, BorderLayout.CENTER);
+        handPanel.add(
+                createEvidenceHeader(),
+                BorderLayout.NORTH
+        );
+        handPanel.setBorder(
+                BorderFactory.createEmptyBorder(3, 10, 3, 10)
+        );
 
         actionsPanel.setName("area.actions");
         actionsPanel.setPreferredSize(
@@ -249,6 +258,54 @@ public final class InGameScreen extends JFrame {
         styleSectionPanel(historyPanel);
         styleSectionPanel(chatRenderer);
         styleSectionPanel(actionsPanel);
+    }
+
+    private JPanel createEvidenceHeader() {
+
+        JPanel header = new JPanel(new BorderLayout(8, 0));
+
+        header.setOpaque(false);
+
+        JLabel title = new JLabel("YOUR EVIDENCE");
+
+        title.setFont(new Font("Georgia", Font.BOLD, 16));
+        title.setForeground(new Color(214, 179, 113));
+
+        JLabel subtitle = new JLabel(
+                "Private evidence"
+        );
+
+        subtitle.setFont(new Font("Arial", Font.PLAIN, 11));
+        subtitle.setForeground(new Color(145, 169, 176));
+
+        header.add(title, BorderLayout.WEST);
+        evidenceCountLabel.setFont(
+                new Font("Arial", Font.BOLD, 12)
+        );
+
+        evidenceCountLabel.setForeground(
+                new Color(214, 179, 113)
+        );
+
+        JPanel information = new JPanel(
+                new FlowLayout(FlowLayout.RIGHT, 12, 0)
+        );
+
+        information.setOpaque(false);
+
+        information.add(subtitle);
+        information.add(evidenceCountLabel);
+
+        header.add(information, BorderLayout.EAST);
+
+        header.setBorder(
+                BorderFactory.createMatteBorder(
+                        0, 0, 1, 0,
+                        new Color(160, 133, 87)
+                )
+        );
+
+        return header;
     }
 
     /**
@@ -296,7 +353,14 @@ public final class InGameScreen extends JFrame {
         boardSection.setOpaque(false);
 
         boardSection.add(boardLayer, BorderLayout.CENTER);
-        boardSection.add(createBoardControls(), BorderLayout.SOUTH);
+        JPanel boardToolbar = new JPanel(new BorderLayout());
+
+        boardToolbar.setOpaque(false);
+
+        boardToolbar.add(createBoardControls(), BorderLayout.NORTH);
+        boardToolbar.add(createBoardLegend(), BorderLayout.SOUTH);
+
+        boardSection.add(boardToolbar, BorderLayout.SOUTH);
 
         gameRowPanel.add(boardSection, BorderLayout.CENTER);
 
@@ -322,6 +386,20 @@ public final class InGameScreen extends JFrame {
 
         setContentPane(rootPanel);
 
+    }
+
+    public void updateEvidenceCount(int count) {
+
+        if (!SwingUtilities.isEventDispatchThread()) {
+            SwingUtilities.invokeLater(
+                    () -> updateEvidenceCount(count)
+            );
+            return;
+        }
+
+        evidenceCountLabel.setText(
+                count + (count == 1 ? " card" : " cards")
+        );
     }
 
     private JButton createImageButton(
@@ -863,6 +941,81 @@ public final class InGameScreen extends JFrame {
         return controls;
     }
 
+    private JComponent createLegendItem(String text, Color color) {
+
+        JPanel item = new JPanel(new FlowLayout(
+                FlowLayout.LEFT, 5, 0
+        ));
+
+        item.setOpaque(false);
+
+        JComponent indicator = new JComponent() {
+
+            @Override
+            protected void paintComponent(Graphics g) {
+
+                Graphics2D g2 = (Graphics2D) g.create();
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON
+                );
+
+                g2.setColor(new Color(
+                        color.getRed(),
+                        color.getGreen(),
+                        color.getBlue(),
+                        75
+                ));
+
+                g2.fillRoundRect(1, 1, 12, 12, 4, 4);
+
+                g2.setColor(color);
+                g2.drawRoundRect(1, 1, 12, 12, 4, 4);
+
+                g2.dispose();
+            }
+        };
+
+        indicator.setPreferredSize(new Dimension(15, 15));
+
+        JLabel label = new JLabel(text);
+
+        label.setFont(new Font("Arial", Font.PLAIN, 11));
+        label.setForeground(new Color(232, 214, 181));
+
+        item.add(indicator);
+        item.add(label);
+
+        return item;
+    }
+
+    private JPanel createBoardLegend() {
+
+        JPanel legend = new JPanel(
+                new FlowLayout(FlowLayout.CENTER, 15, 3)
+        );
+
+        legend.setOpaque(false);
+
+        legend.add(createLegendItem(
+                "Room entrance",
+                new Color(150, 65, 60)
+        ));
+
+        legend.add(createLegendItem(
+                "Room position",
+                new Color(55, 105, 125)
+        ));
+
+        legend.add(createLegendItem(
+                "Available move",
+                new Color(101, 187, 135)
+        ));
+
+        return legend;
+    }
+
     private void changeBoardZoom(double newZoom) {
 
         zoom = Math.max(0.50, Math.min(3.00, newZoom));
@@ -1260,6 +1413,49 @@ public final class InGameScreen extends JFrame {
         return avatar;
     }
 
+    private Icon createActiveTurnIcon() {
+
+        return new Icon() {
+
+            @Override
+            public int getIconWidth() {
+                return 16;
+            }
+
+            @Override
+            public int getIconHeight() {
+                return 16;
+            }
+
+            @Override
+            public void paintIcon(
+                    Component c, Graphics g, int x, int y
+            ) {
+
+                Graphics2D g2 = (Graphics2D) g.create();
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON
+                );
+
+                g2.translate(x, y);
+
+                g2.setColor(new Color(214, 179, 113));
+
+                Polygon triangle = new Polygon();
+
+                triangle.addPoint(4, 2);
+                triangle.addPoint(13, 8);
+                triangle.addPoint(4, 14);
+
+                g2.fillPolygon(triangle);
+
+                g2.dispose();
+            }
+        };
+    }
+
     private JPanel createPlayerCard(
             String name,
             Color playerColor,
@@ -1373,16 +1569,19 @@ public final class InGameScreen extends JFrame {
         information.add(Box.createVerticalGlue());
 
         // STATUS INDICATOR
-        JLabel statusIndicator = new JLabel(
-                active ? "\u25B6" : "\u25CF"
-        );
+        JLabel statusIndicator = new JLabel();
 
         statusIndicator.setFont(new Font("Arial", Font.BOLD, 14));
 
-        statusIndicator.setForeground(active
-                ? AllThemes.DoradorDM
-                : new Color(101, 187, 135)
-        );
+        if (active) {
+
+            statusIndicator.setIcon(createActiveTurnIcon());
+
+        } else {
+
+            statusIndicator.setText("\u25CF");
+            statusIndicator.setForeground(new Color(101, 187, 135));
+        }
 
         // ADD COMPONENTS
         card.add(avatar, BorderLayout.WEST);

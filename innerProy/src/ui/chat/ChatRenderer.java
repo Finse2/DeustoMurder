@@ -336,12 +336,14 @@ public final class ChatRenderer extends JPanel {
         );
 
         activityLabel.setPreferredSize(
-                new Dimension(150, 16)
+                new Dimension(150, 12)
         );
 
         activityLabel.setMaximumSize(
-                new Dimension(Integer.MAX_VALUE, 16)
+                new Dimension(Integer.MAX_VALUE, 12)
         );
+
+        activityLabel.setVisible(false);
 
         header.add(activityLabel);
 
@@ -1072,6 +1074,9 @@ public final class ChatRenderer extends JPanel {
 
         activityLabel.setText(notification);
 
+        activityLabel.setVisible(true);
+        revalidate();
+
         activityLabel.setForeground(GOLD);
 
         final int[] frame = {0};
@@ -1112,6 +1117,10 @@ public final class ChatRenderer extends JPanel {
                 ((Timer) event.getSource()).stop();
 
                 activityLabel.setText(" ");
+
+                activityLabel.setVisible(false);
+                revalidate();
+                repaint();
             }
         });
 

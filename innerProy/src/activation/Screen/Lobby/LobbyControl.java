@@ -1,4 +1,4 @@
-package activation.Screen.Lobby;
+package activation.Screen.lobby;
 import Networking.Server;
 
 import java.io.IOException;
