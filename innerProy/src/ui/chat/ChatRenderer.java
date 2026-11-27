@@ -2,6 +2,7 @@ package ui.chat;
 
 import Networking.common.ChatChannel;
 
+import ui.NoirScrollBarUI;
 import ui.NoirTheme;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -947,105 +948,7 @@ public final class ChatRenderer extends JPanel {
         scrollBar.setPreferredSize(new Dimension(9, 9));
         scrollBar.setOpaque(false);
         scrollBar.setUnitIncrement(16);
-
-        scrollBar.setUI(new BasicScrollBarUI() {
-
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                return createInvisibleButton();
-            }
-
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                return createInvisibleButton();
-            }
-
-            private JButton createInvisibleButton() {
-
-                JButton button = new JButton();
-
-                Dimension size = new Dimension(0, 0);
-
-                button.setPreferredSize(size);
-                button.setMinimumSize(size);
-                button.setMaximumSize(size);
-
-                button.setOpaque(false);
-                button.setBorderPainted(false);
-                button.setContentAreaFilled(false);
-
-                return button;
-            }
-
-            @Override
-            protected void paintTrack(
-                    Graphics g,
-                    JComponent c,
-                    Rectangle bounds
-            ) {
-
-                Graphics2D g2 = (Graphics2D) g.create();
-
-                g2.setRenderingHint(
-                        RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON
-                );
-
-                g2.setColor(BUTTON_BACKGROUND);
-
-                g2.fillRoundRect(
-                        bounds.x,
-                        bounds.y,
-                        bounds.width,
-                        bounds.height,
-                        8, 8
-                );
-
-                g2.dispose();
-            }
-
-            @Override
-            protected void paintThumb(
-                    Graphics g,
-                    JComponent c,
-                    Rectangle bounds
-            ) {
-
-                if (bounds.isEmpty() || !scrollbar.isEnabled()) {
-                    return;
-                }
-
-                Graphics2D g2 = (Graphics2D) g.create();
-
-                g2.setRenderingHint(
-                        RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON
-                );
-
-                if (isDragging) {
-                    g2.setColor(GOLD);
-                } else if (isThumbRollover()) {
-                    g2.setColor(new Color(225, 195, 135));
-                } else {
-                    g2.setColor(new Color(160, 133, 87));
-                }
-
-                g2.fillRoundRect(
-                        bounds.x + 2,
-                        bounds.y + 2,
-                        Math.max(1, bounds.width - 4),
-                        Math.max(1, bounds.height - 4),
-                        8, 8
-                );
-
-                g2.dispose();
-            }
-
-            @Override
-            protected Dimension getMinimumThumbSize() {
-                return new Dimension(9, 30);
-            }
-        });
+        scrollBar.setUI(new NoirScrollBarUI());
     }
 
     private void sendMessage() {
