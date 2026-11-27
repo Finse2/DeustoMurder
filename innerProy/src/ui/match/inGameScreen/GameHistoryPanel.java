@@ -49,7 +49,7 @@ public final class GameHistoryPanel extends JPanel {
     private final JLabel resultCount = new JLabel("0 eventos");
     private final JPanel turnBox = new JPanel(new BorderLayout(8, 0));
     private final JScrollPane scrollPane;
-    private final JTextField searchField = new JTextField();
+    private final JTextField searchField = createSearchField();
     private final JComboBox<Object> typeFilter = new JComboBox<>();
     private final JComboBox<String> playerFilter = new JComboBox<>();
     private final JComboBox<String> dateFilter = new JComboBox<>(new String[]{"Todo", "1 h", "24 h", "7 d"});
@@ -147,7 +147,6 @@ public final class GameHistoryPanel extends JPanel {
         titleRow.add(optionsButton, BorderLayout.EAST);
 
         searchField.setToolTipText("Buscar por jugador, tipo o descripción");
-        searchField.putClientProperty("JTextField.placeholderText", "Buscar eventos...");
         searchField.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent event) { refreshFromHistory(); }
             public void removeUpdate(DocumentEvent event) { refreshFromHistory(); }
@@ -186,7 +185,6 @@ public final class GameHistoryPanel extends JPanel {
         heading.setOpaque(false);
         heading.setLayout(new BoxLayout(heading, BoxLayout.Y_AXIS));
         titleRow.setAlignmentX(LEFT_ALIGNMENT);
-        searchField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 23));
         searchField.setAlignmentX(LEFT_ALIGNMENT);
         filters.setPreferredSize(new Dimension(280, 59));
         filters.setMaximumSize(
@@ -522,6 +520,152 @@ public final class GameHistoryPanel extends JPanel {
         });
     }
 
+    private JTextField createSearchField() {
+
+        JTextField field = new JTextField() {
+
+            @Override
+            protected void paintComponent(Graphics g) {
+
+                Graphics2D g2 = (Graphics2D) g.create();
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON
+                );
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_TEXT_ANTIALIASING,
+                        RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+                );
+
+                // BACKGROUND
+                g2.setColor(BACKGROUND);
+
+                g2.fillRoundRect(
+                        1, 1,
+                        getWidth() - 3,
+                        getHeight() - 3,
+                        12, 12
+                );
+
+                // BORDER
+                g2.setColor(
+                        hasFocus() ? GOLD : BORDER_COLOR
+                );
+
+                g2.setStroke(
+                        new BasicStroke(hasFocus() ? 1.5f : 1f)
+                );
+
+                g2.drawRoundRect(
+                        1, 1,
+                        getWidth() - 3,
+                        getHeight() - 3,
+                        12, 12
+                );
+
+                // SEARCH ICON
+                g2.setColor(
+                        hasFocus() ? GOLD : SECONDARY_TEXT
+                );
+
+                g2.setStroke(new BasicStroke(
+                        1.7f,
+                        BasicStroke.CAP_ROUND,
+                        BasicStroke.JOIN_ROUND
+                ));
+
+                int iconX = 12;
+                int iconY = getHeight() / 2 - 7;
+
+                g2.drawOval(iconX, iconY, 11, 11);
+
+                g2.drawLine(
+                        iconX + 9,
+                        iconY + 9,
+                        iconX + 15,
+                        iconY + 15
+                );
+
+                g2.dispose();
+
+                // DRAW USER TEXT
+                super.paintComponent(g);
+
+                // PLACEHOLDER
+                if (getText().isEmpty()) {
+
+                    Graphics2D placeholder =
+                            (Graphics2D) g.create();
+
+                    placeholder.setRenderingHint(
+                            RenderingHints.KEY_TEXT_ANTIALIASING,
+                            RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+                    );
+
+                    placeholder.setColor(SECONDARY_TEXT);
+                    placeholder.setFont(getFont());
+
+                    FontMetrics fm = placeholder.getFontMetrics();
+
+                    int textY = (getHeight() - fm.getHeight()) / 2
+                            + fm.getAscent();
+
+                    placeholder.drawString(
+                            "Search evidence...",
+                            getInsets().left,
+                            textY
+                    );
+
+                    placeholder.dispose();
+                }
+            }
+        };
+
+        // TEXT STYLE
+        field.setFont(new Font("Arial", Font.PLAIN, 12));
+        field.setForeground(TEXT);
+        field.setCaretColor(GOLD);
+
+        // TEXT SELECTION
+        field.setSelectionColor(HOVER_BACKGROUND);
+        field.setSelectedTextColor(TEXT);
+
+        // TRANSPARENCY
+        field.setOpaque(false);
+
+        // INTERNAL PADDING
+        field.setBorder(
+                BorderFactory.createEmptyBorder(5, 36, 5, 10)
+        );
+
+        // DIMENSIONS
+        field.setPreferredSize(new Dimension(280, 34));
+
+        field.setMaximumSize(
+                new Dimension(Integer.MAX_VALUE, 34)
+        );
+
+        field.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // FOCUS EFFECT
+        field.addFocusListener(new java.awt.event.FocusAdapter() {
+
+            @Override
+            public void focusGained(java.awt.event.FocusEvent e) {
+                field.repaint();
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                field.repaint();
+            }
+        });
+
+        return field;
+    }
+
     /** Vincular solo si este panel visualiza game.getGameHistory(). */
     public void bindTimer(Game game) {
         if (boundGame != null) boundGame.removeTurnTimeListener(timerChanged);
@@ -618,29 +762,146 @@ public final class GameHistoryPanel extends JPanel {
     }
 
     private JPanel createEntry(GameEvent event) {
-        JPanel row = new JPanel(new BorderLayout(7, 0));
+
+        Color eventColor = getEventColor(event.getType());
+
+        JPanel row = new JPanel(new BorderLayout(8, 0)) {
+
+            @Override
+            protected void paintComponent(Graphics g) {
+
+                Graphics2D g2 = (Graphics2D) g.create();
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON
+                );
+
+                // CARD BACKGROUND
+                g2.setColor(BUTTON_BACKGROUND);
+
+                g2.fillRoundRect(
+                        1, 1,
+                        getWidth() - 3,
+                        getHeight() - 3,
+                        12, 12
+                );
+
+                // CARD BORDER
+                g2.setColor(new Color(48, 73, 85));
+                g2.setStroke(new BasicStroke(1f));
+
+                g2.drawRoundRect(
+                        1, 1,
+                        getWidth() - 3,
+                        getHeight() - 3,
+                        12, 12
+                );
+
+                // EVENT COLOR INDICATOR
+                g2.setColor(eventColor);
+
+                g2.fillRoundRect(
+                        5, 8,
+                        3, getHeight() - 16,
+                        3, 3
+                );
+
+                g2.dispose();
+            }
+        };
+
         row.setOpaque(false);
         row.setAlignmentX(Component.LEFT_ALIGNMENT);
-        row.setBorder(BorderFactory.createEmptyBorder(3, 2, 3, 2));
 
-        Color color = playerColors.getOrDefault(event.getPlayerName(), BLUE);
-        JLabel dot = new JLabel("●");
-        dot.setForeground(color);
-        dot.setVerticalAlignment(SwingConstants.TOP);
+        row.setBorder(
+                BorderFactory.createEmptyBorder(9, 14, 9, 9)
+        );
 
+        // EVENT ICON
+        JComponent eventIcon = createEventIcon(
+                event.getType()
+        );
+
+        // EVENT INFORMATION
+        JPanel information = new JPanel(
+                new BorderLayout(0, 5)
+        );
+
+        information.setOpaque(false);
+
+        // EVENT HEADER
+        JPanel eventHeader = new JPanel(
+                new BorderLayout(5, 0)
+        );
+
+        eventHeader.setOpaque(false);
+
+        JLabel typeLabel = new JLabel(
+                event.getType().name().replace('_', ' ')
+        );
+
+        typeLabel.setFont(new Font("Arial", Font.BOLD, 10));
+        typeLabel.setForeground(eventColor);
+
+        JLabel timeLabel = new JLabel(
+                HOUR.format(event.getTimestamp())
+        );
+
+        timeLabel.setFont(new Font("Arial", Font.PLAIN, 10));
+        timeLabel.setForeground(SECONDARY_TEXT);
+
+        eventHeader.add(typeLabel, BorderLayout.CENTER);
+        eventHeader.add(timeLabel, BorderLayout.EAST);
+
+        // EVENT DESCRIPTION
         String who = event.getPlayerName();
         String narrative = eventNarrative(event);
-        String message = who.isBlank() ? escape(narrative) :
-                "<span style='color:" + hex(color) + "'>" + escape(who) + "</span> " + escape(narrative);
-        String time = HOUR.format(event.getTimestamp());
-        JLabel content = new JLabel("<html><div style='width:245px;color:" + hex(TEXT)
-                + ";font-size:11px;font-family:serif'><span style='color:#8da8b5'>" + time
-                + "</span> " + message + "</div></html>");
-        content.setToolTipText("<html>" + escape(event.getType().name()) + " | "
-                + escape(event.getTimestamp().toString()) + "<br>" + escape(event.getDescription()) + "</html>");
-        row.add(dot, BorderLayout.WEST);
-        row.add(content, BorderLayout.CENTER);
-        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, row.getPreferredSize().height));
+
+        Color playerColor = playerColors.getOrDefault(
+                who, BLUE
+        );
+
+        String message = who.isBlank()
+                ? escape(narrative)
+                : "<span style='color:" + hex(playerColor)
+                + "'><b>" + escape(who) + "</b></span> "
+                + escape(narrative);
+
+        JLabel description = new JLabel(
+                "<html><div style='width:155px;"
+                        + "color:" + hex(TEXT) + ";"
+                        + "font-family:Arial;"
+                        + "font-size:10px;'>"
+                        + message
+                        + "</div></html>"
+        );
+
+        information.add(eventHeader, BorderLayout.NORTH);
+        information.add(description, BorderLayout.CENTER);
+
+        // ADD COMPONENTS
+        row.add(eventIcon, BorderLayout.WEST);
+        row.add(information, BorderLayout.CENTER);
+
+        row.setMaximumSize(
+                new Dimension(
+                        Integer.MAX_VALUE,
+                        Math.max(58, row.getPreferredSize().height)
+                )
+        );
+
+        // EVENT DETAILS
+        row.setToolTipText(
+                "<html>"
+                        + escape(event.getType().name())
+                        + "<br>"
+                        + escape(event.getTimestamp().toString())
+                        + "<br>"
+                        + escape(event.getDescription())
+                        + "</html>"
+        );
+
         return row;
     }
 
