@@ -1018,6 +1018,139 @@ public final class InGameScreen extends JFrame {
         return panelJugadores;
     }
 
+    private JPanel createPlayerCard(
+            String name,
+            Color playerColor,
+            boolean active
+    ) {
+
+        JPanel card = new JPanel(new BorderLayout(10, 0)) {
+
+            @Override
+            protected void paintComponent(Graphics g) {
+
+                Graphics2D g2 = (Graphics2D) g.create();
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON
+                );
+
+                // BACKGROUND
+                g2.setColor(active
+                        ? new Color(45, 65, 60)
+                        : AllThemes.AzulOscuro2DM
+                );
+
+                g2.fillRoundRect(
+                        1, 1,
+                        getWidth() - 3,
+                        getHeight() - 3,
+                        14, 14
+                );
+
+                // BORDER
+                g2.setColor(active
+                        ? AllThemes.DoradorDM
+                        : new Color(55, 80, 90)
+                );
+
+                g2.setStroke(
+                        new BasicStroke(active ? 2f : 1f)
+                );
+
+                g2.drawRoundRect(
+                        1, 1,
+                        getWidth() - 3,
+                        getHeight() - 3,
+                        14, 14
+                );
+
+                // PLAYER COLOR INDICATOR
+                g2.setColor(playerColor);
+
+                g2.fillRoundRect(
+                        5, 10,
+                        4, getHeight() - 20,
+                        4, 4
+                );
+
+                g2.dispose();
+            }
+        };
+
+        card.setOpaque(false);
+
+        card.setPreferredSize(new Dimension(200, 66));
+
+        card.setMaximumSize(
+                new Dimension(Integer.MAX_VALUE, 66)
+        );
+
+        card.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        card.setBorder(
+                BorderFactory.createEmptyBorder(8, 15, 8, 10)
+        );
+
+        // AVATAR
+        JComponent avatar = createPlayerAvatar(
+                name, playerColor
+        );
+
+        // PLAYER INFORMATION
+        JPanel information = new JPanel();
+
+        information.setLayout(
+                new BoxLayout(information, BoxLayout.Y_AXIS)
+        );
+
+        information.setOpaque(false);
+
+        JLabel nameLabel = new JLabel(name);
+
+        nameLabel.setFont(AllFonts.GEORGIA_BOLD_15);
+        nameLabel.setForeground(AllThemes.CremaDM);
+
+        JLabel statusLabel = new JLabel(
+                active ? "Current turn" : "Connected"
+        );
+
+        statusLabel.setFont(new Font("Arial", Font.PLAIN, 11));
+
+        statusLabel.setForeground(active
+                ? AllThemes.DoradorDM
+                : new Color(145, 180, 175)
+        );
+
+        information.add(Box.createVerticalGlue());
+        information.add(nameLabel);
+        information.add(Box.createVerticalStrut(4));
+        information.add(statusLabel);
+        information.add(Box.createVerticalGlue());
+
+        // STATUS INDICATOR
+        JLabel statusIndicator = new JLabel(
+                active ? "\u25B6" : "\u25CF"
+        );
+
+        statusIndicator.setFont(new Font("Arial", Font.BOLD, 14));
+
+        statusIndicator.setForeground(active
+                ? AllThemes.DoradorDM
+                : new Color(101, 187, 135)
+        );
+
+        // ADD COMPONENTS
+        card.add(avatar, BorderLayout.WEST);
+        card.add(information, BorderLayout.CENTER);
+        card.add(statusIndicator, BorderLayout.EAST);
+
+        card.setToolTipText(name);
+
+        return card;
+    }
+
     private void styleSectionPanel(JComponent component) {
         component.setOpaque(true);
         component.setBackground(AllThemes.AzulVerdosoDM);
