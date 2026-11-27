@@ -243,12 +243,20 @@ public final class GameHistoryPanel extends JPanel {
         entries.setBorder(
                 BorderFactory.createEmptyBorder(5, 3, 5, 3)
         );
-        scrollPane = new JScrollPane(entries,
+        scrollPane = new JScrollPane(
+                entries,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setBorder(null);
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+        );
+
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.setViewportBorder(null);
+        scrollPane.setBackground(BACKGROUND);
         scrollPane.getViewport().setBackground(BACKGROUND);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(14);
+
+        // CUSTOM SCROLLBAR
+        styleScrollBar(scrollPane.getVerticalScrollBar());
+
         add(scrollPane, BorderLayout.CENTER);
 
         JLabel turnIcon = new JLabel("◉");

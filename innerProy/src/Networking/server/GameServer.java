@@ -18,6 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import Networking.common.ChatChannel;
+
 /**
  * This class represents a game server that listens for incoming client connections and handles communication between clients.
  * It manages the connected clients, assigns player IDs, and processes packets sent by clients.
@@ -117,9 +119,23 @@ public final class GameServer {
         switch (type) {
             case JOIN -> handleJoin(packet, serversClientHandler);
             case CARD_SHOW -> handleCardShow(packet, serversClientHandler);
-            case GAME_OVER -> broadcast(packet);
+            case GAME_OVER -> {
+
+                broadcast(packet);
+
+                broadcastSystemMessage(
+                        "The investigation has ended."
+                );
+            }
             case PLAYER_MOVE -> handlePlayerMove(packet, serversClientHandler);
-            case GAME_START -> broadcast(packet);
+            case GAME_START -> {
+
+                broadcast(packet);
+
+                broadcastSystemMessage(
+                        "The investigation has started."
+                );
+            }
             case CHAT_MESSAGE -> handleChatMessage(packet, serversClientHandler);
             case JOIN_ACCEPTED, PLAYER_JOINED ->
                     System.err.println("Ignoring server-only packet from player " + serversClientHandler.getPlayerID());
@@ -131,13 +147,31 @@ public final class GameServer {
      * @param packet The JOIN packet received from the client.
      * @param serversClientHandler The client handler that received the packet.
      */
-    private void handleJoin(Packet packet, ServersClientHandler serversClientHandler) {
+    private synchronized void handleJoin(Packet packet, ServersClientHandler serversClientHandler) {
         if (!(packet instanceof JoinPacket joinPacket)) {
             return;
         }
 
         String userName = cleanName(joinPacket.getUserName(), "Player " + serversClientHandler.getPlayerID());
         String computerName = cleanName(joinPacket.getComputerName(), "Unknown computer");
+        if (serversClientHandler.getUserName() != null) {
+            return;
+        }
+
+        for (ServersClientHandler existing : clients.values()) {
+
+            if (existing != serversClientHandler
+                    && userName.equals(existing.getUserName())) {
+
+                System.err.println(
+                        "Duplicate player name: " + userName
+                );
+
+                serversClientHandler.disconnect();
+
+                return;
+            }
+        }
         serversClientHandler.setUserName(userName);
         serversClientHandler.setComputerName(computerName);
 
@@ -158,7 +192,9 @@ public final class GameServer {
                 new PlayerJoinedPacket(serversClientHandler.getPlayerID(), userName, computerName),
                 serversClientHandler
         );
-        System.out.println("Player joined: " + userName + " from " + computerName);
+        broadcastSystemMessage(
+                userName + " has joined the investigation."
+        );
     }
 /**
      * Handles a CARD_SHOW packet received from a client.
@@ -167,19 +203,153 @@ public final class GameServer {
      * @param serversClientHandler The client handler that received the packet.
      */
     /** Retransmite mensajes a todos los clientes excepto al emisor (que ya los muestra localmente). */
-    private void handleChatMessage(Packet packet, ServersClientHandler sender) {
-        if (!(packet instanceof ChatMessagePacket chatPacket) || sender.getUserName() == null) {
+    private void handleChatMessage(
+            Packet packet,
+            ServersClientHandler sender
+    ) {
+
+        if (!(packet instanceof ChatMessagePacket chatPacket)
+                || sender.getUserName() == null) {
+
             return;
         }
+
         String message = chatPacket.getMessage();
-        if (message == null || message.isBlank() || message.strip().length() > 500) {
+
+        if (message == null
+                || message.isBlank()
+                || message.strip().length() > 500) {
+
             return;
         }
-        // El nombre y el ID se obtienen de la conexión, nunca del paquete del cliente.
-        ChatMessagePacket authoritative = new ChatMessagePacket(
-                sender.getPlayerID(), sender.getUserName(), message.strip()
+
+        ChatChannel channel = chatPacket.getChannel();
+
+        if (channel == null || channel == ChatChannel.SYSTEM) {
+            return;
+        }
+
+        switch (channel) {
+
+            case GENERAL -> {
+
+                ChatMessagePacket authoritative =
+                        new ChatMessagePacket(
+                                sender.getPlayerID(),
+                                sender.getUserName(),
+                                message.strip(),
+                                ChatChannel.GENERAL,
+                                null
+                        );
+
+                broadcastExcept(authoritative, sender);
+            }
+
+            case PRIVATE -> {
+
+                handlePrivateMessage(
+                        sender,
+                        chatPacket.getRecipient(),
+                        message.strip()
+                );
+            }
+            case SYSTEM -> {
+                // Only the server can generate system messages.
+            }
+        }
+    }
+
+    private void handlePrivateMessage(
+            ServersClientHandler sender,
+            String recipient,
+            String message
+    ) {
+
+        if (recipient == null || recipient.isBlank()) {
+
+            sendSystemMessage(sender, "Invalid recipient.");
+
+            return;
+        }
+
+        ServersClientHandler target = null;
+
+        // FIND RECIPIENT
+
+        for (ServersClientHandler client : clients.values()) {
+
+            if (recipient.equals(client.getUserName())) {
+
+                // Reject ambiguous usernames.
+
+                if (target != null) {
+
+                    sendSystemMessage(
+                            sender,
+                            "Recipient name is ambiguous."
+                    );
+
+                    return;
+                }
+
+                target = client;
+            }
+        }
+
+        if (target == null) {
+
+            sendSystemMessage(
+                    sender,
+                    "The recipient is not connected."
+            );
+
+            return;
+        }
+
+        if (target == sender) {
+
+            sendSystemMessage(
+                    sender,
+                    "You cannot send a private message to yourself."
+            );
+
+            return;
+        }
+
+        // AUTHORITATIVE PRIVATE MESSAGE
+
+        ChatMessagePacket authoritative =
+                new ChatMessagePacket(
+                        sender.getPlayerID(),
+                        sender.getUserName(),
+                        message,
+                        ChatChannel.PRIVATE,
+                        target.getUserName()
+                );
+
+        // SEND ONLY TO THE RECIPIENT
+
+        target.sendPacket(authoritative);
+
+        // RETURN MESSAGE TO THE SENDER
+
+        sender.sendPacket(authoritative);
+    }
+
+    private void sendSystemMessage(
+            ServersClientHandler target,
+            String message
+    ) {
+
+        target.sendPacket(
+                new ChatMessagePacket(
+                        -1,
+                        "System",
+                        message,
+                        ChatChannel.SYSTEM,
+                        null
+                )
         );
-        broadcastExcept(authoritative, sender);
     }
 
     private void handleCardShow(Packet packet, ServersClientHandler serversClientHandler) {
@@ -251,6 +421,25 @@ public final class GameServer {
         }
         clientExecutor.shutdownNow();
     }
+
+    private void broadcastSystemMessage(String message) {
+
+        ChatMessagePacket packet = new ChatMessagePacket(
+                -1,
+                "System",
+                message,
+                ChatChannel.SYSTEM,
+                null
+        );
+
+        for (ServersClientHandler client : clients.values()) {
+
+            if (client.getUserName() != null) {
+                client.sendPacket(packet);
+            }
+        }
+    }
+
 /**
      * Cleans a string value by trimming whitespace and providing a fallback if the value is null or blank.
      *
@@ -269,9 +458,25 @@ public final class GameServer {
      *
      * @param serversClientHandler The client handler to remove.
      */
-    void removeClient(ServersClientHandler serversClientHandler) {
-        clients.remove(serversClientHandler.getPlayerID(), serversClientHandler);
+void removeClient(
+        ServersClientHandler serversClientHandler
+) {
+
+    boolean removed = clients.remove(
+            serversClientHandler.getPlayerID(),
+            serversClientHandler
+    );
+
+    if (removed
+            && running
+            && serversClientHandler.getUserName() != null) {
+
+        broadcastSystemMessage(
+                serversClientHandler.getUserName()
+                        + " has left the investigation."
+        );
     }
+}
 /**
      * Gets the current number of connected clients.
      *
