@@ -273,14 +273,101 @@ public final class InGameScreen extends JFrame {
         setContentPane(rootPanel);
     }
 
+    private JButton createImageButton(
+            String path,
+            int buttonWidth,
+            int buttonHeight,
+            int imageWidth,
+            int imageHeight
+    ) {
+
+        JButton button = new JButton();
+
+        try {
+
+            BufferedImage original = ImageIO.read(
+                    Path.of(path).toFile()
+            );
+
+            if (original == null) {
+                throw new IOException("Invalid image: " + path);
+            }
+
+            double scale = Math.min(
+                    (double) imageWidth / original.getWidth(),
+                    (double) imageHeight / original.getHeight()
+            );
+
+            int width = Math.max(1,
+                    (int) Math.round(original.getWidth() * scale));
+
+            int height = Math.max(1,
+                    (int) Math.round(original.getHeight() * scale));
+
+            BufferedImage resized = new BufferedImage(
+                    width,
+                    height,
+                    BufferedImage.TYPE_INT_ARGB
+            );
+
+            Graphics2D g2 = resized.createGraphics();
+
+            g2.setRenderingHint(
+                    RenderingHints.KEY_INTERPOLATION,
+                    RenderingHints.VALUE_INTERPOLATION_BICUBIC
+            );
+
+            g2.setRenderingHint(
+                    RenderingHints.KEY_RENDERING,
+                    RenderingHints.VALUE_RENDER_QUALITY
+            );
+
+            g2.drawImage(original, 0, 0, width, height, null);
+            g2.dispose();
+
+            button.setIcon(new ImageIcon(resized));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            button.setText("?");
+        }
+
+        button.setPreferredSize(
+                new Dimension(buttonWidth, buttonHeight)
+        );
+
+        button.setMargin(new Insets(0, 0, 0, 0));
+        button.setBorder(BorderFactory.createEmptyBorder());
+
+        button.setHorizontalAlignment(SwingConstants.CENTER);
+        button.setVerticalAlignment(SwingConstants.CENTER);
+
+        button.setOpaque(false);
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(false);
+        button.setFocusPainted(false);
+
+        button.setCursor(
+                Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+        );
+
+        return button;
+    }
+
     /** The top-right control area: profile, settings and quit. */
     private JPanel createHeaderControlsPanel() {
-        JPanel header = new JPanel(new GridLayout(1,3,10,10));
-        JPanel topButtons = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 3));
+
+        JPanel header = new JPanel(new GridBagLayout());
+
+        JPanel topButtons = new JPanel(
+                new FlowLayout(FlowLayout.CENTER, 14, 0)
+        );
+
         topButtons.setOpaque(false);
 
-        // Profile button
+        // PROFILE BUTTON
         BufferedImage profilePicture = null;
+
         try {
             profilePicture = ImageIO.read(
                     Path.of("innerProy/ressources/DefaultProfile.jpg").toFile()
@@ -288,54 +375,43 @@ public final class InGameScreen extends JFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         if (profilePicture != null) {
             profilePicture = resizeIfNecessary(profilePicture, 512);
         }
+
         ProfileButton profileButton = new ProfileButton(profilePicture);
-        profileButton.setPreferredSize(new Dimension(48, 48));
+
+        profileButton.setPreferredSize(new Dimension(54, 54));
         profileButton.addActionListener(e -> openProfileStats());
 
-        // Settings button
-        ImageIcon settingsIcon = new ImageIcon("innerProy/ressources/settings.png");
-        Image settingsImage = settingsIcon.getImage().getScaledInstance(
-                34, 34, Image.SCALE_SMOOTH
+        // SETTINGS BUTTON
+        JButton settingsButton = createImageButton(
+                "innerProy/ressources/settings.png",
+                54, 54,
+                36, 36
         );
-        JButton settingsButton = new JButton(new ImageIcon(settingsImage));
-        settingsButton.setOpaque(false);
-        settingsButton.setBorderPainted(false);
-        settingsButton.setContentAreaFilled(false);
-        settingsButton.setFocusPainted(false);
-        settingsButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        settingsButton.setToolTipText("Settings");
         settingsButton.addActionListener(e -> openSettings());
 
-        // Quit button
-        ImageIcon quitIcon = new ImageIcon(
-                "innerProy/ressources/quit.png"
-        );
-
-        Image quitImage = quitIcon.getImage().getScaledInstance(
-                110, 55, Image.SCALE_SMOOTH
-        );
-
-        JButton exitButton = new JButton(new ImageIcon(quitImage));
-
-        exitButton.setPreferredSize(new Dimension(150, 55));
-        exitButton.setOpaque(false);
-        exitButton.setBorderPainted(false);
-        exitButton.setContentAreaFilled(false);
-        exitButton.setFocusPainted(false);
-
-        exitButton.setCursor(
-                Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+        // QUIT BUTTON
+        JButton exitButton = createImageButton(
+                "innerProy/ressources/quit.png",
+                114, 54,
+                114, 44
         );
 
         exitButton.setToolTipText("Quit Game");
         exitButton.addActionListener(e -> exitGame());
 
+        // ADD COMPONENTS
         topButtons.add(profileButton);
         topButtons.add(settingsButton);
         topButtons.add(exitButton);
-        header.add(topButtons, BorderLayout.NORTH);
+
+        header.add(topButtons);
+
         return header;
     }
 

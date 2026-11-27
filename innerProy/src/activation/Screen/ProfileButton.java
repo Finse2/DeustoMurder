@@ -50,8 +50,13 @@ public class ProfileButton extends JButton {
         Graphics2D g2 = (Graphics2D) g.create();
 
         g2.setRenderingHint(
-                RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON
+                RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_BICUBIC
+        );
+
+        g2.setRenderingHint(
+                RenderingHints.KEY_RENDERING,
+                RenderingHints.VALUE_RENDER_QUALITY
         );
 
         int size = Math.min(getWidth(), getHeight()) - 8;
