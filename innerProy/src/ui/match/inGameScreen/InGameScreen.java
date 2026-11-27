@@ -1,5 +1,7 @@
 
 package ui.match.inGameScreen;
+
+import ui.NoirConfirmDialog;
 import ui.NoirTheme;
 import activation.Screen.CluedoTableTheme;
 import activation.Screen.lobby.LobbyRoster;
@@ -1727,15 +1729,15 @@ public final class InGameScreen extends JFrame {
 
     private void exitGame() {
 
-        int option = JOptionPane.showConfirmDialog(
+        boolean confirmed = NoirConfirmDialog.showConfirm(
                 this,
-                "Are you sure you want to exit the game?",
-                "Quit Game",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE
+                "LEAVE THE INVESTIGATION?",
+                "Are you sure you want to leave the current game?",
+                "Resume game",
+                "Leave game"
         );
 
-        if (option == JOptionPane.YES_OPTION) {
+        if (confirmed) {
             dispose();
         }
     }
