@@ -1018,6 +1018,74 @@ public final class InGameScreen extends JFrame {
         return panelJugadores;
     }
 
+    private JComponent createPlayerAvatar(
+            String name,
+            Color playerColor
+    ) {
+
+        JComponent avatar = new JComponent() {
+
+            @Override
+            protected void paintComponent(Graphics g) {
+
+                Graphics2D g2 = (Graphics2D) g.create();
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON
+                );
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_TEXT_ANTIALIASING,
+                        RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+                );
+
+                int size = Math.min(getWidth(), getHeight()) - 4;
+
+                if (size <= 0) {
+                    g2.dispose();
+                    return;
+                }
+
+                int x = (getWidth() - size) / 2;
+                int y = (getHeight() - size) / 2;
+
+                // BACKGROUND
+                g2.setColor(AllThemes.AzulOscuroDM);
+                g2.fillOval(x, y, size, size);
+
+                // BORDER
+                g2.setColor(playerColor);
+                g2.setStroke(new BasicStroke(2f));
+                g2.drawOval(x, y, size, size);
+
+                // INITIAL
+                String initial = name == null || name.isBlank()
+                        ? "?"
+                        : name.substring(0, 1).toUpperCase();
+
+                g2.setFont(new Font("Georgia", Font.BOLD, 19));
+                g2.setColor(AllThemes.CremaDM);
+
+                FontMetrics fm = g2.getFontMetrics();
+
+                int textX = (getWidth()
+                        - fm.stringWidth(initial)) / 2;
+
+                int textY = (getHeight()
+                        - fm.getHeight()) / 2 + fm.getAscent();
+
+                g2.drawString(initial, textX, textY);
+
+                g2.dispose();
+            }
+        };
+
+        avatar.setPreferredSize(new Dimension(42, 42));
+
+        return avatar;
+    }
+
     private JPanel createPlayerCard(
             String name,
             Color playerColor,
@@ -1150,6 +1218,8 @@ public final class InGameScreen extends JFrame {
 
         return card;
     }
+
+
 
     private void styleSectionPanel(JComponent component) {
         component.setOpaque(true);
