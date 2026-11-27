@@ -1417,62 +1417,36 @@ public final class InGameScreen extends JFrame {
     }
 
     private void refreshPlayers() {
+
         if (!SwingUtilities.isEventDispatchThread()) {
+
             SwingUtilities.invokeLater(this::refreshPlayers);
             return;
         }
-        panelJugadores.removeAll();
+
+        playerListPanel.removeAll();
 
         List<LobbyRoster.Entry> players = roster.snapshot();
 
         connectedPlayers = players.size();
 
-        // Actualizar el contador, incluso cuando no haya jugadores.
-        playerCountLabel.setText("Connected Players (" + connectedPlayers + ")");
+        playerCountLabel.setText(
+                connectedPlayers + " Connected Players"
+        );
 
-        panelJugadores.add(playerCountLabel);
-        panelJugadores.add(playersTitleLabel);
-
-        // Si no hay jugadores, el contador mostrará 0 y no se añadirán entradas.
         for (LobbyRoster.Entry player : players) {
 
-            JPanel playerPanel = new JPanel(new BorderLayout(10, 5));
-
-            playerPanel.setBorder(
-                    BorderFactory.createCompoundBorder(
-                            BorderFactory.createLineBorder(AllThemes.MarronOscuroDM),
-                            BorderFactory.createEmptyBorder(10, 12, 10, 12)
-                    )
+            JPanel card = createPlayerCard(
+                    player.name(),
+                    AllThemes.DoradorDM,
+                    false
             );
 
-            playerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
-            playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-            JPanel infoPanel = new JPanel(new GridLayout(2, 1));
-            infoPanel.setOpaque(false);
-
-            JLabel name = new JLabel(player.name());
-            name.setFont(AllFonts.GEORGIA_BOLD_15);
-            name.setForeground(AllThemes.CremaDM);
-            infoPanel.add(name);
-
-            ImageIcon icon1 = new ImageIcon("innerProy/ressources/PerfilDet.png");
-            Image image1 = icon1.getImage().getScaledInstance(
-                    35, 35, Image.SCALE_SMOOTH
-            );
-
-            JLabel icono = new JLabel(new ImageIcon(image1));
-            infoPanel.add(icono);
-
-            playerPanel.setOpaque(true);
-            playerPanel.setBackground(AllThemes.AzulVerdosoDM);
-            playerPanel.add(infoPanel, BorderLayout.CENTER);
-
-            panelJugadores.add(playerPanel);
-            panelJugadores.add(Box.createVerticalStrut(6));
+            playerListPanel.add(card);
+            playerListPanel.add(Box.createVerticalStrut(8));
         }
 
-        panelJugadores.revalidate();
-        panelJugadores.repaint();
+        playerListPanel.revalidate();
+        playerListPanel.repaint();
     }
 }
