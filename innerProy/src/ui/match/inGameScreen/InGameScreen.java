@@ -85,6 +85,8 @@ public final class InGameScreen extends JFrame {
     private JLabel playersTitleLabel;
     private int connectedPlayers;
 
+    private JPanel playerListPanel;
+
 
     public InGameScreen(BoardLayout board, List<Actor> actors,
                         JComponent hand, LobbyRoster roster) {
@@ -917,25 +919,102 @@ public final class InGameScreen extends JFrame {
     }
 
     private JPanel createPlayersPanel() {
-        panelJugadores = new JPanel();
-        panelJugadores.setLayout(new BoxLayout(panelJugadores, BoxLayout.Y_AXIS));
+
+        panelJugadores = new JPanel(new BorderLayout(0, 10));
+
         panelJugadores.setBackground(AllThemes.AzulVerdosoDM);
 
-        playerCountLabel = new JLabel("Connected Players (0)");
-        playerCountLabel.setFont(new Font("Georgia", Font.BOLD, 18));
-        playerCountLabel.setForeground(new Color(235, 215, 100));
-        playerCountLabel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
-        panelJugadores.add(playerCountLabel);
+        // HEADER
+        JPanel header = new JPanel();
 
-        playersTitleLabel = new JLabel("Jugadores:");
-        playersTitleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        playersTitleLabel.setForeground(AllThemes.BlancoDM);
-        playersTitleLabel.setBorder(BorderFactory.createEmptyBorder(0, 12, 8, 12));
-        panelJugadores.add(playersTitleLabel);
+        header.setLayout(
+                new BoxLayout(header, BoxLayout.Y_AXIS)
+        );
+
+        header.setOpaque(false);
+        header.setBorder(
+                BorderFactory.createEmptyBorder(12, 8, 8, 8)
+        );
+
+        // TITLE
+        playersTitleLabel = new JLabel("INVESTIGATORS");
+
+        playersTitleLabel.setFont(AllFonts.GEORGIA_BOLD_18);
+        playersTitleLabel.setForeground(AllThemes.DoradorDM);
+        playersTitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // CONNECTED PLAYERS
+        playerCountLabel = new JLabel("0 Connected Players");
+
+        playerCountLabel.setFont(AllFonts.ARIAL_BOLD_12);
+        playerCountLabel.setForeground(AllThemes.CremaDM);
+        playerCountLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        header.add(playersTitleLabel);
+        header.add(Box.createVerticalStrut(8));
+        header.add(playerCountLabel);
+        header.add(Box.createVerticalStrut(12));
+
+        JSeparator separator = new JSeparator();
+        separator.setForeground(AllThemes.DoradorDM);
+        separator.setMaximumSize(
+                new Dimension(Integer.MAX_VALUE, 2)
+        );
+
+        header.add(separator);
+
+        // PLAYER LIST
+        playerListPanel = new JPanel();
+
+        playerListPanel.setLayout(
+                new BoxLayout(playerListPanel, BoxLayout.Y_AXIS)
+        );
+
+        playerListPanel.setOpaque(false);
+
+        playerListPanel.setBorder(
+                BorderFactory.createEmptyBorder(0, 8, 0, 8)
+        );
+
+        // SCROLL
+        JScrollPane scrollPane = new JScrollPane(playerListPanel);
+
+        scrollPane.setBorder(null);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+
+        scrollPane.setHorizontalScrollBarPolicy(
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+        );
+
+        scrollPane.setVerticalScrollBarPolicy(
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
+        );
+
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+        // FOOTER
+        JLabel footer = new JLabel(
+                "Everyone is a suspect.",
+                SwingConstants.CENTER
+        );
+
+        footer.setFont(new Font("Georgia", Font.ITALIC, 12));
+        footer.setForeground(AllThemes.DoradorDM);
+
+        footer.setBorder(
+                BorderFactory.createEmptyBorder(8, 0, 12, 0)
+        );
+
+        // ADD COMPONENTS
+        panelJugadores.add(header, BorderLayout.NORTH);
+        panelJugadores.add(scrollPane, BorderLayout.CENTER);
+        panelJugadores.add(footer, BorderLayout.SOUTH);
 
         roster.setOnChanged(this::refreshPlayers);
 
         refreshPlayers();
+
         return panelJugadores;
     }
 
