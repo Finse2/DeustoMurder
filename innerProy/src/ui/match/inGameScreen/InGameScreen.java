@@ -1,6 +1,10 @@
 
 package ui.match.inGameScreen;
 
+import ui.TurnTransitionOverlay;
+import ui.match.PlayerTokenRenderer;
+import utils.AllPaths.DefaultCardModels.ActorsData;
+import ui.NoirToastManager;
 import ui.NoirConfirmDialog;
 import ui.NoirTheme;
 import activation.Screen.CluedoTableTheme;
@@ -65,6 +69,8 @@ public final class InGameScreen extends JFrame {
     private final GameActionsPanel actionsPanel;
     private JScrollPane boardScrollPane;
     private JLayeredPane boardLayer;
+    private NoirToastManager toastManager;
+    private final TurnTransitionOverlay turnTransitionOverlay = new TurnTransitionOverlay();
     private final DiceRollPanel diceRollPanel;
     private JPanel boardCanvas;
 
@@ -194,18 +200,44 @@ public final class InGameScreen extends JFrame {
         // CENTER: the board and its own scrollable viewport.
         boardScrollPane = createBoardScrollPane();
         boardLayer = new JLayeredPane() {
+
             @Override
             public void doLayout() {
-                boardScrollPane.setBounds(0, 0, getWidth(), getHeight());
-                diceRollPanel.setBounds(0, 0, getWidth(), getHeight());
+
+                boardScrollPane.setBounds(
+                        0, 0, getWidth(), getHeight()
+                );
+
+                diceRollPanel.setBounds(
+                        0, 0, getWidth(), getHeight()
+                );
+
+                turnTransitionOverlay.setBounds(
+                        0, 0, getWidth(), getHeight()
+                );
             }
         };
+
         boardLayer.setOpaque(false);
+
         boardLayer.setName("area.boardAndDice");
-        boardLayer.add(boardScrollPane, JLayeredPane.DEFAULT_LAYER);
-        boardLayer.add(diceRollPanel, JLayeredPane.PALETTE_LAYER);
-        boardScrollPane.setName("area.board");
-        boardCanvas.setName("area.boardCanvas");
+
+        boardLayer.add(
+                boardScrollPane,
+                JLayeredPane.DEFAULT_LAYER
+        );
+
+        boardLayer.add(
+                diceRollPanel,
+                JLayeredPane.PALETTE_LAYER
+        );
+
+        boardLayer.add(
+                turnTransitionOverlay,
+                JLayeredPane.MODAL_LAYER
+        );
+
+        toastManager = new NoirToastManager(boardLayer);
 
         // RIGHT: top controls, with the history and chat below.
         rightColumnPanel = new JPanel(new BorderLayout(0, GAP));
@@ -307,6 +339,32 @@ public final class InGameScreen extends JFrame {
         return header;
     }
 
+    public void showTurnTransition(String playerName) {
+
+        String localPlayer = chatRenderer
+                .getChat()
+                .getLocalPlayer();
+
+        boolean localTurn = Objects.equals(
+                playerName,
+                localPlayer
+        );
+
+        turnTransitionOverlay.showTurn(
+                playerName,
+                localTurn
+        );
+    }
+
+    public void stopTurnTransition() {
+        turnTransitionOverlay.stop();
+    }
+
+    public boolean isTurnTransitionActive() {
+
+        return turnTransitionOverlay.isVisible();
+    }
+
     /**
      * STEP 2 - POSITION AREAS.
      */
@@ -364,10 +422,6 @@ public final class InGameScreen extends JFrame {
         footerPanel.add(handPanel, BorderLayout.CENTER);
 
         // WHOLE SCREEN
-        rootPanel.add(gameRowPanel, BorderLayout.CENTER);
-        rootPanel.add(footerPanel, BorderLayout.SOUTH);
-        setContentPane(rootPanel);
-
         JPanel mainContent = new JPanel(
                 new BorderLayout(0, GAP)
         );
@@ -747,6 +801,30 @@ public final class InGameScreen extends JFrame {
         return header;
     }
 
+    public void showNotification(
+            NoirToastManager.Type type,
+            String title,
+            String message
+    ) {
+
+        if (toastManager != null) {
+
+            toastManager.show(
+                    type,
+                    title,
+                    message
+            );
+        }
+    }
+
+    public void clearNotifications() {
+
+        if (toastManager != null) {
+
+            toastManager.clear();
+        }
+    }
+
     /** Logo de Deusto en la esquina superior izquierda, adaptado al tamaño del panel. */
     private JPanel createDeustoLogoPanel() {
 
@@ -1021,6 +1099,102 @@ public final class InGameScreen extends JFrame {
         return legend;
     }
 
+    public void notifyAccusationMade(String playerName) {
+
+        showNotification(
+                NoirToastManager.Type.WARNING,
+                "ACCUSATION MADE",
+                playerName + " has made a final accusation."
+        );
+    }
+
+    public void notifyAccusationCorrect(String playerName) {
+        showVictory(playerName);
+
+        showNotification(
+                NoirToastManager.Type.SUCCESS,
+                "CASE SOLVED",
+                playerName + " has solved the murder."
+        );
+    }
+
+    private void showVictory(String playerName) {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            SwingUtilities.invokeLater(() -> showVictory(playerName));
+            return;
+        }
+        board.cancelMovementAnimation();
+        board.setHoveredTile(null);
+        stopTurnTransition();
+        JDialog dialog = new JDialog(this, "Case solved", false);
+        JPanel content = new JPanel(new BorderLayout(12, 18));
+        content.setBackground(NoirTheme.PANEL);
+        content.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(NoirTheme.GOLD, 2),
+                BorderFactory.createEmptyBorder(30, 30, 30, 30)));
+        JLabel title = new JLabel("CASE CLOSED", SwingConstants.CENTER);
+        title.setFont(new Font("Georgia", Font.BOLD, 32));
+        title.setForeground(NoirTheme.GOLD);
+        JLabel winner = new JLabel(playerName + " has solved the murder.", SwingConstants.CENTER);
+        winner.setForeground(NoirTheme.TEXT);
+        winner.setFont(NoirTheme.BODY_FONT);
+        JButton close = createBoardControl("Review the investigation");
+        close.addActionListener(e -> dialog.dispose());
+        content.add(title, BorderLayout.NORTH);
+        content.add(winner, BorderLayout.CENTER);
+        content.add(close, BorderLayout.SOUTH);
+        dialog.setContentPane(content);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
+    public void notifyAccusationIncorrect(String playerName) {
+
+        showNotification(
+                NoirToastManager.Type.ERROR,
+                "INCORRECT ACCUSATION",
+                playerName + " made an incorrect accusation."
+        );
+    }
+
+    public void notifyPlayerJoined(String playerName) {
+
+        showNotification(
+                NoirToastManager.Type.SUCCESS,
+                "INVESTIGATOR JOINED",
+                playerName + " has joined the investigation."
+        );
+    }
+
+    public void notifyPlayerDisconnected(String playerName) {
+
+        showNotification(
+                NoirToastManager.Type.ERROR,
+                "CONNECTION LOST",
+                playerName + " has disconnected."
+        );
+    }
+
+    public void notifyPlayerReconnected(String playerName) {
+
+        showNotification(
+                NoirToastManager.Type.SUCCESS,
+                "CONNECTION RESTORED",
+                playerName + " has rejoined the investigation."
+        );
+    }
+
+    public void notifyInvestigationReady(int playerCount) {
+
+        showNotification(
+                NoirToastManager.Type.INFO,
+                "INVESTIGATION READY",
+                "All " + playerCount + " investigators are ready."
+        );
+    }
+
     private void changeBoardZoom(double newZoom) {
 
         zoom = Math.max(0.50, Math.min(3.00, newZoom));
@@ -1105,12 +1279,26 @@ public final class InGameScreen extends JFrame {
             private Point lastScreenPoint;
 
             @Override
+            public void mouseMoved(MouseEvent event) {
+                Point point = SwingUtilities.convertPoint(event.getComponent(), event.getPoint(), board);
+                board.setHoveredTile(board.pixelToTile(point));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent event) {
+                Point point = SwingUtilities.convertPoint(event.getComponent(), event.getPoint(), board);
+                if (!board.contains(point)) board.setHoveredTile(null);
+            }
+
+            @Override
             public void mousePressed(MouseEvent event) {
                 boolean middleOrRight = SwingUtilities.isMiddleMouseButton(event)
                         || SwingUtilities.isRightMouseButton(event);
                 boolean shiftLeft = SwingUtilities.isLeftMouseButton(event) && event.isShiftDown();
                 if (!middleOrRight && !shiftLeft) return;
 
+                board.setHoveredTile(null);
+                board.clearPreviewPath();
                 lastScreenPoint = event.getLocationOnScreen();
                 boardCanvas.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
                 event.consume();
@@ -1355,61 +1543,22 @@ public final class InGameScreen extends JFrame {
             Color playerColor
     ) {
 
+        Image portrait = null;
+        for (ActorsData data : ActorsData.values()) {
+            if (data.getName().equalsIgnoreCase(name)) {
+                portrait = data.getMainBackgroundImage();
+                if (portrait == null) portrait = data.getFrontCircleImage();
+                break;
+            }
+        }
+        final Image image = portrait;
         JComponent avatar = new JComponent() {
-
             @Override
             protected void paintComponent(Graphics g) {
-
-                Graphics2D g2 = (Graphics2D) g.create();
-
-                g2.setRenderingHint(
-                        RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON
-                );
-
-                g2.setRenderingHint(
-                        RenderingHints.KEY_TEXT_ANTIALIASING,
-                        RenderingHints.VALUE_TEXT_ANTIALIAS_ON
-                );
-
-                int size = Math.min(getWidth(), getHeight()) - 4;
-
-                if (size <= 0) {
-                    g2.dispose();
-                    return;
-                }
-
-                int x = (getWidth() - size) / 2;
-                int y = (getHeight() - size) / 2;
-
-                // BACKGROUND
-                g2.setColor(AllThemes.AzulOscuroDM);
-                g2.fillOval(x, y, size, size);
-
-                // BORDER
-                g2.setColor(playerColor);
-                g2.setStroke(new BasicStroke(2f));
-                g2.drawOval(x, y, size, size);
-
-                // INITIAL
-                String initial = name == null || name.isBlank()
-                        ? "?"
-                        : name.substring(0, 1).toUpperCase();
-
-                g2.setFont(new Font("Georgia", Font.BOLD, 19));
-                g2.setColor(AllThemes.CremaDM);
-
-                FontMetrics fm = g2.getFontMetrics();
-
-                int textX = (getWidth()
-                        - fm.stringWidth(initial)) / 2;
-
-                int textY = (getHeight()
-                        - fm.getHeight()) / 2 + fm.getAscent();
-
-                g2.drawString(initial, textX, textY);
-
-                g2.dispose();
+                int size = Math.min(getWidth(), getHeight()) - 6;
+                PlayerTokenRenderer.paint(g, (getWidth() - size) / 2,
+                        (getHeight() - size) / 2, size, playerColor, image,
+                        name != null && Objects.equals(name, activePlayerName));
             }
         };
 
@@ -1738,8 +1887,13 @@ public final class InGameScreen extends JFrame {
         );
 
         if (confirmed) {
+            board.cancelMovementAnimation();
+            stopTurnTransition();
+            clearNotifications();
             dispose();
         }
+
+
     }
 
     private BufferedImage resizeIfNecessary(BufferedImage source, int maxSide) {
@@ -1796,6 +1950,23 @@ public final class InGameScreen extends JFrame {
             return;
         }
 
+        String previousPlayer = activePlayerName;
+
+        activePlayerName = active != null
+                ? active.getName()
+                : null;
+
+        board.setActivePlayer(activePlayerName);
+
+        if (activePlayerName != null
+                && !Objects.equals(
+                previousPlayer,
+                activePlayerName
+        )) {
+
+            notifyTurnChange(activePlayerName);
+        }
+
         playerListPanel.removeAll();
 
         connectedPlayers = joined.size();
@@ -1825,15 +1996,63 @@ public final class InGameScreen extends JFrame {
     public void setActivePlayer(String playerName) {
 
         if (!SwingUtilities.isEventDispatchThread()) {
+
             SwingUtilities.invokeLater(
                     () -> setActivePlayer(playerName)
             );
+
             return;
         }
 
+        String previousPlayer = activePlayerName;
+
         activePlayerName = playerName;
+        board.setActivePlayer(playerName);
 
         refreshPlayers();
+
+        // NOTIFY ONLY WHEN THE ACTIVE PLAYER CHANGES
+
+        if (playerName != null
+                && !Objects.equals(previousPlayer, playerName)) {
+
+            notifyTurnChange(playerName);
+        }
+    }
+
+    private void notifyTurnChange(String playerName) {
+
+        String localPlayer = chatRenderer
+                .getChat()
+                .getLocalPlayer();
+
+        boolean myTurn = Objects.equals(
+                playerName,
+                localPlayer
+        );
+
+        // CINEMATIC TRANSITION
+
+        showTurnTransition(playerName);
+
+        // TOAST NOTIFICATION
+
+        if (myTurn) {
+
+            showNotification(
+                    NoirToastManager.Type.TURN,
+                    "YOUR TURN",
+                    "It is your turn to investigate."
+            );
+
+        } else {
+
+            showNotification(
+                    NoirToastManager.Type.INFO,
+                    "TURN CHANGED",
+                    playerName + " is now investigating."
+            );
+        }
     }
 
     public void bindRoundManager(RoundManager roundManager) {

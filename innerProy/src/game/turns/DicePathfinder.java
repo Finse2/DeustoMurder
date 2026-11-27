@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Rutas ortogonales de movimiento en el tablero. No atraviesa habitaciones
@@ -77,6 +79,209 @@ public final class DicePathfinder {
 
     public static int shortestDistance(BoardLayout board, Piece piece, int x, int y, int limit) {
         return distances(board, piece, limit).getOrDefault(new Point(x, y), -1);
+    }
+
+    public static List<Point> findPath(
+            BoardLayout board,
+            Piece piece,
+            Point destination,
+            int maxSteps
+    ) {
+
+        if (board == null || piece == null
+                || destination == null || maxSteps < 0) {
+
+            return List.of();
+        }
+
+        Point start = new Point(
+                piece.getX(),
+                piece.getY()
+        );
+
+        if (!inside(start.x, start.y)
+                || !inside(destination.x, destination.y)) {
+
+            return List.of();
+        }
+
+        if (board.getTileAt(start.x, start.y)
+                .getPieceOnThisTile() != piece) {
+
+            return List.of();
+        }
+
+        // BFS STRUCTURES
+
+        Map<Point, Integer> distances = new HashMap<>();
+
+        Map<Point, Point> predecessors = new HashMap<>();
+
+        ArrayDeque<Point> queue = new ArrayDeque<>();
+
+        distances.put(start, 0);
+
+        queue.add(start);
+
+        // BFS SEARCH
+
+        while (!queue.isEmpty()) {
+
+            Point current = queue.removeFirst();
+
+            if (current.equals(destination)) {
+
+                return reconstructPath(
+                        predecessors,
+                        start,
+                        destination
+                );
+            }
+
+            int steps = distances.get(current);
+
+            if (steps >= maxSteps) {
+                continue;
+            }
+
+            Tile currentTile = board.getTileAt(
+                    current.x,
+                    current.y
+            );
+
+            // EXIT FROM ROOM
+
+            if (current.equals(start)
+                    && currentTile.isRoomPosition()
+                    && currentTile.getRoom() != null) {
+
+                Room room = currentTile.getRoom();
+
+                for (List<Room.Cell> entrance
+                        : room.getEntrances()) {
+
+                    for (Room.Cell cell : entrance) {
+
+                        Point next = new Point(
+                                cell.column(),
+                                cell.row()
+                        );
+
+                        visitNeighbour(
+                                board,
+                                piece,
+                                current,
+                                next,
+                                steps,
+                                distances,
+                                predecessors,
+                                queue
+                        );
+                    }
+                }
+
+                continue;
+            }
+
+            // NORMAL MOVEMENT
+
+            for (int[] direction : DIRECTIONS) {
+
+                Point next = new Point(
+                        current.x + direction[0],
+                        current.y + direction[1]
+                );
+
+                visitNeighbour(
+                        board,
+                        piece,
+                        current,
+                        next,
+                        steps,
+                        distances,
+                        predecessors,
+                        queue
+                );
+            }
+        }
+
+        return List.of();
+    }
+
+    private static void visitNeighbour(
+            BoardLayout board,
+            Piece piece,
+            Point current,
+            Point next,
+            int steps,
+            Map<Point, Integer> distances,
+            Map<Point, Point> predecessors,
+            ArrayDeque<Point> queue
+    ) {
+
+        if (!inside(next.x, next.y)) {
+            return;
+        }
+
+        if (distances.containsKey(next)) {
+            return;
+        }
+
+        Tile tile = board.getTileAt(
+                next.x,
+                next.y
+        );
+
+        if (tile.isDisabled()) {
+            return;
+        }
+
+        Piece occupyingPiece = tile.getPieceOnThisTile();
+
+        if (occupyingPiece != null
+                && occupyingPiece != piece) {
+
+            return;
+        }
+
+        // SAVE DISTANCE
+
+        distances.put(next, steps + 1);
+
+        // SAVE PREDECESSOR
+
+        predecessors.put(next, current);
+
+        // ADD TO BFS QUEUE
+
+        queue.addLast(next);
+    }
+
+    private static List<Point> reconstructPath(
+            Map<Point, Point> predecessors,
+            Point start,
+            Point destination
+    ) {
+
+        List<Point> path = new ArrayList<>();
+
+        Point current = destination;
+
+        while (current != null) {
+
+            path.add(new Point(current));
+
+            if (current.equals(start)) {
+
+                Collections.reverse(path);
+
+                return path;
+            }
+
+            current = predecessors.get(current);
+        }
+
+        return List.of();
     }
 
     private static boolean inside(int x, int y) {

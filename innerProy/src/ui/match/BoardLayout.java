@@ -16,6 +16,9 @@ import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.Image;
+import java.awt.geom.Point2D;
+import java.util.Objects;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Shape;
@@ -42,6 +45,14 @@ public final class BoardLayout extends JPanel {
     private final List<PlacedTile> visibleTiles = new ArrayList<>();
     private final List<PlacedTile> roomPositionTiles = new ArrayList<>();
     private final List<RoomsLook> roomLooks = new ArrayList<>();
+    private Room hoveredRoom;
+    private List<Point> previewPath = List.of();
+    private final PlayerMovementAnimator movementAnimator = new PlayerMovementAnimator();
+    private Piece animatedPiece;
+    private Point2D.Double animatedPosition;
+    private Image animatedPortrait;
+    private TileAspect hiddenTile;
+    private String activePlayerName;
 
     private record PlacedTile(TileAspect look, JPanel container, int column, int row) {
     }
@@ -71,6 +82,197 @@ public final class BoardLayout extends JPanel {
         setLayout(null);
         setBackground(new Color(25, 29, 32));
         setPreferredSize(new Dimension(900, 900));
+    }
+
+    public void setActivePlayer(String playerName) {
+        this.activePlayerName = playerName;
+
+        for (PlacedTile placedTile : visibleTiles) {
+
+            placedTile.look().setActivePlayer(playerName);
+        }
+
+        repaint();
+    }
+
+    public void setHoveredTile(Point point) {
+        Room room = null;
+        if (point != null && point.x >= 0 && point.x < columns
+                && point.y >= 0 && point.y < rows) {
+            Tile tile = getTileAt(point.x, point.y);
+            room = tile.getRoom();
+            if (room == null) room = tile.getAccessibleRoom();
+        }
+        if (hoveredRoom != room) {
+            hoveredRoom = room;
+            repaint();
+        }
+    }
+
+    private void paintRoomHover(Graphics graphics) {
+        if (hoveredRoom == null || movementAnimator.isRunning()) return;
+        int size = calculateTileSize();
+        if (size <= 0) return;
+        RoomHoverEffect.paint(graphics, hoveredRoom,
+                (getWidth() - columns * size) / 2,
+                (getHeight() - rows * size) / 2, size);
+    }
+
+    public void setPreviewPath(List<Point> path) {
+
+        previewPath = path == null
+                ? List.of()
+                : List.copyOf(path);
+
+        if (isShowing()) {
+            paintImmediately(getVisibleRect());
+        } else {
+            repaint();
+        }
+    }
+
+    public void clearPreviewPath() {
+
+        if (previewPath.isEmpty()) return;
+
+        previewPath = List.of();
+
+        repaint();
+    }
+
+    private void paintPathPreview(Graphics graphics) {
+
+        if (previewPath.size() < 2
+                || movementAnimator.isRunning()) {
+
+            return;
+        }
+
+        int tileSize = calculateTileSize();
+
+        if (tileSize <= 0) return;
+
+        int startX =
+                (getWidth() - columns * tileSize) / 2;
+
+        int startY =
+                (getHeight() - rows * tileSize) / 2;
+
+        PathPreviewRenderer.paint(
+                graphics,
+                previewPath,
+                startX,
+                startY,
+                tileSize
+        );
+    }
+
+
+    public void animatePieceMovement(Piece piece, List<Point> path, Runnable onFinished) {
+        if (piece == null || path == null || path.size() < 2 || movementAnimator.isRunning()) return;
+
+        Point origin = path.getFirst();
+        if (piece.getX() != origin.x || piece.getY() != origin.y) return;
+
+        clearPreviewPath();
+        animatedPiece = piece;
+        animatedPortrait = TileAspect.getPlayerPortrait(piece);
+        animatedPosition = new Point2D.Double(origin.x, origin.y);
+
+        for (PlacedTile placedTile : visibleTiles) {
+            if (placedTile.column() == origin.x && placedTile.row() == origin.y) {
+                hiddenTile = placedTile.look();
+                hiddenTile.setTokenHidden(true);
+                break;
+            }
+        }
+
+        movementAnimator.animate(
+
+                path,
+
+                position -> {
+
+                    animatedPosition = position;
+
+                    if (isShowing()) {
+
+                        paintImmediately(getVisibleRect());
+
+                    } else {
+
+                        repaint();
+                    }
+                },
+
+                () -> {
+
+                    clearMovementAnimation();
+
+                    if (onFinished != null) {
+
+                        onFinished.run();
+                    }
+
+                    repaint();
+                }
+        );
+    }
+
+    private void clearMovementAnimation() {
+        if (hiddenTile != null) hiddenTile.setTokenHidden(false);
+        hiddenTile = null;
+        animatedPiece = null;
+        animatedPosition = null;
+        animatedPortrait = null;
+        repaint();
+    }
+
+    public boolean isMovementAnimating() {
+        return movementAnimator.isRunning();
+    }
+    @Override
+    public boolean isOptimizedDrawingEnabled() {
+        return false;
+    }
+
+    public void cancelMovementAnimation() {
+        movementAnimator.stop();
+        clearMovementAnimation();
+        clearPreviewPath();
+    }
+
+    @Override
+    protected void paintChildren(Graphics graphics) {
+        super.paintChildren(graphics);
+        paintRoomHover(graphics);
+        paintPathPreview(graphics);
+        paintAnimatedPiece(graphics);
+    }
+
+    private void paintAnimatedPiece(Graphics graphics) {
+        if (animatedPiece == null || animatedPosition == null) return;
+        int tileSize = calculateTileSize();
+        if (tileSize <= 0) return;
+
+        int startX = (getWidth() - columns * tileSize) / 2;
+        int startY = (getHeight() - rows * tileSize) / 2;
+        int margin = Math.max(3, tileSize / 12);
+        int tokenSize = tileSize - margin * 2;
+        int pixelX = startX + (int) Math.round(animatedPosition.x * tileSize) + margin;
+        int pixelY = startY + (int) Math.round(animatedPosition.y * tileSize) + margin;
+
+        boolean active = animatedPiece.getOwner() != null && activePlayerName != null
+                && Objects.equals(animatedPiece.getOwner().getName(), activePlayerName);
+
+        PlayerTokenRenderer.paint(graphics, pixelX, pixelY, tokenSize,
+                animatedPiece.getColor(), animatedPortrait, active);
+    }
+
+    // Ensure child repaints pass through the board's custom overlays.
+    @Override
+    protected boolean isPaintingOrigin() {
+        return true;
     }
 
     public Room checkTileEntrance(int x, int y) {

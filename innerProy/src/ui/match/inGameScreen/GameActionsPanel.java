@@ -15,6 +15,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Random;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  * Panel inferior derecho con los botones de las tarjetas del juego.
@@ -39,6 +40,8 @@ public final class GameActionsPanel extends JPanel {
     private Runnable onDiceRequested;
     private final Dice diceModel;
     private BiConsumer<Integer, Integer> onDiceRolled;
+    private Consumer<AccusationCard.AccusationSelection>
+            onAccusationConfirmed;
 
     private final JButton detectiveButton =
             new NoirActionButton(
@@ -157,6 +160,13 @@ public final class GameActionsPanel extends JPanel {
         buttonsPanel.add(Box.createVerticalStrut(4));
 
         add(buttonsPanel, BorderLayout.CENTER);
+    }
+
+    public void setOnAccusationConfirmed(
+            Consumer<AccusationCard.AccusationSelection> listener
+    ) {
+
+        this.onAccusationConfirmed = listener;
     }
 
     private JPanel createActionsHeader() {
@@ -426,19 +436,10 @@ public final class GameActionsPanel extends JPanel {
                 GameSetup.createRooms(),
                 selection -> {
 
-                    System.out.println("ACUSACIÓN CONFIRMADA");
+                    if (onAccusationConfirmed != null) {
 
-                    System.out.println(
-                            "Sospechoso: " + selection.actor().getName()
-                    );
-
-                    System.out.println(
-                            "Arma: " + selection.weapon().getName()
-                    );
-
-                    System.out.println(
-                            "Ubicación: " + selection.room().getName()
-                    );
+                        onAccusationConfirmed.accept(selection);
+                    }
                 }
         );
 
