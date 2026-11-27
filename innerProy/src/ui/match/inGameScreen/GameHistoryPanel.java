@@ -239,6 +239,9 @@ public final class GameHistoryPanel extends JPanel {
 
         entries.setLayout(new BoxLayout(entries, BoxLayout.Y_AXIS));
         entries.setBackground(BACKGROUND);
+        entries.setBorder(
+                BorderFactory.createEmptyBorder(5, 3, 5, 3)
+        );
         scrollPane = new JScrollPane(entries,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -727,7 +730,31 @@ public final class GameHistoryPanel extends JPanel {
         int previousScroll = bar.getValue();
 
         entries.removeAll();
-        for (GameEvent event : filtered) entries.add(createEntry(event));
+        for (GameEvent event : filtered) {
+
+            JPanel card = createEntry(event);
+
+            JPanel wrapper = new JPanel(new BorderLayout());
+
+            wrapper.setOpaque(false);
+
+            wrapper.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+            wrapper.setBorder(
+                    BorderFactory.createEmptyBorder(0, 0, 6, 0)
+            );
+
+            wrapper.add(card, BorderLayout.CENTER);
+
+            wrapper.setMaximumSize(
+                    new Dimension(
+                            Integer.MAX_VALUE,
+                            card.getMaximumSize().height + 6
+                    )
+            );
+
+            entries.add(wrapper);
+        }
         resultCount.setText(filtered.size() + " visibles / " + matching + " filtrados / " + all.size() + " eventos");
         entries.revalidate();
         entries.repaint();
