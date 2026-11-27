@@ -4,201 +4,544 @@ import model.Actor;
 import model.Room;
 import model.Weapon;
 
+import ui.NoirTheme;
+import ui.NoirDialog;
+import ui.NoirCheckBox;
+import ui.NoirScrollBarUI;
+import ui.NoirConfirmDialog;
+
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DetectiveCard extends JPanel {
-    private static final Color PAPER = new Color(248,246,238); // Fondo de la tarjeta
 
-    private static final Color INK = new Color(25, 25, 25); // Textos y encabezados
+    private final List<NoirCheckBox> checkBoxes = new ArrayList<>();
 
-    public DetectiveCard (List <Actor> actors, List <Weapon> weapons, List <Room> rooms) {
+    private final JLabel totalCounter = new JLabel("0 marked clues");
 
-        setLayout(new BorderLayout());
-        setBackground(new Color (220,220,215));
+    private final JTextField playerName = new JTextField();
 
+    public DetectiveCard(
+            List<Actor> actors,
+            List<Weapon> weapons,
+            List<Room> rooms
+    ) {
 
-        // PAPEL DE LA TARJETA
+        setLayout(new BorderLayout(0, 12));
+        setBackground(NoirTheme.BACKGROUND);
+
+        // MAIN CONTENT
 
         JPanel paper = new JPanel();
 
-        paper.setLayout(new BoxLayout(paper, BoxLayout.Y_AXIS));
+        paper.setLayout(
+                new BoxLayout(paper, BoxLayout.Y_AXIS)
+        );
 
-        paper.setBackground(PAPER); // Le ponemos el color al papel
+        paper.setBackground(NoirTheme.BACKGROUND);
 
-        paper.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(INK, 2),
-                new EmptyBorder(18, 18, 18, 18)
-        ));
+        paper.setBorder(
+                BorderFactory.createEmptyBorder(4, 4, 4, 4)
+        );
 
-        // TÍTULO
+        // INVESTIGATOR
 
-        JLabel title = new JLabel("Cluedo: Tarjeta del detective");
-        title.setAlignmentX(Component.LEFT_ALIGNMENT);
-        title.setFont(new Font("Serif", Font.BOLD, 25));
-        title.setForeground(INK);
-        paper.add(title);
-        paper.add(Box.createVerticalStrut(15));
+        paper.add(createPlayerPanel());
+        paper.add(Box.createVerticalStrut(16));
 
-        // JUGADOR
+        // SUSPECTS
 
-        JPanel playerPanel = new JPanel(new BorderLayout());
-
-        playerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        playerPanel.setMaximumSize(new Dimension (Integer.MAX_VALUE, 40));
-
-        playerPanel.setBackground(Color.WHITE);
-        playerPanel.setBorder(new LineBorder(INK, 1));
-
-        JLabel playerLabel = new JLabel("JUGADOR");
-
-        playerLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-        playerLabel.setPreferredSize(new Dimension (110, 38));
-
-        playerLabel.setFont(new Font ("SansSerif", Font.BOLD, 13));
-
-        playerLabel.setForeground(Color.WHITE);
-
-        playerLabel.setBackground(INK);
-
-        playerLabel.setOpaque(true);
-
-        JTextField playerName = new JTextField();
-
-        playerName.setFont(new Font ("SansSerif", Font.PLAIN, 14));
-
-        playerName.setBorder(new EmptyBorder(4, 8,4,8));
-
-        playerPanel.add(playerLabel, BorderLayout.WEST);
-
-        playerPanel.add(playerName, BorderLayout.CENTER);
-
-        paper.add(playerPanel);
-
-        paper.add(Box.createVerticalStrut(15));
-
-        // SOSPECHOSOS
-
-        String [] actorNames = new String [actors.size()];
+        String[] actorNames = new String[actors.size()];
 
         for (int i = 0; i < actors.size(); i++) {
-            Actor actor = actors.get(i);
 
-            actorNames[i] = actor.getName();
-
+            actorNames[i] = actors.get(i).getName();
         }
 
-        addSection(paper, "SOSPECHOSOS", actorNames);
+        addSection(paper, "01 / SUSPECTS", actorNames);
 
+        // WEAPONS
 
-        // ARMAS
-
-        String [] weaponNames = new String[weapons.size()];
+        String[] weaponNames = new String[weapons.size()];
 
         for (int i = 0; i < weapons.size(); i++) {
-            Weapon weapon = weapons.get(i);
 
-            weaponNames[i] = weapon.getName();
+            weaponNames[i] = weapons.get(i).getName();
         }
-        addSection(paper, "ARMAS", weaponNames);
 
-        String [] roomNames = new String [rooms.size()];
+        addSection(paper, "02 / WEAPONS", weaponNames);
+
+        // LOCATIONS
+
+        String[] roomNames = new String[rooms.size()];
 
         for (int i = 0; i < rooms.size(); i++) {
-            Room room = rooms.get(i);
 
-            roomNames[i] = room.getName();
+            roomNames[i] = rooms.get(i).getName();
         }
 
-        addSection (paper, "UBICACIONES", roomNames);
+        addSection(paper, "03 / LOCATIONS", roomNames);
 
         // SCROLL
 
-        JScrollPane scrollPane = new JScrollPane(paper);
+        JScrollPane scrollPane = new JScrollPane(
+                paper,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+        );
 
-        scrollPane.setBorder(null);
+        scrollPane.setBorder(
+                BorderFactory.createEmptyBorder()
+        );
 
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setViewportBorder(null);
+
+        scrollPane.setBackground(NoirTheme.BACKGROUND);
+
+        scrollPane.getViewport().setBackground(
+                NoirTheme.BACKGROUND
+        );
+
+        JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
+
+        scrollBar.setUI(new NoirScrollBarUI());
+
+        scrollBar.setPreferredSize(new Dimension(9, 9));
+
+        scrollBar.setUnitIncrement(16);
 
         add(scrollPane, BorderLayout.CENTER);
+
+        // FOOTER
+
+        add(createFooter(), BorderLayout.SOUTH);
+
+        updateTotalCounter();
     }
 
-    private void addSection(JPanel parent, String title, String [] entries) {
-        JLabel header = new JLabel(" " + title);
+    // INVESTIGATOR PANEL
 
-        header.setAlignmentX(Component.LEFT_ALIGNMENT);
-        header.setOpaque(true);
-        header.setBackground(INK);
-        header.setForeground(Color.WHITE);
-        header.setFont(new Font("SansSerif", Font.BOLD, 14));
+    private JPanel createPlayerPanel() {
+
+        JPanel panel = new JPanel(
+                new BorderLayout(12, 0)
+        );
+
+        panel.setBackground(NoirTheme.SURFACE);
+
+        panel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        panel.setMaximumSize(
+                new Dimension(Integer.MAX_VALUE, 62)
+        );
+
+        panel.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(
+                                NoirTheme.INNER_BORDER
+                        ),
+                        BorderFactory.createEmptyBorder(
+                                10, 12, 10, 12
+                        )
+                )
+        );
+
+        // INVESTIGATOR ICON
+
+        JLabel icon = new JLabel(
+                "\u25C9",
+                SwingConstants.CENTER
+        );
+
+        icon.setFont(
+                new Font("Serif", Font.PLAIN, 28)
+        );
+
+        icon.setForeground(NoirTheme.GOLD);
+
+        icon.setPreferredSize(new Dimension(35, 40));
+
+        panel.add(icon, BorderLayout.WEST);
+
+        // PLAYER INFORMATION
+
+        JPanel information = new JPanel();
+
+        information.setLayout(
+                new BoxLayout(information, BoxLayout.Y_AXIS)
+        );
+
+        information.setOpaque(false);
+
+        JLabel label = new JLabel("INVESTIGATOR");
+
+        label.setFont(NoirTheme.SUBTITLE_FONT);
+        label.setForeground(NoirTheme.GOLD);
+
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        playerName.setFont(
+                new Font("Georgia", Font.BOLD, 14)
+        );
+
+        playerName.setForeground(NoirTheme.TEXT);
+        playerName.setCaretColor(NoirTheme.GOLD);
+
+        playerName.setBackground(NoirTheme.SURFACE);
+
+        playerName.setSelectionColor(
+                NoirTheme.DARK_CRIMSON
+        );
+
+        playerName.setBorder(
+                BorderFactory.createEmptyBorder(4, 0, 0, 0)
+        );
+
+        playerName.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        playerName.setToolTipText("Enter investigator name");
+
+        information.add(label);
+        information.add(playerName);
+
+        panel.add(information, BorderLayout.CENTER);
+
+        // PRIVATE LABEL
+
+        JLabel privacy = new JLabel("PRIVATE");
+
+        privacy.setFont(NoirTheme.SUBTITLE_FONT);
+        privacy.setForeground(NoirTheme.SECONDARY_TEXT);
+
+        panel.add(privacy, BorderLayout.EAST);
+
+        return panel;
+    }
+
+    // SECTION
+
+    private void addSection(
+            JPanel parent,
+            String title,
+            String[] entries
+    ) {
+
+        JPanel section = new JPanel(new BorderLayout(0, 6));
+
+        section.setOpaque(false);
+
+        section.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // SECTION HEADER
+
+        JPanel header = new JPanel(
+                new BorderLayout()
+        );
+
+        header.setBackground(NoirTheme.DARK_CRIMSON);
+
         header.setPreferredSize(new Dimension(0, 32));
-        header.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
 
-        parent.add(header);
+        header.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(
+                                NoirTheme.INNER_BORDER
+                        ),
+                        BorderFactory.createEmptyBorder(
+                                6, 10, 6, 10
+                        )
+                )
+        );
 
-        JPanel rows = new JPanel();
+        JLabel titleLabel = new JLabel(title);
 
-        rows.setLayout(new BoxLayout(rows, BoxLayout.Y_AXIS));
-        rows.setBackground(PAPER);
-        rows.setAlignmentX(Component.LEFT_ALIGNMENT);
+        titleLabel.setFont(
+                new Font("Arial", Font.BOLD, 12)
+        );
+
+        titleLabel.setForeground(NoirTheme.TEXT);
+
+        JLabel counter = new JLabel(
+                "0 / " + entries.length
+        );
+
+        counter.setFont(NoirTheme.SUBTITLE_FONT);
+        counter.setForeground(NoirTheme.GOLD);
+
+        header.add(titleLabel, BorderLayout.WEST);
+        header.add(counter, BorderLayout.EAST);
+
+        section.add(header, BorderLayout.NORTH);
+
+        // TWO-COLUMN GRID
+
+        JPanel rows = new JPanel(
+                new GridLayout(0, 2, 6, 6)
+        );
+
+        rows.setOpaque(false);
+
+        List<NoirCheckBox> sectionBoxes = new ArrayList<>();
 
         for (String entry : entries) {
-            JPanel row = new JPanel(new BorderLayout());
 
-            row.setBackground(PAPER);
+            NoirCheckBox checkBox = new NoirCheckBox(entry);
 
-            row.setPreferredSize(new Dimension (0, 34));
+            sectionBoxes.add(checkBox);
+            checkBoxes.add(checkBox);
 
-            row.setMaximumSize(new Dimension (Integer.MAX_VALUE, 34));
+            checkBox.addItemListener(event -> {
 
-            JLabel name = new JLabel (" " + entry);
+                updateSectionCounter(
+                        sectionBoxes,
+                        counter
+                );
 
-            name.setFont(new Font ("SansSerif", Font.PLAIN, 14));
+                updateTotalCounter();
+            });
 
-            name.setForeground(INK);
-
-            JCheckBox check = new JCheckBox();
-            check.setOpaque(false);
-            check.setFocusPainted(false);
-
-            row.add(name, BorderLayout.CENTER);
-            row.add(check, BorderLayout.EAST);
-            rows.add(row);
+            rows.add(checkBox);
         }
 
-        parent.add(rows);
+        // COMPLETE THE LAST ROW
 
-        parent.add(Box.createVerticalStrut(12));
+        if (entries.length % 2 != 0) {
 
+            JPanel empty = new JPanel();
+
+            empty.setOpaque(false);
+
+            rows.add(empty);
         }
 
-        public static void showCard (List <Actor> actors, List <Weapon> weapons, List <Room> rooms) {
-            JFrame frame = new JFrame("Cluedo - Tarjeta de detective");
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        section.add(rows, BorderLayout.CENTER);
 
-            DetectiveCard card = new DetectiveCard(actors, weapons, rooms);
+        section.setMaximumSize(
+                new Dimension(
+                        Integer.MAX_VALUE,
+                        section.getPreferredSize().height
+                )
+        );
 
-            frame.setContentPane(card);
-
-            frame.setSize(520, 800);
-
-            frame.setMinimumSize(new Dimension (450, 600));
-
-            frame.setLocationRelativeTo(null);
-
-            frame.setVisible(true);
-        }
-
-        public static void main(String[] args) {
-            List <Actor> actors = new ArrayList<>();
-            List <Weapon> weapons = new ArrayList<>();
-            List <Room> rooms = new ArrayList<>();
-        }
-
+        parent.add(section);
+        parent.add(Box.createVerticalStrut(14));
     }
 
+    // SECTION COUNTER
+
+    private void updateSectionCounter(
+            List<NoirCheckBox> boxes,
+            JLabel counter
+    ) {
+
+        int marked = 0;
+
+        for (NoirCheckBox box : boxes) {
+
+            if (box.isSelected()) {
+                marked++;
+            }
+        }
+
+        counter.setText(
+                marked + " / " + boxes.size()
+        );
+    }
+
+    // TOTAL COUNTER
+
+    private void updateTotalCounter() {
+
+        int marked = 0;
+
+        for (NoirCheckBox box : checkBoxes) {
+
+            if (box.isSelected()) {
+                marked++;
+            }
+        }
+
+        totalCounter.setText(
+                marked + " / " + checkBoxes.size()
+                        + " marked clues"
+        );
+    }
+
+    // FOOTER
+
+    private JPanel createFooter() {
+
+        JPanel footer = new JPanel(
+                new BorderLayout(0, 12)
+        );
+
+        footer.setOpaque(false);
+
+        footer.setBorder(
+                BorderFactory.createMatteBorder(
+                        1, 0, 0, 0,
+                        NoirTheme.BORDER
+                )
+        );
+
+        JPanel controls = new JPanel(
+                new BorderLayout(12, 0)
+        );
+
+        controls.setOpaque(false);
+
+        controls.setBorder(
+                BorderFactory.createEmptyBorder(
+                        10, 0, 0, 0
+                )
+        );
+
+        totalCounter.setFont(NoirTheme.SUBTITLE_FONT);
+        totalCounter.setForeground(NoirTheme.GOLD);
+
+        JButton resetButton = createResetButton();
+
+        controls.add(totalCounter, BorderLayout.WEST);
+        controls.add(resetButton, BorderLayout.EAST);
+
+        footer.add(controls, BorderLayout.NORTH);
+
+        JLabel quote = new JLabel(
+                "The truth is hidden in the details.",
+                SwingConstants.CENTER
+        );
+
+        quote.setFont(
+                new Font("Georgia", Font.ITALIC, 11)
+        );
+
+        quote.setForeground(NoirTheme.GOLD);
+
+        footer.add(quote, BorderLayout.SOUTH);
+
+        return footer;
+    }
+
+    // RESET BUTTON
+
+    private JButton createResetButton() {
+
+        JButton button = new JButton("Reset notes");
+
+        button.setFont(NoirTheme.BODY_FONT);
+        button.setForeground(NoirTheme.TEXT);
+        button.setBackground(NoirTheme.SURFACE);
+
+        button.setFocusPainted(false);
+
+        button.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(
+                                NoirTheme.BORDER
+                        ),
+                        BorderFactory.createEmptyBorder(
+                                7, 12, 7, 12
+                        )
+                )
+        );
+
+        button.setCursor(
+                Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+        );
+
+        button.addMouseListener(
+                new java.awt.event.MouseAdapter() {
+
+                    @Override
+                    public void mouseEntered(
+                            java.awt.event.MouseEvent e
+                    ) {
+
+                        button.setBackground(NoirTheme.HOVER);
+                    }
+
+                    @Override
+                    public void mouseExited(
+                            java.awt.event.MouseEvent e
+                    ) {
+
+                        button.setBackground(NoirTheme.SURFACE);
+                    }
+                }
+        );
+
+        button.addActionListener(event -> resetNotes());
+
+        return button;
+    }
+
+    // RESET NOTES
+
+    private void resetNotes() {
+
+        boolean confirmed = NoirConfirmDialog.showConfirm(
+                this,
+                "RESET INVESTIGATION NOTES?",
+                "All marked clues will be cleared.",
+                "Keep notes",
+                "Reset notes"
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        for (NoirCheckBox box : checkBoxes) {
+
+            box.setSelected(false);
+        }
+
+        updateTotalCounter();
+    }
+
+    // PLAYER NAME
+
+    public void setPlayerName(String name) {
+
+        playerName.setText(name);
+    }
+
+    public String getPlayerName() {
+
+        return playerName.getText();
+    }
+
+    // STANDALONE DIALOG
+
+    public static void showCard(
+            List<Actor> actors,
+            List<Weapon> weapons,
+            List<Room> rooms
+    ) {
+
+        NoirDialog dialog = new NoirDialog(
+                null,
+                "DETECTIVE NOTEBOOK",
+                "Every clue brings you closer to the truth.",
+                Dialog.ModalityType.MODELESS
+        );
+
+        dialog.setDefaultCloseOperation(
+                WindowConstants.DISPOSE_ON_CLOSE
+        );
+
+        DetectiveCard card = new DetectiveCard(
+                actors,
+                weapons,
+                rooms
+        );
+
+        dialog.setBody(card);
+
+        dialog.setSize(560, 720);
+
+        dialog.open();
+    }
+}

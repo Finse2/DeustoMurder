@@ -105,7 +105,9 @@ public final class NoirConfirmDialog extends JDialog {
         messageArea.setLineWrap(true);
         messageArea.setWrapStyleWord(true);
         messageArea.setColumns(36);
-        messageArea.setRows(2);
+        messageArea.setRows(
+                Math.max(2, message.split("\n", -1).length)
+        );
 
         messageArea.setAlignmentX(Component.CENTER_ALIGNMENT);
 

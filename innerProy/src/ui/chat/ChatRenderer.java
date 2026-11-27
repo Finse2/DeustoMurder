@@ -16,6 +16,9 @@ import javax.swing.plaf.basic.BasicScrollBarUI;
 import Networking.common.ChatChannel;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.Timer;
+import ui.NoirEmojiPicker;
+import ui.NoirEmojiManager;
+import ui.NoirEmojiManager;
 
 /** Vista Swing de un Chat. No guarda mensajes ni gestiona sockets. */
 public final class ChatRenderer extends JPanel {
@@ -178,8 +181,23 @@ public final class ChatRenderer extends JPanel {
 
         bottom.setBorder(new EmptyBorder(5, 6, 6, 6));
 
+        JButton emojiButton = createEmojiButton(input);
+
+        JPanel actionButtons = new JPanel(
+                new GridLayout(1, 2, 6, 0)
+        );
+
+        actionButtons.setOpaque(false);
+
+        actionButtons.add(emojiButton);
+        actionButtons.add(sendButton);
+
         bottom.add(input, BorderLayout.CENTER);
-        bottom.add(sendButton, BorderLayout.EAST);
+
+        bottom.add(
+                actionButtons,
+                BorderLayout.EAST
+        );
         // GENERAL CHANNEL
         JPanel generalPanel = new JPanel(
                 new BorderLayout(0, 4)
@@ -591,6 +609,136 @@ public final class ChatRenderer extends JPanel {
         );
 
         button.addActionListener(event -> switchChannel(channel));
+
+        return button;
+    }
+
+    private JButton createEmojiButton(JTextField target) {
+
+        JButton button = new JButton() {
+
+            @Override
+            protected void paintComponent(Graphics g) {
+
+                Graphics2D g2 = (Graphics2D) g.create();
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON
+                );
+
+                // BACKGROUND
+
+                if (getModel().isPressed()) {
+
+                    g2.setColor(NoirTheme.DARK_CRIMSON);
+
+                } else if (getModel().isRollover()) {
+
+                    g2.setColor(NoirTheme.HOVER);
+
+                } else {
+
+                    g2.setColor(NoirTheme.SURFACE);
+                }
+
+                g2.fillRoundRect(
+                        1, 1,
+                        getWidth() - 3,
+                        getHeight() - 3,
+                        8, 8
+                );
+
+                // BORDER
+
+                g2.setColor(
+                        getModel().isRollover() || hasFocus()
+                                ? NoirTheme.GOLD
+                                : NoirTheme.INNER_BORDER
+                );
+
+                g2.drawRoundRect(
+                        1, 1,
+                        getWidth() - 3,
+                        getHeight() - 3,
+                        8, 8
+                );
+
+                // SMILE ICON
+
+                g2.setColor(NoirTheme.GOLD);
+
+                g2.setStroke(
+                        new BasicStroke(
+                                1.7f,
+                                BasicStroke.CAP_ROUND,
+                                BasicStroke.JOIN_ROUND
+                        )
+                );
+
+                int x = getWidth() / 2;
+                int y = getHeight() / 2;
+
+                g2.drawOval(
+                        x - 11, y - 11,
+                        22, 22
+                );
+
+                // EYES
+
+                g2.fillOval(x - 5, y - 4, 3, 3);
+                g2.fillOval(x + 3, y - 4, 3, 3);
+
+                // SMILE
+
+                g2.drawArc(
+                        x - 6, y - 1,
+                        12, 8,
+                        180, 180
+                );
+
+                g2.dispose();
+            }
+        };
+
+        button.setPreferredSize(
+                new Dimension(42, 42)
+        );
+
+        button.setOpaque(false);
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(false);
+        button.setFocusPainted(false);
+        button.setRolloverEnabled(true);
+
+        button.setToolTipText("Insert emoji");
+
+        button.getAccessibleContext().setAccessibleName(
+                "Insert emoji"
+        );
+
+        button.setCursor(
+                Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+        );
+
+        NoirEmojiPicker picker = new NoirEmojiPicker(target);
+
+        button.addActionListener(event -> {
+
+            if (picker.isVisible()) {
+
+                picker.setVisible(false);
+
+            } else {
+
+                picker.show(
+                        button,
+                        button.getWidth()
+                                - picker.getPreferredSize().width,
+                        -picker.getPreferredSize().height - 6
+                );
+            }
+        });
 
         return button;
     }
@@ -1157,7 +1305,7 @@ public final class ChatRenderer extends JPanel {
         private final JLabel senderLabel = new JLabel();
         private final JLabel timeLabel = new JLabel();
 
-        private final JTextArea messageLabel = new JTextArea();
+        private final JTextPane messageLabel = new JTextPane();
 
         private final JPanel messageContainer =
                 new JPanel(new BorderLayout(0, 4));
@@ -1312,8 +1460,6 @@ public final class ChatRenderer extends JPanel {
             // MESSAGE TEXT
             messageLabel.setEditable(false);
             messageLabel.setFocusable(false);
-            messageLabel.setLineWrap(true);
-            messageLabel.setWrapStyleWord(true);
             messageLabel.setOpaque(false);
 
             messageLabel.setForeground(TEXT);
@@ -1399,7 +1545,11 @@ public final class ChatRenderer extends JPanel {
             );
 
             // Message content
-            messageLabel.setText(message.text());
+            NoirEmojiManager.renderMessage(
+                    messageLabel,
+                    message.text(),
+                    20
+            );
 
             // Calculate available width
             int listWidth = list.getWidth() > 0
@@ -1419,6 +1569,7 @@ public final class ChatRenderer extends JPanel {
             );
 
             // Calculate dynamic bubble width
+
             FontMetrics fm = messageLabel.getFontMetrics(
                     messageLabel.getFont()
             );
@@ -1426,8 +1577,14 @@ public final class ChatRenderer extends JPanel {
             int textLength = 0;
 
             for (String line : message.text().split("\n", -1)) {
+
                 textLength = Math.max(
-                        textLength, fm.stringWidth(line)
+                        textLength,
+                        NoirEmojiManager.measureText(
+                                line,
+                                fm,
+                                20
+                        )
                 );
             }
 
@@ -1447,12 +1604,17 @@ public final class ChatRenderer extends JPanel {
             int textWidth = Math.max(40, bubbleWidth - 20);
 
             // Reset previous renderer dimensions
+
             messageLabel.setPreferredSize(null);
 
             messageLabel.setSize(
                     textWidth,
                     Short.MAX_VALUE
             );
+
+            messageLabel.getUI()
+                    .getRootView(messageLabel)
+                    .setSize(textWidth, Short.MAX_VALUE);
 
             int textHeight = Math.max(
                     16,

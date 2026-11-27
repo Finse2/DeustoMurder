@@ -7,6 +7,7 @@ import ui.match.DetectiveCard;
 import ui.match.AccusationCard;
 import ui.NoirActionButton;
 import ui.NoirTheme;
+import ui.NoirDialog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,8 +33,8 @@ public final class GameActionsPanel extends JPanel {
 
     private static final Color BORDER_COLOR = NoirTheme.INNER_BORDER;
 
-    private JDialog detectiveDialog;
-    private JDialog accusationDialog;
+    private NoirDialog detectiveDialog;
+    private NoirDialog accusationDialog;
     private final DiceRollPanel diceRollPanel;
     private Runnable onDiceRequested;
     private final Dice diceModel;
@@ -346,38 +347,46 @@ public final class GameActionsPanel extends JPanel {
 
         Window owner = SwingUtilities.getWindowAncestor(this);
 
-        detectiveDialog = new JDialog(
+        detectiveDialog = new NoirDialog(
                 owner,
-                "Tarjeta de marcaje",
+                "DETECTIVE NOTEBOOK",
+                "Every clue brings you closer to the truth.",
                 Dialog.ModalityType.MODELESS
         );
 
-        detectiveDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        detectiveDialog.setDefaultCloseOperation(
+                WindowConstants.HIDE_ON_CLOSE
+        );
 
-        detectiveDialog.setContentPane(new DetectiveCard(
+        DetectiveCard card = new DetectiveCard(
                 GameSetup.createActors(),
                 GameSetup.createWeapons(),
                 GameSetup.createRooms()
-        ));
+        );
 
-        detectiveDialog.setSize(520, 750);
-        detectiveDialog.setMinimumSize(new Dimension(450, 550));
+        detectiveDialog.setBody(card);
+
+        detectiveDialog.setSize(560, 720);
+
         detectiveDialog.setLocationRelativeTo(owner);
 
-        JDialog currentDialog = detectiveDialog;
+        NoirDialog currentDialog = detectiveDialog;
 
         detectiveDialog.addWindowListener(new WindowAdapter() {
 
             @Override
             public void windowClosing(WindowEvent event) {
+
                 detectiveButton.setSelected(false);
             }
 
             @Override
             public void windowClosed(WindowEvent event) {
+
                 detectiveButton.setSelected(false);
 
                 if (detectiveDialog == currentDialog) {
+
                     detectiveDialog = null;
                 }
             }
@@ -400,39 +409,54 @@ public final class GameActionsPanel extends JPanel {
 
         Window owner = SwingUtilities.getWindowAncestor(this);
 
-        accusationDialog = new JDialog(
+        accusationDialog = new NoirDialog(
                 owner,
-                "Tarjeta de acusación",
+                "FINAL ACCUSATION",
+                "Present your theory. Reveal the truth.",
                 Dialog.ModalityType.MODELESS
         );
 
-        accusationDialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        accusationDialog.setDefaultCloseOperation(
+                WindowConstants.HIDE_ON_CLOSE
+        );
 
-        accusationDialog.setContentPane(new AccusationCard(
+        AccusationCard card = new AccusationCard(
                 GameSetup.createActors(),
                 GameSetup.createWeapons(),
                 GameSetup.createRooms(),
                 selection -> {
 
                     System.out.println("ACUSACIÓN CONFIRMADA");
-                    System.out.println("Sospechoso: " + selection.actor().getName());
-                    System.out.println("Arma: " + selection.weapon().getName());
-                    System.out.println("Ubicación: " + selection.room().getName());
 
+                    System.out.println(
+                            "Sospechoso: " + selection.actor().getName()
+                    );
+
+                    System.out.println(
+                            "Arma: " + selection.weapon().getName()
+                    );
+
+                    System.out.println(
+                            "Ubicación: " + selection.room().getName()
+                    );
                 }
-        ));
+        );
 
-        accusationDialog.setSize(520, 800);
-        accusationDialog.setMinimumSize(new Dimension(450, 600));
+        accusationDialog.setBody(card);
+
+        accusationDialog.setSize(560, 800);
+
         accusationDialog.setLocationRelativeTo(owner);
 
-        JDialog currentDialog = accusationDialog;
+        NoirDialog currentDialog = accusationDialog;
 
         accusationDialog.addWindowListener(new WindowAdapter() {
 
             @Override
             public void windowClosed(WindowEvent event) {
+
                 if (accusationDialog == currentDialog) {
+
                     accusationDialog = null;
                 }
             }
