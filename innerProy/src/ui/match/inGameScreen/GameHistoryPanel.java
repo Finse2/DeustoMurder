@@ -187,15 +187,48 @@ public final class GameHistoryPanel extends JPanel {
         filters.setMaximumSize(new Dimension(Integer.MAX_VALUE, 23));
         filters.setAlignmentX(LEFT_ALIGNMENT);
         resultCount.setAlignmentX(LEFT_ALIGNMENT);
+// HEADER
         heading.add(titleRow);
-        heading.add(Box.createVerticalStrut(3));
+        heading.add(Box.createVerticalStrut(5));
+
+// GOLD SEPARATOR
+        JPanel goldSeparator = new JPanel();
+
+        goldSeparator.setBackground(GOLD);
+        goldSeparator.setAlignmentX(Component.LEFT_ALIGNMENT);
+        goldSeparator.setPreferredSize(new Dimension(1, 1));
+        goldSeparator.setMaximumSize(
+                new Dimension(Integer.MAX_VALUE, 1)
+        );
+
+        heading.add(goldSeparator);
+        heading.add(Box.createVerticalStrut(8));
+
+        // SEARCH FIELD
         heading.add(searchField);
-        heading.add(Box.createVerticalStrut(2));
+        heading.add(Box.createVerticalStrut(4));
+
+        // FILTERS
         heading.add(filters);
-        heading.add(Box.createVerticalStrut(2));
+        heading.add(Box.createVerticalStrut(4));
+
+        // EVENT COUNT
         heading.add(resultCount);
-        heading.add(Box.createVerticalStrut(2));
-        heading.add(new JSeparator());
+        heading.add(Box.createVerticalStrut(4));
+
+        // BOTTOM SEPARATOR
+        JSeparator bottomSeparator = new JSeparator();
+
+        bottomSeparator.setForeground(BORDER_COLOR);
+        bottomSeparator.setBackground(BORDER_COLOR);
+        bottomSeparator.setMaximumSize(
+                new Dimension(Integer.MAX_VALUE, 2)
+        );
+
+        bottomSeparator.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        heading.add(bottomSeparator);
+
         add(heading, BorderLayout.NORTH);
 
         entries.setLayout(new BoxLayout(entries, BoxLayout.Y_AXIS));
@@ -230,10 +263,81 @@ public final class GameHistoryPanel extends JPanel {
     }
 
     private static JButton miniButton(String label) {
-        JButton button = new JButton(label);
-        button.setFont(new Font("SansSerif", Font.PLAIN, 10));
-        button.setFocusable(false);
-        button.setMargin(new Insets(2, 4, 2, 4));
+
+        JButton button = new JButton(label) {
+
+            @Override
+            protected void paintComponent(Graphics g) {
+
+                Graphics2D g2 = (Graphics2D) g.create();
+
+                g2.setRenderingHint(
+                        RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON
+                );
+
+                // BACKGROUND
+                if (getModel().isPressed()) {
+                    g2.setColor(BACKGROUND);
+                } else if (getModel().isRollover()) {
+                    g2.setColor(HOVER_BACKGROUND);
+                } else {
+                    g2.setColor(BUTTON_BACKGROUND);
+                }
+
+                g2.fillRoundRect(
+                        1, 1,
+                        getWidth() - 3,
+                        getHeight() - 3,
+                        10, 10
+                );
+
+                // BORDER
+                g2.setColor(
+                        getModel().isRollover()
+                                ? GOLD
+                                : BORDER_COLOR
+                );
+
+                g2.setStroke(new BasicStroke(1f));
+
+                g2.drawRoundRect(
+                        1, 1,
+                        getWidth() - 3,
+                        getHeight() - 3,
+                        10, 10
+                );
+
+                // THREE DOTS ICON
+                g2.setColor(GOLD);
+
+                int centerX = getWidth() / 2;
+                int centerY = getHeight() / 2;
+
+                for (int i = -1; i <= 1; i++) {
+
+                    g2.fillOval(
+                            centerX + i * 7 - 2,
+                            centerY - 2,
+                            4, 4
+                    );
+                }
+
+                g2.dispose();
+            }
+        };
+
+        button.setPreferredSize(new Dimension(36, 34));
+        button.setOpaque(false);
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(false);
+        button.setFocusPainted(false);
+        button.setRolloverEnabled(true);
+
+        button.setCursor(
+                Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+        );
+
         return button;
     }
 
