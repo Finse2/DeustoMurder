@@ -1,6 +1,6 @@
 
 package ui.match.inGameScreen;
-
+import ui.NoirTheme;
 import activation.Screen.CluedoTableTheme;
 import activation.Screen.lobby.LobbyRoster;
 import model.Player;
@@ -267,24 +267,22 @@ public final class InGameScreen extends JFrame {
 
         JLabel title = new JLabel("YOUR EVIDENCE");
 
-        title.setFont(new Font("Georgia", Font.BOLD, 16));
-        title.setForeground(new Color(214, 179, 113));
+        title.setFont(NoirTheme.TITLE_FONT);
+        title.setForeground(NoirTheme.TEXT);
 
         JLabel subtitle = new JLabel(
                 "Private evidence"
         );
 
-        subtitle.setFont(new Font("Arial", Font.PLAIN, 11));
-        subtitle.setForeground(new Color(145, 169, 176));
+        subtitle.setFont(NoirTheme.SUBTITLE_FONT);
+        subtitle.setForeground(NoirTheme.SECONDARY_TEXT);
 
         header.add(title, BorderLayout.WEST);
         evidenceCountLabel.setFont(
                 new Font("Arial", Font.BOLD, 12)
         );
 
-        evidenceCountLabel.setForeground(
-                new Color(214, 179, 113)
-        );
+        evidenceCountLabel.setForeground(NoirTheme.GOLD);
 
         JPanel information = new JPanel(
                 new FlowLayout(FlowLayout.RIGHT, 12, 0)
@@ -300,7 +298,7 @@ public final class InGameScreen extends JFrame {
         header.setBorder(
                 BorderFactory.createMatteBorder(
                         0, 0, 1, 0,
-                        new Color(160, 133, 87)
+                        NoirTheme.BORDER
                 )
         );
 
@@ -589,15 +587,15 @@ public final class InGameScreen extends JFrame {
                 // Hover effect
                 if (getModel().isPressed()) {
 
-                    g2.setColor(AllThemes.AzulClaroDM);
+                    g2.setColor(NoirTheme.CRIMSON);
 
                 } else if (getModel().isRollover()) {
 
-                    g2.setColor(AllThemes.DoradorDM);
+                    g2.setColor(NoirTheme.GOLD);
 
                 } else {
 
-                    g2.setColor(AllThemes.CremaDM);
+                    g2.setColor(NoirTheme.TEXT);
                 }
 
                 g2.fill(shape);
@@ -650,22 +648,22 @@ public final class InGameScreen extends JFrame {
 
                 // Background
                 if (getModel().isPressed()) {
-                    g2.setColor(AllThemes.NegroDM);
+                    g2.setColor(NoirTheme.BACKGROUND);
                 } else if (getModel().isRollover()) {
-                    g2.setColor(AllThemes.AzulVerdosoDM);
+                    g2.setColor(NoirTheme.DARK_CRIMSON);
                 } else {
-                    g2.setColor(AllThemes.AzulOscuro2DM);
+                    g2.setColor(NoirTheme.SURFACE);
                 }
 
                 g2.fillRoundRect(x, y, width, height, 16, 16);
 
                 // Border
-                g2.setColor(AllThemes.AzulClaroDM);
+                g2.setColor(NoirTheme.BORDER);
                 g2.setStroke(new BasicStroke(1.5f));
                 g2.drawRoundRect(x, y, width, height, 16, 16);
 
                 // Icon and text
-                g2.setColor(AllThemes.CremaDM);
+                g2.setColor(NoirTheme.TEXT);
                 g2.setFont(AllFonts.GEORGIA_BOLD_18);
 
                 FontMetrics fm = g2.getFontMetrics();
@@ -892,17 +890,21 @@ public final class InGameScreen extends JFrame {
         JButton button = new JButton(text);
 
         button.setFont(new Font("Arial", Font.BOLD, 13));
-        button.setForeground(new Color(214, 179, 113));
-        button.setBackground(new Color(12, 34, 46));
+        button.setForeground(NoirTheme.GOLD);
+        button.setBackground(NoirTheme.SURFACE);
 
         button.setFocusPainted(false);
 
-        button.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(
-                        new Color(85, 112, 122)
-                ),
-                BorderFactory.createEmptyBorder(5, 12, 5, 12)
-        ));
+        button.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(
+                                NoirTheme.BORDER
+                        ),
+                        BorderFactory.createEmptyBorder(
+                                5, 12, 5, 12
+                        )
+                )
+        );
 
         button.setCursor(
                 Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
@@ -923,7 +925,7 @@ public final class InGameScreen extends JFrame {
         JButton zoomIn = createBoardControl("+");
         JButton resetZoom = createBoardControl("Fit Board");
 
-        zoomLabel.setForeground(new Color(214, 179, 113));
+        zoomLabel.setForeground(NoirTheme.GOLD);
         zoomLabel.setFont(new Font("Arial", Font.BOLD, 12));
         zoomLabel.setHorizontalAlignment(SwingConstants.CENTER);
         zoomLabel.setPreferredSize(new Dimension(55, 28));
@@ -1248,8 +1250,8 @@ public final class InGameScreen extends JFrame {
         // TITLE
         playersTitleLabel = new JLabel("INVESTIGATORS");
 
-        playersTitleLabel.setFont(AllFonts.GEORGIA_BOLD_18);
-        playersTitleLabel.setForeground(AllThemes.DoradorDM);
+        playersTitleLabel.setFont(NoirTheme.TITLE_FONT);
+        playersTitleLabel.setForeground(NoirTheme.TEXT);
         playersTitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // CONNECTED PLAYERS
@@ -1477,8 +1479,8 @@ public final class InGameScreen extends JFrame {
 
                 // BACKGROUND
                 g2.setColor(active
-                        ? new Color(45, 65, 60)
-                        : AllThemes.AzulOscuro2DM
+                        ? NoirTheme.DARK_CRIMSON
+                        : NoirTheme.SURFACE
                 );
 
                 g2.fillRoundRect(
@@ -1490,8 +1492,8 @@ public final class InGameScreen extends JFrame {
 
                 // BORDER
                 g2.setColor(active
-                        ? AllThemes.DoradorDM
-                        : new Color(55, 80, 90)
+                        ? NoirTheme.GOLD
+                        : NoirTheme.INNER_BORDER
                 );
 
                 g2.setStroke(
@@ -1550,7 +1552,7 @@ public final class InGameScreen extends JFrame {
         JLabel nameLabel = new JLabel(name);
 
         nameLabel.setFont(AllFonts.GEORGIA_BOLD_15);
-        nameLabel.setForeground(AllThemes.CremaDM);
+        nameLabel.setForeground(NoirTheme.TEXT);
 
         JLabel statusLabel = new JLabel(
                 active ? "Current turn" : "Connected"
@@ -1559,8 +1561,8 @@ public final class InGameScreen extends JFrame {
         statusLabel.setFont(new Font("Arial", Font.PLAIN, 11));
 
         statusLabel.setForeground(active
-                ? AllThemes.DoradorDM
-                : new Color(145, 180, 175)
+                ? NoirTheme.GOLD
+                : NoirTheme.SECONDARY_TEXT
         );
 
         information.add(Box.createVerticalGlue());
@@ -1597,12 +1599,36 @@ public final class InGameScreen extends JFrame {
 
 
     private void styleSectionPanel(JComponent component) {
+
         component.setOpaque(true);
-        component.setBackground(AllThemes.AzulVerdosoDM);
-        component.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(AllThemes.MarronOscuro2DM, 3),
-                BorderFactory.createEmptyBorder(3, 3, 3, 3)
-        ));
+        component.setBackground(NoirTheme.PANEL);
+
+        component.setBorder(
+                BorderFactory.createCompoundBorder(
+
+                        BorderFactory.createLineBorder(
+                                NoirTheme.BORDER, 1
+                        ),
+
+                        BorderFactory.createCompoundBorder(
+
+                                BorderFactory.createEmptyBorder(
+                                        3, 3, 3, 3
+                                ),
+
+                                BorderFactory.createCompoundBorder(
+
+                                        BorderFactory.createLineBorder(
+                                                NoirTheme.INNER_BORDER, 1
+                                        ),
+
+                                        BorderFactory.createEmptyBorder(
+                                                1, 1, 1, 1
+                                        )
+                                )
+                        )
+                )
+        );
     }
 
     public GameHistoryPanel getHistoryPanel() {

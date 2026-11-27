@@ -2,20 +2,17 @@ package ui.match.inGameScreen;
 
 import javax.swing.*;
 import java.awt.*;
+import ui.NoirTheme;
 
 public final class TurnHUD extends JPanel {
 
-    private static final Color BACKGROUND =
-            new Color(12, 34, 46);
+    private static final Color BACKGROUND = NoirTheme.BACKGROUND;
 
-    private static final Color GOLD =
-            new Color(214, 179, 113);
+    private static final Color GOLD = NoirTheme.GOLD;
 
-    private static final Color TEXT =
-            new Color(232, 214, 181);
+    private static final Color TEXT = NoirTheme.TEXT;
 
-    private static final Color SECONDARY_TEXT =
-            new Color(145, 169, 176);
+    private static final Color SECONDARY_TEXT = NoirTheme.SECONDARY_TEXT;
 
     private final JLabel playerLabel =
             new JLabel("Waiting for turn");
@@ -60,8 +57,11 @@ public final class TurnHUD extends JPanel {
         movesLabel.setFont(new Font("Arial", Font.BOLD, 12));
         movesLabel.setForeground(GOLD);
 
-        movesBar.setForeground(GOLD);
-        movesBar.setBackground(new Color(41, 67, 75));
+        movesBar.setForeground(NoirTheme.CRIMSON);
+        movesBar.setBackground(NoirTheme.HOVER);
+
+        timerBar.setBackground(NoirTheme.HOVER);
+        timerBar.setForeground(NoirTheme.SUCCESS);
 
         movesBar.setBorderPainted(false);
         movesBar.setStringPainted(false);

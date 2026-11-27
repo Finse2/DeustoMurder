@@ -6,6 +6,7 @@ import game.dice.Dice;
 import ui.match.DetectiveCard;
 import ui.match.AccusationCard;
 import ui.NoirActionButton;
+import ui.NoirTheme;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,23 +20,17 @@ import java.util.function.BiConsumer;
  */
 public final class GameActionsPanel extends JPanel {
 
-    private static final Color BACKGROUND =
-            new Color(23, 49, 62);
+    private static final Color BACKGROUND = NoirTheme.PANEL;
 
-    private static final Color GOLD =
-            new Color(214, 179, 113);
+    private static final Color GOLD = NoirTheme.GOLD;
 
-    private static final Color TEXT =
-            new Color(232, 214, 181);
+    private static final Color TEXT = NoirTheme.TEXT;
 
-    private static final Color SECONDARY_TEXT =
-            new Color(145, 169, 176);
+    private static final Color SECONDARY_TEXT = NoirTheme.SECONDARY_TEXT;
 
-    private static final Color BUTTON_BACKGROUND =
-            new Color(12, 34, 46);
+    private static final Color BUTTON_BACKGROUND = NoirTheme.SURFACE;
 
-    private static final Color BORDER_COLOR =
-            new Color(85, 112, 122);
+    private static final Color BORDER_COLOR = NoirTheme.INNER_BORDER;
 
     private JDialog detectiveDialog;
     private JDialog accusationDialog;
@@ -173,21 +168,15 @@ public final class GameActionsPanel extends JPanel {
 
         JLabel title = new JLabel("DETECTIVE ACTIONS");
 
-        title.setFont(
-                new Font("Georgia", Font.BOLD, 17)
-        );
-
-        title.setForeground(GOLD);
+        title.setFont(NoirTheme.TITLE_FONT);
+        title.setForeground(NoirTheme.TEXT);
 
         JLabel subtitle = new JLabel(
                 "Your investigation tools"
         );
 
-        subtitle.setFont(
-                new Font("Arial", Font.PLAIN, 10)
-        );
-
-        subtitle.setForeground(SECONDARY_TEXT);
+        subtitle.setFont(NoirTheme.SUBTITLE_FONT);
+        subtitle.setForeground(NoirTheme.SECONDARY_TEXT);
 
         JPanel titlePanel = new JPanel();
 
@@ -212,7 +201,7 @@ public final class GameActionsPanel extends JPanel {
 
         JPanel separator = new JPanel();
 
-        separator.setBackground(GOLD);
+        separator.setBackground(NoirTheme.BORDER);
         separator.setPreferredSize(new Dimension(1, 1));
 
         header.add(titleRow, BorderLayout.CENTER);

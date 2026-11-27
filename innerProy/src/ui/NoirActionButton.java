@@ -13,14 +13,9 @@ public final class NoirActionButton extends JButton {
         DANGER
     }
 
-    private static final Color GOLD =
-            new Color(214, 179, 113);
-
-    private static final Color BACKGROUND =
-            new Color(12, 34, 46);
-
-    private static final Color TEXT =
-            new Color(232, 214, 181);
+    private static final Color GOLD = NoirTheme.GOLD;
+    private static final Color BACKGROUND = NoirTheme.BACKGROUND;
+    private static final Color TEXT = NoirTheme.TEXT;
 
     private final String subtitle;
     private final Style style;
@@ -89,39 +84,30 @@ public final class NoirActionButton extends JButton {
         // BUTTON COLORS
 
         Color background = switch (style) {
-
-            case PRIMARY -> GOLD;
-
-            case SECONDARY -> new Color(16, 38, 49);
-
-            case DANGER -> new Color(57, 40, 43);
+            case PRIMARY -> NoirTheme.DARK_CRIMSON;
+            case SECONDARY -> NoirTheme.SURFACE;
+            case DANGER -> NoirTheme.BACKGROUND;
         };
 
         Color foreground = switch (style) {
-
-            case PRIMARY -> BACKGROUND;
-
-            case SECONDARY -> GOLD;
-
-            case DANGER -> new Color(219, 161, 154);
+            case PRIMARY -> NoirTheme.TEXT;
+            case SECONDARY -> NoirTheme.TEXT;
+            case DANGER -> new Color(219, 135, 145);
         };
 
         Color border = switch (style) {
-
-            case PRIMARY -> GOLD;
-
-            case SECONDARY -> new Color(85, 112, 122);
-
-            case DANGER -> new Color(158, 101, 98);
+            case PRIMARY -> NoirTheme.GOLD;
+            case SECONDARY -> NoirTheme.BORDER;
+            case DANGER -> NoirTheme.CRIMSON;
         };
 
         // INTERACTION STATES
 
         if (!isEnabled()) {
 
-            background = new Color(31, 48, 56);
-            foreground = new Color(110, 125, 130);
-            border = new Color(61, 77, 84);
+            background = NoirTheme.PANEL;
+            foreground = new Color(105, 92, 94);
+            border = NoirTheme.INNER_BORDER;
 
         } else if (getModel().isPressed()) {
 

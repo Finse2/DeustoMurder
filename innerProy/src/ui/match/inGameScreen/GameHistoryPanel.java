@@ -1,6 +1,7 @@
 package ui.match.inGameScreen;
 
-import javax.swing.plaf.basic.BasicScrollBarUI;
+import ui.NoirTheme;
+import ui.NoirScrollBarUI;
 import game.core.Game;
 import game.history.GameEvent;
 import game.history.GameHistory;
@@ -29,15 +30,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /** Vista del historial real: búsqueda, filtros, contador, CSV y turno actual. */
 public final class GameHistoryPanel extends JPanel {
 
-    private static final Color BACKGROUND = new Color(12, 34, 46);
-    private static final Color GOLD = new Color(214, 179, 113);
-    private static final Color TEXT = new Color(232, 214, 181);
-    private static final Color BLUE = new Color(44, 151, 204);
+    private static final Color BACKGROUND = NoirTheme.BACKGROUND;
+    private static final Color GOLD = NoirTheme.GOLD;
+    private static final Color TEXT = NoirTheme.TEXT;
+    private static final Color BLUE = NoirTheme.GOLD;
 
-    private static final Color SECONDARY_TEXT = new Color(145, 169, 176);
-    private static final Color BUTTON_BACKGROUND = new Color(16, 38, 49);
-    private static final Color HOVER_BACKGROUND = new Color(41, 67, 75);
-    private static final Color BORDER_COLOR = new Color(85, 112, 122);
+    private static final Color SECONDARY_TEXT = NoirTheme.SECONDARY_TEXT;
+    private static final Color BUTTON_BACKGROUND = NoirTheme.SURFACE;
+    private static final Color HOVER_BACKGROUND = NoirTheme.HOVER;
+    private static final Color BORDER_COLOR = NoirTheme.BORDER;
 
     private static final DateTimeFormatter HOUR = DateTimeFormatter.ofPattern("HH:mm:ss")
             .withZone(ZoneId.systemDefault());
@@ -82,12 +83,12 @@ public final class GameHistoryPanel extends JPanel {
         // JOURNAL TITLE
         JLabel title = new JLabel("CASE JOURNAL");
 
-        title.setFont(new Font("Georgia", Font.BOLD, 18));
-        title.setForeground(GOLD);
+        title.setFont(NoirTheme.TITLE_FONT);
+        title.setForeground(NoirTheme.TEXT);
         title.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // JOURNAL SUBTITLE
-        JLabel subtitle = new JLabel("Investigation records");
+        JLabel subtitle = new JLabel("Confidential investigation records");
 
         subtitle.setFont(new Font("Arial", Font.PLAIN, 11));
         subtitle.setForeground(SECONDARY_TEXT);
@@ -183,8 +184,8 @@ public final class GameHistoryPanel extends JPanel {
         filters.add(dateFilter);
         filters.add(limitFilter);
 
-        resultCount.setForeground(new Color(141, 168, 181));
-        resultCount.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        resultCount.setForeground(NoirTheme.SECONDARY_TEXT);
+        resultCount.setFont(NoirTheme.SUBTITLE_FONT);
 
         JPanel heading = new JPanel();
         heading.setOpaque(false);
@@ -223,12 +224,13 @@ public final class GameHistoryPanel extends JPanel {
         );
 
         filterButton.setForeground(GOLD);
-        filterButton.setBackground(BUTTON_BACKGROUND);
+        filterButton.setBackground(NoirTheme.SURFACE);
+        filterButton.setForeground(NoirTheme.GOLD);
         filterButton.setFocusPainted(false);
 
         filterButton.setBorder(
                 BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(BORDER_COLOR),
+                        BorderFactory.createLineBorder(NoirTheme.BORDER),
                         BorderFactory.createEmptyBorder(5, 8, 5, 8)
                 )
         );
@@ -738,125 +740,7 @@ public final class GameHistoryPanel extends JPanel {
         scrollBar.setOpaque(false);
         scrollBar.setUnitIncrement(16);
 
-        scrollBar.setUI(new BasicScrollBarUI() {
-
-            @Override
-            protected void configureScrollBarColors() {
-
-                this.thumbColor = GOLD;
-                this.trackColor = BUTTON_BACKGROUND;
-            }
-
-            // REMOVE UPPER ARROW
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                return createInvisibleButton();
-            }
-
-            // REMOVE LOWER ARROW
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                return createInvisibleButton();
-            }
-
-            // INVISIBLE BUTTON
-            private JButton createInvisibleButton() {
-
-                JButton button = new JButton();
-
-                Dimension size = new Dimension(0, 0);
-
-                button.setPreferredSize(size);
-                button.setMinimumSize(size);
-                button.setMaximumSize(size);
-
-                button.setOpaque(false);
-                button.setBorderPainted(false);
-                button.setContentAreaFilled(false);
-
-                return button;
-            }
-
-            // SCROLLBAR TRACK
-            @Override
-            protected void paintTrack(
-                    Graphics g,
-                    JComponent c,
-                    Rectangle trackBounds
-            ) {
-
-                Graphics2D g2 = (Graphics2D) g.create();
-
-                g2.setRenderingHint(
-                        RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON
-                );
-
-                g2.setColor(BUTTON_BACKGROUND);
-
-                g2.fillRoundRect(
-                        trackBounds.x,
-                        trackBounds.y,
-                        trackBounds.width,
-                        trackBounds.height,
-                        8, 8
-                );
-
-                g2.dispose();
-            }
-
-            // SCROLLBAR THUMB
-            @Override
-            protected void paintThumb(
-                    Graphics g,
-                    JComponent c,
-                    Rectangle thumbBounds
-            ) {
-
-                if (thumbBounds.isEmpty() || !scrollbar.isEnabled()) {
-                    return;
-                }
-
-                Graphics2D g2 = (Graphics2D) g.create();
-
-                g2.setRenderingHint(
-                        RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON
-                );
-
-                // HOVER AND DRAG EFFECTS
-                if (isDragging) {
-
-                    g2.setColor(GOLD);
-
-                } else if (isThumbRollover()) {
-
-                    g2.setColor(new Color(225, 195, 135));
-
-                } else {
-
-                    g2.setColor(new Color(160, 133, 87));
-                }
-
-                int padding = 2;
-
-                g2.fillRoundRect(
-                        thumbBounds.x + padding,
-                        thumbBounds.y + padding,
-                        Math.max(1, thumbBounds.width - padding * 2),
-                        Math.max(1, thumbBounds.height - padding * 2),
-                        8, 8
-                );
-
-                g2.dispose();
-            }
-
-            // MINIMUM THUMB SIZE
-            @Override
-            protected Dimension getMinimumThumbSize() {
-                return new Dimension(9, 30);
-            }
-        });
+        scrollBar.setUI(new NoirScrollBarUI());
     }
 
     public void bindTurnHUD(TurnHUD turnHUD, int totalSeconds) {
@@ -1018,7 +902,7 @@ public final class GameHistoryPanel extends JPanel {
                 );
 
                 // CARD BORDER
-                g2.setColor(new Color(48, 73, 85));
+                g2.setColor(NoirTheme.INNER_BORDER);
                 g2.setStroke(new BasicStroke(1f));
 
                 g2.drawRoundRect(
@@ -1154,7 +1038,7 @@ public final class GameHistoryPanel extends JPanel {
                     new Color(181, 138, 209);
 
             case TURN_STARTED, TURN_ENDED ->
-                    new Color(131, 182, 206);
+                    NoirTheme.GOLD;
 
             case SUGGESTION_MADE ->
                     new Color(217, 162, 92);
@@ -1187,8 +1071,12 @@ public final class GameHistoryPanel extends JPanel {
                 g2.translate(x, y);
 
                 // ICON BACKGROUND
-                g2.setColor(HOVER_BACKGROUND);
-                g2.fillRoundRect(0, 0, 32, 32, 9, 9);
+                g2.setColor(NoirTheme.DARK_CRIMSON);
+                g2.fillRoundRect(0, 0, 32, 32, 6, 6);
+
+                // ICON BORDER
+                g2.setColor(NoirTheme.INNER_BORDER);
+                g2.drawRoundRect(0, 0, 31, 31, 6, 6);
 
                 // ICON COLOR
                 g2.setColor(getEventColor(type));

@@ -2,6 +2,7 @@ package ui.chat;
 
 import Networking.common.ChatChannel;
 
+import ui.NoirTheme;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -18,14 +19,14 @@ import javax.swing.Timer;
 /** Vista Swing de un Chat. No guarda mensajes ni gestiona sockets. */
 public final class ChatRenderer extends JPanel {
 
-    private static final Color BACKGROUND = new Color(12, 34, 46);
-    private static final Color GOLD = new Color(214, 179, 113);
-    private static final Color TEXT = new Color(232, 214, 181);
-    private static final Color SECONDARY_TEXT = new Color(145, 169, 176);
-    private static final Color BUTTON_BACKGROUND = new Color(16, 38, 49);
-    private static final Color HOVER_BACKGROUND = new Color(41, 67, 75);
-    private static final Color BORDER_COLOR = new Color(85, 112, 122);
-    private static final Color ONLINE_COLOR = new Color(101, 187, 135);
+    private static final Color BACKGROUND = NoirTheme.BACKGROUND;
+    private static final Color GOLD = NoirTheme.GOLD;
+    private static final Color TEXT = NoirTheme.TEXT;
+    private static final Color SECONDARY_TEXT = NoirTheme.SECONDARY_TEXT;
+    private static final Color BUTTON_BACKGROUND = NoirTheme.SURFACE;
+    private static final Color HOVER_BACKGROUND = NoirTheme.HOVER;
+    private static final Color BORDER_COLOR = NoirTheme.INNER_BORDER;
+    private static final Color ONLINE_COLOR = NoirTheme.SUCCESS;
 
     private final Chat chat;
     private final DefaultListModel<ChatHistory.Message> messageModel = new DefaultListModel<>();
@@ -235,13 +236,13 @@ public final class ChatRenderer extends JPanel {
         // MAIN TITLE
         JLabel title = new JLabel("COMMUNICATIONS");
 
-        title.setFont(new Font("Georgia", Font.BOLD, 17));
-        title.setForeground(GOLD);
+        title.setFont(NoirTheme.TITLE_FONT);
+        title.setForeground(NoirTheme.TEXT);
         title.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // SUBTITLE
         JLabel subtitle = new JLabel(
-                "Detective communication network"
+                "Secure investigation network"
         );
 
         subtitle.setFont(new Font("Arial", Font.PLAIN, 10));
