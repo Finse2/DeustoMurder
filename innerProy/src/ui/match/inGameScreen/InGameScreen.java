@@ -75,6 +75,7 @@ public final class InGameScreen extends JFrame {
     private static final int HAND_HEIGHT = 190;
 
     private double zoom = 1.0;
+    private final JLabel zoomLabel = new JLabel("100%");
     private int baseTileSize = 25;
 
     private LobbyRoster roster;
@@ -288,7 +289,16 @@ public final class InGameScreen extends JFrame {
 
         // MAIN ROW
         gameRowPanel.add(playersColumnPanel, BorderLayout.WEST);
-        gameRowPanel.add(boardLayer, BorderLayout.CENTER);
+        JPanel boardSection = new JPanel(
+                new BorderLayout(0, 4)
+        );
+
+        boardSection.setOpaque(false);
+
+        boardSection.add(boardLayer, BorderLayout.CENTER);
+        boardSection.add(createBoardControls(), BorderLayout.SOUTH);
+
+        gameRowPanel.add(boardSection, BorderLayout.CENTER);
 
         // BOTTOM ROW
         footerPanel.add(handPanel, BorderLayout.CENTER);
@@ -798,6 +808,92 @@ public final class InGameScreen extends JFrame {
         }
     }
 
+    private JButton createBoardControl(String text) {
+
+        JButton button = new JButton(text);
+
+        button.setFont(new Font("Arial", Font.BOLD, 13));
+        button.setForeground(new Color(214, 179, 113));
+        button.setBackground(new Color(12, 34, 46));
+
+        button.setFocusPainted(false);
+
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(
+                        new Color(85, 112, 122)
+                ),
+                BorderFactory.createEmptyBorder(5, 12, 5, 12)
+        ));
+
+        button.setCursor(
+                Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+        );
+
+        return button;
+    }
+
+    private JPanel createBoardControls() {
+
+        JPanel controls = new JPanel(
+                new FlowLayout(FlowLayout.CENTER, 8, 3)
+        );
+
+        controls.setOpaque(false);
+
+        JButton zoomOut = createBoardControl("-");
+        JButton zoomIn = createBoardControl("+");
+        JButton resetZoom = createBoardControl("Fit Board");
+
+        zoomLabel.setForeground(new Color(214, 179, 113));
+        zoomLabel.setFont(new Font("Arial", Font.BOLD, 12));
+        zoomLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        zoomLabel.setPreferredSize(new Dimension(55, 28));
+
+        zoomOut.addActionListener(e -> changeBoardZoom(zoom / 1.15));
+
+        zoomIn.addActionListener(e -> changeBoardZoom(zoom * 1.15));
+
+        resetZoom.addActionListener(e -> changeBoardZoom(1.0));
+
+        controls.add(zoomOut);
+        controls.add(zoomLabel);
+        controls.add(zoomIn);
+        controls.add(resetZoom);
+
+        return controls;
+    }
+
+    private void changeBoardZoom(double newZoom) {
+
+        zoom = Math.max(0.50, Math.min(3.00, newZoom));
+
+        zoomLabel.setText(
+                Math.round(zoom * 100) + "%"
+        );
+
+        fitBoardToViewport();
+
+        boardScrollPane.revalidate();
+
+        SwingUtilities.invokeLater(() -> {
+
+            boardScrollPane.doLayout();
+
+            JViewport viewport = boardScrollPane.getViewport();
+
+            viewport.doLayout();
+            boardCanvas.doLayout();
+
+            Dimension view = viewport.getViewSize();
+            Dimension extent = viewport.getExtentSize();
+
+            moveViewport(
+                    (view.width - extent.width) / 2,
+                    (view.height - extent.height) / 2
+            );
+        });
+    }
+
     private JScrollPane createBoardScrollPane() {
         boardCanvas = new WoodTablePanel(new GridBagLayout());
         boardCanvas.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -959,6 +1055,9 @@ public final class InGameScreen extends JFrame {
         double fractionY = Math.max(0, Math.min(1, mouseInBoard.y / (double) Math.max(1, board.getHeight())));
 
         zoom = nextZoom;
+        zoomLabel.setText(
+                Math.round(zoom * 100) + "%"
+        );
         board.setTileSize(Math.max(3, (int) Math.round(baseTileSize * zoom)));
         boardCanvas.revalidate();
         boardScrollPane.revalidate();
