@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import javax.sql.rowset.RowSetMetaDataImpl;
 
 public class DBManager implements AutoCloseable {
 
@@ -378,6 +379,7 @@ public class DBManager implements AutoCloseable {
 
     // INTERNAL UTILITIES
 
+
     private static CachedRowSet detachedCopy(
             ResultSet result
     ) throws SQLException {
@@ -386,11 +388,124 @@ public class DBManager implements AutoCloseable {
                 .newFactory()
                 .createCachedRowSet();
 
-        rows.populate(result);
+        ResultSetMetaData source = result.getMetaData();
+
+        int columnCount = source.getColumnCount();
+
+        RowSetMetaDataImpl metadata =
+                new RowSetMetaDataImpl();
+
+        metadata.setColumnCount(columnCount);
+
+        // Copy and correct column metadata.
+
+        for (int i = 1; i <= columnCount; i++) {
+
+            int type = source.getColumnType(i);
+
+            // SQLite integers can contain 64-bit values.
+
+            if (type == Types.INTEGER) {
+                type = Types.BIGINT;
+            }
+
+            metadata.setColumnName(
+                    i, source.getColumnName(i)
+            );
+
+            metadata.setColumnLabel(
+                    i, source.getColumnLabel(i)
+            );
+
+            metadata.setColumnType(i, type);
+
+            metadata.setColumnTypeName(
+                    i,
+                    type == Types.BIGINT
+                            ? "BIGINT"
+                            : source.getColumnTypeName(i)
+            );
+
+            metadata.setNullable(
+                    i, source.isNullable(i)
+            );
+        }
+
+        rows.setMetaData(metadata);
+
+        // Copy data using explicit JDBC getters.
+
+        while (result.next()) {
+
+            rows.moveToInsertRow();
+
+            for (int i = 1; i <= columnCount; i++) {
+
+                int type = metadata.getColumnType(i);
+
+                Object value = switch (type) {
+
+                    case Types.TINYINT,
+                         Types.SMALLINT,
+                         Types.INTEGER,
+                         Types.BIGINT -> result.getLong(i);
+
+                    case Types.FLOAT,
+                         Types.REAL,
+                         Types.DOUBLE -> result.getDouble(i);
+
+                    case Types.NUMERIC,
+                         Types.DECIMAL -> result.getBigDecimal(i);
+
+                    case Types.BOOLEAN,
+                         Types.BIT -> result.getBoolean(i);
+
+                    case Types.CHAR,
+                         Types.VARCHAR,
+                         Types.LONGVARCHAR,
+                         Types.NCHAR,
+                         Types.NVARCHAR,
+                         Types.LONGNVARCHAR -> result.getString(i);
+
+                    case Types.BINARY,
+                         Types.VARBINARY,
+                         Types.LONGVARBINARY,
+                         Types.BLOB -> result.getBytes(i);
+
+                    case Types.NULL -> null;
+
+                    default -> result.getObject(i);
+                };
+
+                if (value == null || result.wasNull()) {
+
+                    rows.updateNull(i);
+
+                } else {
+
+                    rows.updateObject(i, value);
+                }
+            }
+
+            rows.insertRow();
+            rows.moveToCurrentRow();
+
+            // Preserve the original query ordering.
+
+            rows.last();
+        }
+
+        rows.beforeFirst();
+
+        while (rows.next()) {
+            rows.setOriginalRow();
+        }
+
         rows.beforeFirst();
 
         return rows;
     }
+
 
     private static boolean isManagedLocalRqlite(
             String jdbcUrl

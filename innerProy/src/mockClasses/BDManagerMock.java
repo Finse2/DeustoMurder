@@ -24,6 +24,33 @@ public class BDManagerMock {
             if (!db.tableExists("jdbc_test_person")) {
                 throw new AssertionError("Table creation failed");
             }
+            // TEST: 64-bit integer support
+
+            long timestamp = System.currentTimeMillis();
+
+            try (ResultSet rs = db.executeQuery(
+                    "SELECT ? AS timestamp_value",
+                    timestamp
+            )) {
+
+                if (!rs.next()) {
+
+                    throw new AssertionError(
+                            "Missing timestamp result."
+                    );
+                }
+
+                if (rs.getLong("timestamp_value") != timestamp) {
+
+                    throw new AssertionError(
+                            "64-bit integer conversion failed."
+                    );
+                }
+
+                System.out.println(
+                        "[PASS] 64-bit integer support"
+                );
+            }
 
             db.executeUpdate("DELETE FROM jdbc_test_person");
 
