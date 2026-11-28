@@ -13,6 +13,7 @@ import java.net.Socket;
 
 import java.util.Objects;
 import java.util.UUID;
+import Networking.packets.GameStartPacket;
 
 public final class GameClient {
 
@@ -39,6 +40,8 @@ public final class GameClient {
     private volatile int playerID = -1;
 
     private volatile UUID profileId;
+
+    private volatile UUID currentMatchId;
 
     private Socket socket;
 
@@ -122,6 +125,8 @@ public final class GameClient {
             this.profileId = profileId;
 
             playerID = -1;
+
+            currentMatchId = null;
 
             connected = true;
 
@@ -259,10 +264,13 @@ public final class GameClient {
 
                 if (packet instanceof JoinAcceptedPacket acceptedPacket) {
 
-                    playerID =
-                            acceptedPacket.getPlayerID();
-                }
+                    playerID = acceptedPacket.getPlayerID();
 
+                } else if (packet instanceof GameStartPacket startPacket
+                        && startPacket.isConfirmed()) {
+
+                    currentMatchId = startPacket.getMatchId();
+                }
                 if (listener != null) {
 
                     listener.onPacket(packet);
@@ -307,5 +315,8 @@ public final class GameClient {
     public UUID getProfileId() {
 
         return profileId;
+    }
+    public UUID getCurrentMatchId() {
+        return currentMatchId;
     }
 }

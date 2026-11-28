@@ -27,6 +27,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import Networking.match.NetworkMatchResult;
+
 public final class Client {
 
     // LISTENER INTERFACE
@@ -78,6 +80,11 @@ public final class Client {
         ) {}
 
         default void onGameStarted() {}
+        default void onGameStarted(GameStartPacket packet) {
+            onGameStarted();
+        }
+
+        default void onMatchCompleted(NetworkMatchResult result) {}
 
         default void onGameOver(String winner) {}
 
@@ -244,6 +251,33 @@ public final class Client {
                 )
         );
     }
+    public void endGame(
+            int winnerID,
+            String winnerName,
+            String murderer,
+            String weapon,
+            String room
+    ) {
+
+        UUID matchId = client.getCurrentMatchId();
+
+        if (matchId == null) {
+            throw new IllegalStateException(
+                    "There is no current match."
+            );
+        }
+
+        client.sendPacket(
+                new GameOverPacket(
+                        matchId,
+                        winnerID,
+                        winnerName,
+                        murderer,
+                        weapon,
+                        room
+                )
+        );
+    }
 
     // GENERAL CHAT
 
@@ -356,6 +390,10 @@ public final class Client {
         return client.getPlayerID();
     }
 
+    public UUID getCurrentMatchId() {
+        return client.getCurrentMatchId();
+    }
+
     // PERMANENT PROFILE UUID
 
     public UUID getProfileId() {
@@ -459,15 +497,19 @@ public final class Client {
         // GAME START
 
         else if (packet instanceof GameStartPacket startPacket
-                && startPacket.getGameStart()) {
+                && startPacket.isConfirmed()) {
 
-            listener.onGameStarted();
+            listener.onGameStarted(startPacket);
         }
 
-        // GAME OVER
+// GAME OVER
 
         else if (packet instanceof GameOverPacket gameOverPacket
-                && gameOverPacket.getGameOver()) {
+                && gameOverPacket.isConfirmed()
+                && Objects.equals(
+                client.getCurrentMatchId(),
+                gameOverPacket.getMatchId()
+        )) {
 
             listener.onGameOver(
                     gameOverPacket.getWinner()
@@ -475,6 +517,10 @@ public final class Client {
 
             listener.onGameOverPacket(
                     gameOverPacket
+            );
+
+            listener.onMatchCompleted(
+                    gameOverPacket.getMatchResult()
             );
         }
     }
