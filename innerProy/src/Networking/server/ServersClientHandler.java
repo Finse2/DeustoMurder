@@ -2,6 +2,8 @@ package Networking.server;
 
 import Networking.common.Packet;
 
+import java.util.UUID;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -12,6 +14,8 @@ import java.net.Socket;
  * and sends packets to the client. It also handles disconnection of the client.
  */
 final class ServersClientHandler implements Runnable {
+
+    private volatile UUID profileId;
 
     private final Socket socket;    //connects to the Client
 
@@ -104,6 +108,17 @@ final class ServersClientHandler implements Runnable {
         } finally {
             server.removeClient(this);
         }
+    }
+    UUID getProfileId() {
+        return profileId;
+    }
+
+    void setProfileId(UUID profileId) {
+        this.profileId = profileId;
+    }
+
+    boolean hasJoined() {
+        return profileId != null && userName != null;
     }
 
 // Getters and Setters for playerID.

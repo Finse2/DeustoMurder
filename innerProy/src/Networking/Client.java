@@ -1,7 +1,10 @@
+
 package Networking;
 
 import Networking.client.GameClient;
 import Networking.common.Packet;
+import Networking.common.ChatChannel;
+
 import Networking.packets.CardShowPacket;
 import Networking.packets.ChatMessagePacket;
 import Networking.packets.GameOverPacket;
@@ -10,114 +13,261 @@ import Networking.packets.JoinAcceptedPacket;
 import Networking.packets.PlayerJoinedPacket;
 import Networking.packets.PlayerMovePacket;
 
+import app.ApplicationContext;
+
 import java.io.IOException;
 import java.io.Serializable;
+
+import java.util.UUID;
 import java.util.List;
+import java.util.Objects;
+
 import java.util.concurrent.CopyOnWriteArrayList;
+
 import java.util.function.BiConsumer;
-import Networking.common.ChatChannel;
 import java.util.function.Consumer;
 
 public final class Client {
 
-    //bunch of empty default functions, meant to not force an over-write from implementors from the get-go but instead force
-    //the user to only over-write functions that it actually has to use
+    // LISTENER INTERFACE
 
-    /**
-     * used by Client to notify Application when something arrives from Server
-     */
     public interface Listener {
+
         default void onConnected(int playerID) {}
 
-        default void onGameOverPacket(GameOverPacket packet) {}
+        default void onGameOverPacket(
+                GameOverPacket packet
+        ) {}
 
-        /**used when a player joins the game*/
-        default void onPlayerJoined(int playerID, String playerName, String computerName) {}
+        // Legacy player joined callback
 
-        /**used when a player makes a move*/
-        default void onPlayerMoved(int playerID, int x, int y, int distance) {}
+        default void onPlayerJoined(
+                int playerID,
+                String playerName,
+                String computerName
+        ) {}
 
-        /**used when a player shows a card to another player*/
-        default void onCardShown(Serializable card, String fromUser, String targetUser, int targetPlayerID) {}
+        // Player joined callback with persistent UUID
 
-        /**default game initializer*/
+        default void onPlayerJoined(
+                int playerID,
+                String playerName,
+                String computerName,
+                UUID profileId
+        ) {
+
+            onPlayerJoined(
+                    playerID,
+                    playerName,
+                    computerName
+            );
+        }
+
+        default void onPlayerMoved(
+                int playerID,
+                int x,
+                int y,
+                int distance
+        ) {}
+
+        default void onCardShown(
+                Serializable card,
+                String fromUser,
+                String targetUser,
+                int targetPlayerID
+        ) {}
+
         default void onGameStarted() {}
 
         default void onGameOver(String winner) {}
 
-        default void onChatMessage(int playerID, String senderName, String text) {}
+        default void onChatMessage(
+                int playerID,
+                String senderName,
+                String text
+        ) {}
 
         default void onDisconnected() {}
 
         default void onError(Exception exception) {
+
             exception.printStackTrace();
         }
     }
 
-    /**the real Client backend engine, instead of inheritance I thought composition would be a better choice for this case
-     * its package private so it cant be accessed externally*/
-    private final GameClient client;
-    private final Listener listener;
-    private final List<BiConsumer<String, String>> chatListeners = new CopyOnWriteArrayList<>();
+    // FIELDS
 
-    private final List<Consumer<ChatMessagePacket>> chatPacketListeners =
-            new CopyOnWriteArrayList<>();
+    private final GameClient client;
+
+    private final Listener listener;
+
+    private final List<BiConsumer<String, String>>
+            chatListeners = new CopyOnWriteArrayList<>();
+
+    private final List<Consumer<ChatMessagePacket>>
+            chatPacketListeners = new CopyOnWriteArrayList<>();
+
+    // CONSTRUCTORS
 
     public Client(String host, int port) {
+
         this(host, port, null);
     }
 
-    /**we pass a host whitch is the Server, a port witch is the */
-    public Client(String host, int port, Listener listener) {
+    public Client(
+            String host,
+            int port,
+            Listener listener
+    ) {
+
         this.listener = listener;
-        this.client = new GameClient(host, port, new GameClient.PacketListener() {
-            @Override
-            public void onPacket(Packet packet) {
-                dispatch(packet);
-            }
 
-            @Override
-            public void onDisconnected() {
-                if (Client.this.listener != null) {
-                    Client.this.listener.onDisconnected();
-                }
-            }
+        this.client = new GameClient(
+                host,
+                port,
+                new GameClient.PacketListener() {
 
-            @Override
-            public void onError(Exception exception) {
-                if (Client.this.listener != null) {
-                    Client.this.listener.onError(exception);
+                    @Override
+                    public void onPacket(Packet packet) {
+
+                        dispatch(packet);
+                    }
+
+                    @Override
+                    public void onDisconnected() {
+
+                        if (Client.this.listener != null) {
+
+                            Client.this.listener
+                                    .onDisconnected();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Exception exception) {
+
+                        if (Client.this.listener != null) {
+
+                            Client.this.listener
+                                    .onError(exception);
+                        }
+                    }
                 }
-            }
-        });
+        );
     }
 
-    public void connect(String userName, String computerName) throws IOException {
-        client.connect(userName, computerName);
+    // CONNECT USING PERSISTENT LOCAL PROFILE
+
+    public void connect(
+            String userName,
+            String computerName
+    ) throws IOException {
+
+        ApplicationContext context =
+                ApplicationContext.getInstance();
+
+        if (!context.isInitialized()) {
+
+            throw new IllegalStateException(
+                    "Application context is not initialized."
+            );
+        }
+
+        connect(
+                userName,
+                computerName,
+                context.getLocalPlayerId()
+        );
     }
+
+    // CONNECT USING EXPLICIT PROFILE UUID
+
+    public void connect(
+            String userName,
+            String computerName,
+            UUID profileId
+    ) throws IOException {
+
+        client.connect(
+                userName,
+                computerName,
+                Objects.requireNonNull(profileId)
+        );
+    }
+
+    // GAME ACTIONS
 
     public void startGame() {
-        client.sendPacket(new GameStartPacket(true));
+
+        client.sendPacket(
+                new GameStartPacket(true)
+        );
     }
 
-    public void movePlayer(int x, int y, int distance) {
-        client.sendPacket(new PlayerMovePacket(x, y, distance, client.getPlayerID()));
+    public void movePlayer(
+            int x,
+            int y,
+            int distance
+    ) {
+
+        client.sendPacket(
+                new PlayerMovePacket(
+                        x,
+                        y,
+                        distance,
+                        client.getPlayerID()
+                )
+        );
     }
 
-    public void showCard(Serializable card, int targetPlayerID) {
-        client.sendPacket(new CardShowPacket(card, null, null, targetPlayerID));
+    public void showCard(
+            Serializable card,
+            int targetPlayerID
+    ) {
+
+        client.sendPacket(
+                new CardShowPacket(
+                        card,
+                        null,
+                        null,
+                        targetPlayerID
+                )
+        );
     }
 
     public void endGame(String winner) {
-        client.sendPacket(new GameOverPacket(true, winner));
+
+        client.sendPacket(
+                new GameOverPacket(
+                        true,
+                        winner
+                )
+        );
     }
 
+    // GENERAL CHAT
+
     public void sendChatMessage(String message) {
-        if (message == null || message.isBlank() || message.strip().length() > 500) {
-            throw new IllegalArgumentException("Message must contain 1 to 500 characters");
+
+        if (message == null
+                || message.isBlank()
+                || message.strip().length() > 500) {
+
+            throw new IllegalArgumentException(
+                    "Message must contain 1 to 500 characters"
+            );
         }
-        client.sendPacket(new ChatMessagePacket(-1, null, message.strip()));
+
+        client.sendPacket(
+                new ChatMessagePacket(
+                        -1,
+                        null,
+                        message.strip()
+                )
+        );
     }
+
+    // PRIVATE CHAT
 
     public void sendPrivateMessage(
             String recipient,
@@ -151,12 +301,14 @@ public final class Client {
         );
     }
 
+    // COMPLETE CHAT PACKET LISTENERS
+
     public void addChatPacketListener(
             Consumer<ChatMessagePacket> listener
     ) {
 
         chatPacketListeners.add(
-                java.util.Objects.requireNonNull(listener)
+                Objects.requireNonNull(listener)
         );
     }
 
@@ -167,30 +319,59 @@ public final class Client {
         chatPacketListeners.remove(listener);
     }
 
-    public void addChatListener(BiConsumer<String, String> listener) {
-        chatListeners.add(java.util.Objects.requireNonNull(listener));
+    // GENERAL CHAT LISTENERS
+
+    public void addChatListener(
+            BiConsumer<String, String> listener
+    ) {
+
+        chatListeners.add(
+                Objects.requireNonNull(listener)
+        );
     }
 
-    public void removeChatListener(BiConsumer<String, String> listener) {
+    public void removeChatListener(
+            BiConsumer<String, String> listener
+    ) {
+
         chatListeners.remove(listener);
     }
 
+    // CONNECTION MANAGEMENT
+
     public void disconnect() {
+
         client.disconnect();
     }
 
     public boolean isConnected() {
+
         return client.isConnected();
     }
 
+    // TEMPORARY SESSION ID
+
     public int getPlayerID() {
+
         return client.getPlayerID();
     }
 
+    // PERMANENT PROFILE UUID
+
+    public UUID getProfileId() {
+
+        return client.getProfileId();
+    }
+
+    // PACKET DISPATCH
+
     private void dispatch(Packet packet) {
+
+        // CHAT MESSAGE PACKET
+
         if (packet instanceof ChatMessagePacket chatPacket) {
 
-            // COMPLETE PACKET LISTENERS
+            // Complete packet listeners
 
             for (Consumer<ChatMessagePacket> chatListener :
                     chatPacketListeners) {
@@ -198,9 +379,10 @@ public final class Client {
                 chatListener.accept(chatPacket);
             }
 
-            // LEGACY GENERAL CHAT LISTENERS
+            // Legacy general chat listeners
 
-            if (chatPacket.getChannel() == ChatChannel.GENERAL) {
+            if (chatPacket.getChannel()
+                    == ChatChannel.GENERAL) {
 
                 if (listener != null) {
 
@@ -223,39 +405,77 @@ public final class Client {
 
             return;
         }
+
         if (listener == null) {
+
             return;
         }
 
+        // JOIN ACCEPTED
+
         if (packet instanceof JoinAcceptedPacket acceptedPacket) {
-            listener.onConnected(acceptedPacket.getPlayerID());
-        } else if (packet instanceof PlayerJoinedPacket joinedPacket) {
+
+            listener.onConnected(
+                    acceptedPacket.getPlayerID()
+            );
+        }
+
+        // PLAYER JOINED
+
+        else if (packet instanceof PlayerJoinedPacket joinedPacket) {
+
             listener.onPlayerJoined(
                     joinedPacket.getPlayerID(),
                     joinedPacket.getPlayerName(),
-                    joinedPacket.getComputerName()
+                    joinedPacket.getComputerName(),
+                    joinedPacket.getProfileId()
             );
-        } else if (packet instanceof PlayerMovePacket movePacket) {
+        }
+
+        // PLAYER MOVEMENT
+
+        else if (packet instanceof PlayerMovePacket movePacket) {
+
             listener.onPlayerMoved(
                     movePacket.getPlayerID(),
                     movePacket.getPlayerPosX(),
                     movePacket.getPlayerPosY(),
                     movePacket.getMoveDistance()
             );
-        } else if (packet instanceof CardShowPacket cardShowPacket) {
+        }
+
+        // CARD REVELATION
+
+        else if (packet instanceof CardShowPacket cardShowPacket) {
+
             listener.onCardShown(
                     cardShowPacket.getShowCard(),
                     cardShowPacket.getUser(),
                     cardShowPacket.getTargetUser(),
                     cardShowPacket.getTargetUserID()
             );
-        } else if (packet instanceof GameStartPacket startPacket && startPacket.getGameStart()) {
+        }
+
+        // GAME START
+
+        else if (packet instanceof GameStartPacket startPacket
+                && startPacket.getGameStart()) {
+
             listener.onGameStarted();
-        } else if (packet instanceof GameOverPacket gameOverPacket
+        }
+
+        // GAME OVER
+
+        else if (packet instanceof GameOverPacket gameOverPacket
                 && gameOverPacket.getGameOver()) {
 
-            listener.onGameOver(gameOverPacket.getWinner());
-            listener.onGameOverPacket(gameOverPacket);
+            listener.onGameOver(
+                    gameOverPacket.getWinner()
+            );
+
+            listener.onGameOverPacket(
+                    gameOverPacket
+            );
         }
     }
 }
