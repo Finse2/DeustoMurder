@@ -75,7 +75,7 @@ public class DatabaseServiceMock {
 
             int version = service.getSchemaVersion();
 
-            if (version != 1) {
+            if (version != 2) {
 
                 throw new AssertionError(
                         "Unexpected schema version: "

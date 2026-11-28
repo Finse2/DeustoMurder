@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
+import utils.JDBC.migrations.MigrationV2;
 
 public final class DatabaseMigrationManager {
 
@@ -68,11 +69,7 @@ public final class DatabaseMigrationManager {
     private static List<Migration> registeredMigrations() {
 
         return List.of(
-
-                // Register future migrations here.
-                // new MigrationV2(),
-                // new MigrationV3()
-
+                new MigrationV2()
         );
     }
 
