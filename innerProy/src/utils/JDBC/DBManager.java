@@ -372,7 +372,7 @@ public class DBManager implements AutoCloseable {
         String host = uri.getHost();
 
         return "http".equalsIgnoreCase(uri.getScheme())
-                && uri.getPort() == 4001
+                && uri.getPort() == JDBCDependencyHandler.getHttpPort()
                 && host != null
                 && (
                 host.equalsIgnoreCase("localhost")
