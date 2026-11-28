@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 import utils.JDBC.migrations.MigrationV2;
+import utils.JDBC.migrations.MigrationV3;
 
 public final class DatabaseMigrationManager {
 
@@ -69,7 +70,8 @@ public final class DatabaseMigrationManager {
     private static List<Migration> registeredMigrations() {
 
         return List.of(
-                new MigrationV2()
+                new MigrationV2(),
+                new MigrationV3()
         );
     }
 
