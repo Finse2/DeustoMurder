@@ -26,65 +26,51 @@ public final class JDBCDependencyHandler {
                     JDBCDependencyHandler.class.getName()
             );
 
-    // CONFIGURATION
 
-    private static final String VERSION = "10.6.5";
+// CONFIGURATION
+
+    private static final DatabaseConfig CONFIG =
+            DatabaseConfig.getInstance();
+
+    private static final String VERSION =
+            CONFIG.getRqliteVersion();
 
     private static final int HTTP_PORT =
-            Integer.getInteger("rqlite.http.port", 4001);
+            CONFIG.getHttpPort();
 
     private static final int RAFT_PORT =
-            Integer.getInteger("rqlite.raft.port", 4002);
+            CONFIG.getRaftPort();
 
-    private static final Path DIRECTORY = Path.of(
-            System.getProperty(
-                    "rqlite.directory",
-                    Path.of(
-                            System.getProperty("user.home"),
-                            ".deustomurder",
-                            "rqlite"
-                    ).toString()
-            )
-    ).toAbsolutePath().normalize();
+    private static final Path DIRECTORY =
+            CONFIG.getRqliteDirectory();
 
     private static final Path DATA =
-            DIRECTORY.resolve("data");
+            CONFIG.getRqliteDataDirectory();
 
     private static final Path LOG_FILE =
-            DIRECTORY.resolve("rqlite.log");
+            CONFIG.getRqliteLogFile();
 
     private static final Path WINDOWS_EXECUTABLE =
-            DIRECTORY.resolve("rqlited.exe");
+            CONFIG.getWindowsExecutable();
 
     private static final String DOWNLOAD_URL =
-            "https://github.com/rqlite/rqlite/releases/download/v"
-                    + VERSION
-                    + "/rqlite-v"
-                    + VERSION
-                    + "-win64.zip";
+            CONFIG.getWindowsDownloadUrl();
 
     private static final String EXPECTED_SHA256 =
-            System.getProperty(
-                    "rqlite.download.sha256", ""
-            );
+            CONFIG.getDownloadChecksum();
 
     private static final String SERVER_URL =
-            "http://127.0.0.1:" + HTTP_PORT;
+            CONFIG.getManagedServerUrl();
 
     private static final Duration STARTUP_TIMEOUT =
-            Duration.ofSeconds(
-                    Long.getLong(
-                            "rqlite.startup.timeout", 30L
-                    )
-            );
+            CONFIG.getStartupTimeout();
 
     private static final HttpClient CLIENT =
             HttpClient.newBuilder()
                     .connectTimeout(Duration.ofSeconds(2))
-                    .followRedirects(
-                            HttpClient.Redirect.NORMAL
-                    )
+                    .followRedirects(HttpClient.Redirect.NORMAL)
                     .build();
+
 
     // PROCESS MANAGEMENT
 
@@ -98,8 +84,6 @@ public final class JDBCDependencyHandler {
 
     public static synchronized Process startServer()
             throws Exception {
-
-        validateConfiguration();
 
         if (serverProcess != null) {
 
@@ -346,29 +330,22 @@ public final class JDBCDependencyHandler {
 
     // OPERATING SYSTEM HANDLING
 
-    private static Path resolveExecutable()
-            throws Exception {
+    private static Path resolveExecutable() throws Exception {
+        Path executableOverride =
+                CONFIG.getRqliteExecutable();
 
-        String configuredExecutable =
-                System.getProperty("rqlite.executable");
+        if (executableOverride != null) {
 
-        if (configuredExecutable != null
-                && !configuredExecutable.isBlank()) {
-
-            Path executable =
-                    Path.of(configuredExecutable)
-                            .toAbsolutePath();
-
-            if (!Files.isRegularFile(executable)
-                    || !Files.isExecutable(executable)) {
+            if (!Files.isRegularFile(executableOverride)
+                    || !Files.isExecutable(executableOverride)) {
 
                 throw new IOException(
                         "Invalid rqlite executable: "
-                                + executable
+                                + executableOverride
                 );
             }
 
-            return executable;
+            return executableOverride;
         }
 
         String os = System.getProperty("os.name")

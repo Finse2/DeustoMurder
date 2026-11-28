@@ -8,6 +8,8 @@ import java.sql.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class DBManager implements AutoCloseable {
 
@@ -15,7 +17,6 @@ public class DBManager implements AutoCloseable {
     private final boolean sqlite;
 
     // CONSTRUCTORS
-
     public DBManager(String jdbcUrl) throws Exception {
 
         Objects.requireNonNull(jdbcUrl, "jdbcUrl");
@@ -35,6 +36,36 @@ public class DBManager implements AutoCloseable {
         }
 
         connection = DriverManager.getConnection(jdbcUrl);
+    }
+
+
+    public DBManager(DatabaseConfig config) throws Exception {
+
+        Objects.requireNonNull(config, "config");
+
+        this.sqlite = config.isSQLite();
+
+        if (config.isManagedRqlite()) {
+
+            JDBCDependencyHandler.startServer();
+
+        } else if (config.isSQLite()) {
+
+            Path parent =
+                    config.getSQLiteFile().getParent();
+
+            if (parent != null) {
+                Files.createDirectories(parent);
+            }
+        }
+
+        this.connection = DriverManager.getConnection(
+                config.getJdbcUrl()
+        );
+    }
+
+    public DBManager() throws Exception {
+        this(DatabaseConfig.getInstance());
     }
 
     public DBManager(Connection connection) throws SQLException {
