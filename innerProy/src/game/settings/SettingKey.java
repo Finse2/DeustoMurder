@@ -151,7 +151,37 @@ public enum SettingKey {
             "accessibility.high_contrast",
             Type.BOOLEAN,
             "false"
-    );
+    ),
+    BRIGHTNESS(
+            "graphics.brightness",
+            Type.INTEGER,
+            "100",
+            0,
+            100
+    ),
+
+    HIGHLIGHT_POSSIBLE_MOVES(
+            "gameplay.highlight_possible_moves",
+            Type.BOOLEAN,
+            "true"
+    ),
+
+    DEFAULT_SERVER_ADDRESS(
+            "network.default_server_address",
+            Type.STRING,
+            "127.0.0.1"
+    ),
+
+    DEFAULT_SERVER_PORT(
+            "network.default_server_port",
+            Type.INTEGER,
+            "5000",
+            1,
+            65535
+    )
+    ;
+
+
 
     // SETTING TYPES
 

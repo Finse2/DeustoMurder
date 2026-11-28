@@ -8,6 +8,7 @@ import game.profile.PlayerProfileService;
 
 import game.settings.SettingsService;
 import game.statistics.PlayerStatisticsService;
+import game.statistics.LegacyStatisticsMigrator;
 
 import model.PlayerProfile;
 
@@ -66,6 +67,13 @@ public final class ApplicationContext
             profileService.initialize("Player");
 
             statisticsService.initialize();
+
+            LegacyStatisticsMigrator migrator =
+                    new LegacyStatisticsMigrator(database);
+
+            migrator.migrate(
+                    profileService.getLocalPlayerId()
+            );
 
             initialized = true;
 

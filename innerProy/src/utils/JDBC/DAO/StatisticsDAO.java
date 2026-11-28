@@ -4,6 +4,7 @@ package utils.JDBC.DAO;
 import game.statistics.StatisticsSnapshot;
 import utils.JDBC.DBManager;
 import utils.JDBC.DatabaseService;
+import game.statistics.LegacyStatisticsSnapshot;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+
 
 public final class StatisticsDAO {
 
@@ -532,4 +534,101 @@ public final class StatisticsDAO {
             );
         }
     }
+    // CHECK LEGACY IMPORT STATUS
+
+    public boolean hasImportedLegacyStatistics(
+            UUID playerId
+    ) throws Exception {
+
+        Objects.requireNonNull(playerId);
+
+        return database.execute(db -> {
+
+            try (ResultSet rs = db.executeQuery("""
+                SELECT legacy_imported
+
+                FROM player_statistics
+
+                WHERE player_id = ?
+                """,
+
+                    playerId.toString()
+            )) {
+
+                return rs.next()
+                        && rs.getInt("legacy_imported") == 1;
+            }
+        });
+    }
+    // IMPORT LEGACY STATISTICS EXACTLY ONCE
+
+    public boolean importLegacyStatistics(
+
+            UUID playerId,
+
+            LegacyStatisticsSnapshot legacy
+
+    ) throws Exception {
+
+        Objects.requireNonNull(playerId);
+        Objects.requireNonNull(legacy);
+
+        initializeStatistics(playerId);
+
+        return database.execute(db -> {
+
+            int affected = db.executeUpdate("""
+                UPDATE player_statistics
+
+                SET
+
+                    games_played =
+                        games_played + ?,
+
+                    wins =
+                        wins + ?,
+
+                    losses =
+                        losses + ?,
+
+                    accusations_made =
+                        accusations_made + ?,
+
+                    correct_accusations =
+                        correct_accusations + ?,
+
+                    incorrect_accusations =
+                        incorrect_accusations + ?,
+
+                    total_game_duration_millis =
+                        total_game_duration_millis + ?,
+
+                    legacy_imported = 1
+
+                WHERE player_id = ?
+
+                  AND legacy_imported = 0
+                """,
+
+                    legacy.gamesPlayed(),
+
+                    legacy.wins(),
+
+                    legacy.losses(),
+
+                    legacy.accusationsMade(),
+
+                    legacy.correctAccusations(),
+
+                    legacy.incorrectAccusations(),
+
+                    legacy.totalGameDurationMillis(),
+
+                    playerId.toString()
+            );
+
+            return affected == 1;
+        });
+    }
+
 }

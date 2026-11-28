@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.logging.Logger;
 import utils.JDBC.migrations.MigrationV2;
 import utils.JDBC.migrations.MigrationV3;
+import utils.JDBC.migrations.MigrationV4;
 
 public final class DatabaseMigrationManager {
 
@@ -71,7 +72,8 @@ public final class DatabaseMigrationManager {
 
         return List.of(
                 new MigrationV2(),
-                new MigrationV3()
+                new MigrationV3(),
+                new MigrationV4()
         );
     }
 

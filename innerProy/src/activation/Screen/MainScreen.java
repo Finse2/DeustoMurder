@@ -808,38 +808,12 @@ public class MainScreen extends JFrame {
      * The settings are displayed in a table format, and the user can modify values as needed.
      */
     public void openSettings() {
-        JFrame settingsFrame = new JFrame("Settings");
-        String[] colums = {"Settings", "Value"};
 
-        Settings[] data = {
-                new Settings("Music Volume", 0),
-                new Settings("Sound Effects", 0),
-                new Settings("Mute Sound", false),
-                new Settings("Brightness", 0),
-                new Settings("FullScreen", false),
-                new Settings("Highlight Possible Moves", true),
-                new Settings("Player Name", "Finse"),
-                new Settings("Default Server IP", "127.0.0.1"),
-                new Settings("Default Server Port", "5000")
-        };
+        SettingsDialog dialog =
+                new SettingsDialog(this);
 
-        JTable settingsTable = new JTable(Settings.toArray(data), colums) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return column != 0; // Make all cells oof the first column non-editable
-            }
-        };
-
-        JScrollPane scrollPane = CluedoTableTheme.styleConnection(settingsTable);
-        settingsFrame.getContentPane().setBackground(new Color(20, 22, 27));
-        settingsFrame.add(scrollPane);
-
-        settingsFrame.setSize(450, 300);
-        settingsFrame.setLocationRelativeTo(this);
-        settingsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        settingsFrame.setVisible(true);
+        dialog.setVisible(true);
     }
-
     /**
      * Opens a profile statistics dialog that displays the user's game statistics and allows them to change their profile picture.
      * The statistics are displayed in a table format, and the user can modify their profile picture as needed.
@@ -928,6 +902,47 @@ public class MainScreen extends JFrame {
             }
 
             profileButton.setPicture(picture);
+
+            new SwingWorker<Void, Void>() {
+
+                @Override
+                protected Void doInBackground()
+                        throws Exception {
+
+                    app.ApplicationContext.getInstance()
+
+                            .getProfileService()
+
+                            .updateProfileImage(PROFILE_PATH);
+
+                    return null;
+                }
+
+                @Override
+                protected void done() {
+
+                    try {
+
+                        get();
+
+                    } catch (Exception e) {
+
+                        CustomOptionPane.showMessageDialog(
+
+                                MainScreen.this,
+
+                                null,
+
+                                "Picture saved locally, but JDBC "
+                                        + "profile update failed: "
+                                        + e.getMessage(),
+
+                                CustomOptionPane.ERROR
+                        );
+                    }
+                }
+
+            }.execute();
         } catch (IOException | IllegalArgumentException ex) {
             CustomOptionPane.showMessageDialog(
                     this, null,
