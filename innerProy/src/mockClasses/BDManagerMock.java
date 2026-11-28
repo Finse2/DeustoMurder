@@ -6,41 +6,89 @@ import java.sql.ResultSet;
 
 public class BDManagerMock {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
-        try (DBManager db = new DBManager("jdbc:rqlite:http://localhost:4001")) {
+        try (DBManager db = new DBManager(
+                "jdbc:rqlite:http://localhost:4001")) {
 
-            db.execute("DROP TABLE IF EXISTS person");
+            System.out.println("Connected: " + db.isConnected());
 
             db.execute("""
-                CREATE TABLE person (
-                    age INTEGER,
-                    name TEXT
-                )
-                """);
+                    CREATE TABLE IF NOT EXISTS jdbc_test_person (
+                        id INTEGER PRIMARY KEY,
+                        name TEXT NOT NULL,
+                        age INTEGER NOT NULL
+                    )
+                    """);
 
-            db.executeUpdate("INSERT INTO person VALUES (15, 'Antal')");
+            if (!db.tableExists("jdbc_test_person")) {
+                throw new AssertionError("Table creation failed");
+            }
 
-            db.executeUpdate("INSERT INTO person VALUES (20, 'Luka')");
+            db.executeUpdate("DELETE FROM jdbc_test_person");
 
-            db.executeUpdate("INSERT INTO person VALUES (30, 'Antonio')");
+            db.executeUpdate(
+                    "INSERT INTO jdbc_test_person VALUES (?, ?, ?)",
+                    1, "Antal", 15
+            );
 
-            db.executeUpdate("INSERT INTO person VALUES (19, 'Andrada')");
+            db.executeUpdate(
+                    "INSERT INTO jdbc_test_person VALUES (?, ?, ?)",
+                    2, "Luka", 20
+            );
 
-            db.executeUpdate("INSERT INTO person VALUES (19, 'David')");
+            db.executeUpdate(
+                    "INSERT INTO jdbc_test_person VALUES (?, ?, ?)",
+                    3, "O'Connor", 30
+            );
 
-            try (ResultSet rs = db.executeQuery("SELECT * FROM person")) {
+            db.executeUpdate(
+                    "UPDATE jdbc_test_person SET age = ? WHERE id = ?",
+                    21, 2
+            );
 
-                while (rs.next()) {
-                    String name = rs.getString("name");
-                    int age = rs.getInt("age");
+            try (ResultSet rs = db.executeQuery(
+                    "SELECT age FROM jdbc_test_person WHERE id = ?",
+                    2
+            )) {
 
-                    System.out.println(name + " - " + age);
+                if (!rs.next() || rs.getInt("age") != 21) {
+                    throw new AssertionError("Update failed");
                 }
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            try (ResultSet rs = db.executeQuery(
+                    "SELECT name FROM jdbc_test_person WHERE id = ?",
+                    3
+            )) {
+
+                if (!rs.next() ||
+                        !"O'Connor".equals(rs.getString("name"))) {
+                    throw new AssertionError("Parameter binding failed");
+                }
+            }
+
+            db.printQuery(
+                    "SELECT * FROM jdbc_test_person ORDER BY id"
+            );
+
+            db.executeUpdate(
+                    "DELETE FROM jdbc_test_person WHERE id = ?",
+                    1
+            );
+
+            try (ResultSet rs = db.executeQuery(
+                    "SELECT COUNT(*) AS total FROM jdbc_test_person"
+            )) {
+
+                if (!rs.next() || rs.getInt("total") != 2) {
+                    throw new AssertionError("Delete failed");
+                }
+
+                System.out.println("Remaining records: 2");
+            }
+
+            System.out.println("All assertions passed.");
         }
     }
 }
