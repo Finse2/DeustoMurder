@@ -1,50 +1,502 @@
 package achievements;
 
-public class AchievementManager {
+import game.statistics.StatisticsSnapshot;
 
-    // TODO: crear un mapa para almacenar los logros de cada jugador
+import utils.JDBC.DAO.AchievementDAO;
+import utils.JDBC.DAO.AchievementDefinition;
+import utils.JDBC.DAO.StatisticsDAO;
 
-    // TODO: inicializar todos los logros definidos en AchievementType
+import utils.JDBC.DatabaseService;
 
-    // TODO: obtener un logro concreto a partir de su AchievementType
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
-    // TODO: incrementar el progreso de un logro cuando ocurra un evento
+import java.util.function.ToLongFunction;
 
-    // TODO: añadir una cantidad determinada al progreso de un logro
+    public final class AchievementManager {
 
-    // TODO: comprobar si un logro ha sido desbloqueado
+        private final AchievementDAO achievementDAO;
 
-    // TODO: comprobar si un logro ha alcanzado su nivel maximo
+        private final StatisticsDAO statisticsDAO;
 
-    // TODO: calcular el nivel actual de un logro (bronze, silver, gold, platinum)
+        // STATISTICS-BASED ACHIEVEMENTS
 
-    // TODO: detectar cuando un jugador alcanza un nuevo nivel
+        private static final Map<
+                AchievementType,
+                ToLongFunction<StatisticsSnapshot>
+                > STATISTICS_MAPPINGS = Map.of(
 
-    // TODO: notificar al jugador cuando desbloquee un logro
+                AchievementType.WIN_GAMES,
+                StatisticsSnapshot::wins,
 
-    // TODO: obtener todos los logros de un jugador
+                AchievementType.CONSECUTIVE_WINS,
+                StatisticsSnapshot::bestWinStreak,
 
-    // TODO: obtener solamente los logros desbloqueados
+                AchievementType.MAKE_INCORRECT_FINAL_ACCUSATIONS,
+                StatisticsSnapshot::incorrectAccusations,
 
-    // TODO: obtener solamente los logros completados
+                AchievementType.TOTAL_COMPLETED_MATCHES,
+                StatisticsSnapshot::gamesPlayed,
 
-    // TODO: ocultar los logros secretos hasta que sean desbloqueados
+                AchievementType.TOTAL_FINAL_ACCUSATIONS,
+                StatisticsSnapshot::accusationsMade
+        );
 
-    // TODO: calcular el porcentaje total de logros completados
+        // ACHIEVEMENT UNLOCK EVENT
 
-    // TODO: registrar victorias, derrotas y partidas jugadas
+        public record AchievementUnlock(
 
-    // TODO: actualizar los logros relacionados con rachas de victorias
+                UUID playerId,
 
-    // TODO: registrar los movimientos, sugerencias y tiradas de dados
+                String achievementCode,
 
-    // TODO: comprobar los logros especiales al finalizar una partida
+                String achievementName,
 
-    // TODO: reiniciar los contadores temporales al comenzar una partida
+                String previousLevel,
 
-    // TODO: guardar el progreso de los logros utilizando JDBC
+                String newLevel,
 
-    // TODO: cargar el progreso de los logros al iniciar sesion
+                long progress
 
-    // TODO: conectar los desbloqueos con las notificaciones de Swing
-}
+        ) {}
+
+        // CONSTRUCTORS
+
+        public AchievementManager() {
+
+            this(DatabaseService.getInstance());
+        }
+
+        public AchievementManager(DatabaseService database) {
+
+            Objects.requireNonNull(database);
+
+            this.achievementDAO =
+                    new AchievementDAO(database);
+
+            this.statisticsDAO =
+                    new StatisticsDAO(database);
+        }
+
+        // INITIALIZE ACHIEVEMENT CATALOGUE
+
+        public void initializeAchievements()
+                throws Exception {
+
+            for (AchievementType type :
+                    AchievementType.values()) {
+
+                AchievementDefinition definition =
+                        createDefinition(type);
+
+                achievementDAO.registerAchievement(
+                        definition
+                );
+            }
+
+            registerSpecialAchievements();
+        }
+
+        // CREATE DATABASE ACHIEVEMENT DEFINITION
+
+        private AchievementDefinition createDefinition(
+                AchievementType type
+        ) {
+
+            int[] requirements = type.getRequirements();
+
+            if (requirements.length != 4) {
+
+                throw new IllegalArgumentException(
+                        "Expected four requirements for "
+                                + type.name()
+                );
+            }
+
+            return new AchievementDefinition(
+
+                    type.name(),
+
+                    formatName(type.name()),
+
+                    getDescription(type),
+
+                    type.isHidden(),
+
+                    (long) requirements[0],
+
+                    (long) requirements[1],
+
+                    (long) requirements[2],
+
+                    (long) requirements[3],
+
+                    null
+            );
+        }
+
+        // SPECIAL ACHIEVEMENTS
+
+        private void registerSpecialAchievements()
+                throws Exception {
+
+            achievementDAO.registerAchievement(
+
+                    new AchievementDefinition(
+
+                            "LUCK_OF_THE_GODS",
+
+                            "Luck of the Gods",
+
+                            "Win five consecutive matches.",
+
+                            true,
+
+                            null,
+                            null,
+                            null,
+                            5L,
+
+                            null
+                    )
+            );
+        }
+
+        // SYNCHRONIZE ACHIEVEMENTS WITH STATISTICS
+
+        public synchronized List<AchievementUnlock>
+        synchronizeStatistics(UUID playerId)
+                throws Exception {
+
+            Objects.requireNonNull(playerId);
+
+            StatisticsSnapshot statistics =
+                    statisticsDAO.getOrCreateStatistics(
+                            playerId
+                    );
+
+            List<AchievementUnlock> unlocks =
+                    new ArrayList<>();
+
+            for (var mapping :
+                    STATISTICS_MAPPINGS.entrySet()) {
+
+                AchievementType type =
+                        mapping.getKey();
+
+                long progress = mapping.getValue()
+                        .applyAsLong(statistics);
+
+                updateAchievement(
+
+                        playerId,
+
+                        type.name(),
+
+                        progress
+
+                ).ifPresent(unlocks::add);
+            }
+
+            // Special winning streak achievement.
+
+            updateAchievement(
+
+                    playerId,
+
+                    "LUCK_OF_THE_GODS",
+
+                    statistics.bestWinStreak()
+
+            ).ifPresent(unlocks::add);
+
+            return List.copyOf(unlocks);
+        }
+
+        // UPDATE SINGLE ACHIEVEMENT
+
+        public synchronized java.util.Optional<AchievementUnlock>
+        updateAchievement(
+
+                UUID playerId,
+
+                String achievementCode,
+
+                long progress
+
+        ) throws Exception {
+
+            AchievementDAO.AchievementProgress previous =
+                    achievementDAO.getProgress(
+
+                            playerId,
+
+                            achievementCode
+
+                    ).orElseThrow(() ->
+
+                            new IllegalArgumentException(
+
+                                    "Unknown player or achievement: "
+                                            + achievementCode
+                            )
+                    );
+
+            achievementDAO.updateProgress(
+
+                    playerId,
+
+                    achievementCode,
+
+                    progress
+            );
+
+            AchievementDAO.AchievementProgress updated =
+                    achievementDAO.evaluateAndUnlock(
+
+                            playerId,
+
+                            achievementCode
+                    );
+
+            return detectUnlock(previous, updated);
+        }
+
+        // INCREMENT EVENT-BASED ACHIEVEMENT
+
+        public synchronized java.util.Optional<AchievementUnlock>
+        incrementAchievement(
+
+                UUID playerId,
+
+                AchievementType type,
+
+                long amount
+
+        ) throws Exception {
+
+            Objects.requireNonNull(type);
+
+            if (STATISTICS_MAPPINGS.containsKey(type)) {
+
+                throw new IllegalArgumentException(
+
+                        "This achievement must be synchronized "
+                                + "from player statistics."
+                );
+            }
+
+            AchievementDAO.AchievementProgress previous =
+                    achievementDAO.getProgress(
+
+                            playerId,
+
+                            type.name()
+
+                    ).orElseThrow();
+
+            achievementDAO.incrementProgress(
+
+                    playerId,
+
+                    type.name(),
+
+                    amount
+            );
+
+            AchievementDAO.AchievementProgress updated =
+                    achievementDAO.evaluateAndUnlock(
+
+                            playerId,
+
+                            type.name()
+                    );
+
+            return detectUnlock(previous, updated);
+        }
+
+        // DETECT NEW UNLOCK
+
+        private java.util.Optional<AchievementUnlock>
+        detectUnlock(
+
+                AchievementDAO.AchievementProgress previous,
+
+                AchievementDAO.AchievementProgress updated
+
+        ) {
+
+            if (previous.level().equals(updated.level())) {
+
+                return java.util.Optional.empty();
+            }
+
+            return java.util.Optional.of(
+
+                    new AchievementUnlock(
+
+                            updated.playerId(),
+
+                            updated.definition().code(),
+
+                            updated.definition().name(),
+
+                            previous.level(),
+
+                            updated.level(),
+
+                            updated.progress()
+                    )
+            );
+        }
+
+        // GET ACHIEVEMENTS
+
+        public List<AchievementDAO.AchievementProgress>
+        getPlayerAchievements(UUID playerId)
+                throws Exception {
+
+            return achievementDAO.getPlayerAchievements(
+                    playerId
+            );
+        }
+
+        public List<AchievementDAO.AchievementProgress>
+        getVisibleAchievements(UUID playerId)
+                throws Exception {
+
+            return achievementDAO.getVisibleAchievements(
+                    playerId
+            );
+        }
+
+        public List<AchievementDAO.AchievementProgress>
+        getUnlockedAchievements(UUID playerId)
+                throws Exception {
+
+            return achievementDAO.getUnlockedAchievements(
+                    playerId
+            );
+        }
+
+        public List<AchievementDAO.AchievementProgress>
+        getCompletedAchievements(UUID playerId)
+                throws Exception {
+
+            return getPlayerAchievements(playerId)
+
+                    .stream()
+
+                    .filter(
+                            AchievementDAO
+                                    .AchievementProgress::isCompleted
+                    )
+
+                    .toList();
+        }
+
+        // COMPLETION
+
+        public double getCompletionPercentage(
+                UUID playerId
+        ) throws Exception {
+
+            return achievementDAO.getCompletionPercentage(
+                    playerId
+            );
+        }
+
+        public double getMasteryPercentage(
+                UUID playerId
+        ) throws Exception {
+
+            return achievementDAO.getMasteryPercentage(
+                    playerId
+            );
+        }
+
+        // CHECK UNLOCK STATUS
+
+        public boolean isUnlocked(
+
+                UUID playerId,
+
+                AchievementType type
+
+        ) throws Exception {
+
+            return achievementDAO.isUnlocked(
+
+                    playerId,
+
+                    type.name()
+            );
+        }
+
+        // DESCRIPTION MAPPING
+
+        private String getDescription(
+                AchievementType type
+        ) {
+
+            return switch (type) {
+
+                case WIN_GAMES ->
+                        "Win completed matches.";
+
+                case CONSECUTIVE_WINS ->
+                        "Win consecutive completed matches.";
+
+                case MAKE_INCORRECT_FINAL_ACCUSATIONS ->
+                        "Make incorrect final accusations.";
+
+                case TOTAL_COMPLETED_MATCHES ->
+                        "Complete matches.";
+
+                case TOTAL_FINAL_ACCUSATIONS ->
+                        "Make final accusations.";
+
+                default ->
+                        formatName(type.name());
+            };
+        }
+
+        // DISPLAY NAME FORMATTING
+
+        private String formatName(String name) {
+
+            String[] words = name
+
+                    .toLowerCase(Locale.ROOT)
+
+                    .split("_");
+
+            StringBuilder builder =
+                    new StringBuilder();
+
+            for (String word : words) {
+
+                if (word.isEmpty()) {
+                    continue;
+                }
+
+                if (!builder.isEmpty()) {
+                    builder.append(" ");
+                }
+
+                builder.append(
+
+                        Character.toUpperCase(
+                                word.charAt(0)
+                        )
+
+                ).append(word.substring(1));
+            }
+
+            return builder.toString();
+        }
+    }

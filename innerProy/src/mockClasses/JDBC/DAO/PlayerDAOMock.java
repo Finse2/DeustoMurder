@@ -3,7 +3,7 @@ package mockClasses;
 
 import model.PlayerProfile;
 import utils.JDBC.DatabaseService;
-import utils.JDBC.dao.PlayerDAO;
+import utils.JDBC.DAO.PlayerDAO;
 
 import java.util.List;
 import java.util.UUID;

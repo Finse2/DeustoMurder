@@ -1,5 +1,5 @@
 
-package utils.JDBC.dao;
+package utils.JDBC.DAO;
 
 import game.statistics.StatisticsSnapshot;
 import utils.JDBC.DBManager;

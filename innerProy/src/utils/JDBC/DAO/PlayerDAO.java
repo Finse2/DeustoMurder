@@ -1,5 +1,5 @@
 
-package utils.JDBC.dao;
+package utils.JDBC.DAO;
 
 import model.PlayerProfile;
 import utils.JDBC.DatabaseService;

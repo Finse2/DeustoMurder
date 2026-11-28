@@ -1,12 +1,11 @@
-
 package mockClasses;
 
 import game.statistics.StatisticsSnapshot;
 
 import utils.JDBC.DatabaseService;
 
-import utils.JDBC.dao.PlayerDAO;
-import utils.JDBC.dao.StatisticsDAO;
+import utils.JDBC.DAO.PlayerDAO;
+import utils.JDBC.DAO.StatisticsDAO;
 
 import java.sql.SQLException;
 import java.util.UUID;
