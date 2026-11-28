@@ -1,41 +1,107 @@
+
 package app;
 
 import activation.Screen.MainScreen;
-import ui.match.inGameScreen.InGameScreen;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-/**
- * central entry point
- * game data and Swing window layout are handled elsewhere.
- */
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public final class Main {
 
+    private static final Logger LOGGER =
+            Logger.getLogger(Main.class.getName());
+
     private Main() {
-        // utility entry-point class: not instantiated.
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(Main::showMainMenu);
-    }
 
-    private static void showMainMenu() {
-        MainScreen menu = new MainScreen();
-        menu.setVisible(true);
-    }
+        ApplicationContext context =
+                ApplicationContext.getInstance();
 
-    private static void openLocalGame() {
-        //InGameScreen gameScreen = new InGameScreen();
-        //gameScreen.setVisible(true);
-    }
+        // INITIALIZE JDBC OUTSIDE THE SWING EDT
 
-    private static void showJoinNotImplemented() {
-        JOptionPane.showMessageDialog(
-                null,
-                "Joining a network game has not been connected to the menu yet.",
-                "Join Game",
-                JOptionPane.INFORMATION_MESSAGE
+        try {
+
+            LOGGER.info(
+                    "Initializing DeustoMurder..."
+            );
+
+            context.initialize();
+
+            LOGGER.info(
+                    "Database initialization completed."
+            );
+
+            LOGGER.info(
+                    "Local player: "
+                            + context.getLocalPlayerId()
+            );
+
+        } catch (Exception e) {
+
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Application initialization failed.",
+                    e
+            );
+
+            context.shutdown();
+
+            SwingUtilities.invokeLater(() ->
+
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Could not initialize DeustoMurder.\n"
+                                    + e.getMessage(),
+                            "Startup Error",
+                            JOptionPane.ERROR_MESSAGE
+                    )
+            );
+
+            return;
+        }
+
+        // REGISTER APPLICATION SHUTDOWN
+
+        Runtime.getRuntime().addShutdownHook(
+                new Thread(
+                        context::shutdown,
+                        "Application-Shutdown"
+                )
         );
+
+        // CREATE THE MAIN MENU
+
+        SwingUtilities.invokeLater(() -> {
+
+            try {
+
+                MainScreen menu = new MainScreen();
+
+                menu.setVisible(true);
+
+            } catch (RuntimeException e) {
+
+                LOGGER.log(
+                        Level.SEVERE,
+                        "Could not open the main menu.",
+                        e
+                );
+
+                context.shutdown();
+
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Could not open the main menu.\n"
+                                + e.getMessage(),
+                        "Application Error",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+        });
     }
 }
